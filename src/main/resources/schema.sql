@@ -34,16 +34,17 @@ CREATE TABLE employee_t (
     business_key UUID,
     version INT DEFAULT 1,
     user_id INT REFERENCES user_t(id),
-    birth_date DATE
+    birth_date DATE,
+    avg_opinion DOUBLE
 );
 
-CREATE TABLE skill_t (
+/*CREATE TABLE skill_t (
     id INT AUTO_INCREMENT  PRIMARY KEY,
     business_key UUID,
     version INT DEFAULT 1,
     name VARCHAR(4000) NOT NULL,
     code VARCHAR(4000) NOT NULL
-);
+);*/
 
 CREATE TABLE status_t (
      id INT AUTO_INCREMENT  PRIMARY KEY,
@@ -55,7 +56,7 @@ CREATE TABLE status_t (
 
 CREATE TABLE employee_skill_t (
    employee_id INT REFERENCES employee_t(user_id),
-   skill_id INT REFERENCES skill_t(id)
+   work_order_type_id INT REFERENCES work_order_type_t(id)
 );
 
 CREATE TABLE position_t (
@@ -72,7 +73,7 @@ CREATE TABLE work_order_type_t (
    name VARCHAR(4000) NOT NULL,
    code VARCHAR(4000) NOT NULL,
    required_time INT NOT NULL DEFAULT 60,
-   required_skill INT REFERENCES skill_t(id)
+   --required_skill INT REFERENCES skill_t(id)
 );
 
 CREATE TABLE work_order_t (
@@ -87,6 +88,16 @@ CREATE TABLE work_order_t (
     employee_id INT REFERENCES employee_t(user_id),
     type_id INT REFERENCES work_order_type_t(id)
 );
+
+CREATE TABLE opinion_t (
+    id INT AUTO_INCREMENT  PRIMARY KEY,
+    business_key UUID,
+    version INT DEFAULT 1,
+    rating INT DEFAULT 5,
+    description VARCHAR,
+    work_order_id INT REFERENCES work_order_t(id)
+);
+
 
 CREATE TABLE work_order_status_t (
     id INT AUTO_INCREMENT  PRIMARY KEY,

@@ -2,45 +2,60 @@
 <html lang="en" th:replace="layouts/main_layout :: layout (~{::title}, ~{::form})" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="#{registerHeader}">Title</title>
+
+   <!-- <script src='https://www.google.com/recaptcha/api.js'></script>-->
 </head>
 <body>
 
     <!-- Default form register -->
-    <form class="text-center border border-light p-5" action="#" th:action="@{/register}" >
+    <form class="text-center border border-light p-5" action="#" th:action="@{/register}" th:object="${user}" method="post">
 
         <p class="h4 mb-4" th:text="#{registerHeader}">Sign up</p>
 
         <div class="form-row mb-4">
             <div class="col">
                 <!-- First name -->
-                <input type="text" id="defaultRegisterFormFirstName" class="form-control" th:placeholder="#{firstName}">
+                <input type="text" id="defaultRegisterFormFirstName" class="form-control"
+                       th:placeholder="#{firstName}" th:field="*{firstName}">
             </div>
             <div class="col">
                 <!-- Last name -->
-                <input type="text" id="defaultRegisterFormLastName" class="form-control" th:placeholder="#{lastName}">
+                <input type="text" id="defaultRegisterFormLastName" class="form-control"
+                       th:placeholder="#{lastName}" th:field="*{lastName}">
             </div>
         </div>
 
         <!-- E-mail -->
-        <input type="email" id="defaultRegisterFormEmail" class="form-control mb-4" placeholder="E-mail">
+        <input type="email" id="defaultRegisterFormEmail"
+               class="form-control mb-4" placeholder="E-mail" th:field="*{email}">
 
         <!-- Password -->
-        <input type="password" id="defaultRegisterFormPassword" class="form-control" placeholder="Password" aria-describedby="defaultRegisterFormPasswordHelpBlock">
+        <input type="password" id="defaultRegisterFormPassword" class="form-control"
+               placeholder="Password" aria-describedby="defaultRegisterFormPasswordHelpBlock"
+               th:field="*{password}">
         <small id="defaultRegisterFormPasswordHelpBlock" class="form-text text-muted mb-4">
             At least 8 characters and 1 digit
         </small>
 
         <!-- Phone number -->
-        <input type="text" id="defaultRegisterPhonePassword" class="form-control" placeholder="Phone number" aria-describedby="defaultRegisterFormPhoneHelpBlock">
+        <input type="text" id="defaultRegisterPhonePassword" class="form-control"
+               placeholder="Phone number" aria-describedby="defaultRegisterFormPhoneHelpBlock"
+               th:field="*{phoneNumber}">
         <small id="defaultRegisterFormPhoneHelpBlock" class="form-text text-muted mb-4">
             Optional - for two step authentication
         </small>
 
         <!-- Newsletter -->
-        <div class="custom-control custom-checkbox">
+        <!--<div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" id="defaultRegisterFormNewsletter">
             <label class="custom-control-label" for="defaultRegisterFormNewsletter">Subscribe to our newsletter</label>
-        </div>
+        </div>-->
+        <!--<div class="form-row mb-4">
+            <div class="g-recaptcha col-sm-5"
+                 th:attr="data-sitekey=${@captchaConfiguration.getSite()}"></div>
+            <span id="captchaError" class="alert alert-danger col-sm-4"
+                  style="display:none"></span>
+        </div>-->
 
         <!-- Sign up button -->
         <button class="btn btn-info my-4 btn-block" type="submit">Sign in</button>
@@ -62,6 +77,7 @@
 
     </form>
     <!-- Default form register -->
+
 
 </body>
 </html>

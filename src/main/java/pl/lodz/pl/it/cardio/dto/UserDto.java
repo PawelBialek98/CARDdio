@@ -1,13 +1,13 @@
 package pl.lodz.pl.it.cardio.dto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@Getter
-@Setter
+@Data
 public class UserDto {
 
     @Size(min = 4, message = "{validation.login}")

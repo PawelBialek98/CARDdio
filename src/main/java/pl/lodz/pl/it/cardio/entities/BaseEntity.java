@@ -12,7 +12,7 @@ import java.util.UUID;
 public abstract class BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     private Integer id;
 
@@ -23,12 +23,7 @@ public abstract class BaseEntity {
     //@TypeConverter(name = "uuidConverter", dataType = Object.class, objectType = UUID.class)
     @Column(name = "business_key", nullable = false)
     @Getter
-    private UUID businessKey;
-    //private final UUID businessKey = UUID.randomUUID(); <- nie działa (na razie)
-
-    public UUID getBusinessKey() {
-        return businessKey;
-    }
+    private final UUID businessKey = UUID.randomUUID();
 
     @Override
     public boolean equals(Object o) {

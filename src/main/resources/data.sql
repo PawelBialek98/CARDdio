@@ -29,3 +29,10 @@ INSERT INTO employee_t(user_id, birth_date)
 VALUES
 (1, parsedatetime('17-09-2012', 'dd-MM-yyyy')),
 (3, parsedatetime('05-02-1999', 'dd-MM-yyyy'));
+
+INSERT INTO status_t(id, business_key, name, code)
+VALUES
+(1, '0218db7f-5a5f-4a57-9a74-620737f36cf6', 'Oczękująca', 'WAITING'),
+(2, '222b66a4-681a-4907-8b88-5d2fcc52334e', 'Zaakceptowana', 'ACCEPTED'),
+(3, '11e49668-6f32-45eb-9338-be17feeac82c', 'Rozpoczęta', 'STARTED'),
+(4, 'b5f2d1ff-bb74-41da-9e2a-24e1b966ca75', 'Zakończona', 'FINISHED')

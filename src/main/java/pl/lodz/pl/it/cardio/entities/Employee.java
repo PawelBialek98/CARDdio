@@ -28,7 +28,7 @@ public class Employee extends BaseEntity {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "employees")
-    private  Collection<Skill> skills;
+    private  Collection<WorkOrderType> skills;
 
     @Override
     public String toString() {

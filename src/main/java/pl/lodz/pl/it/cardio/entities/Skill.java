@@ -21,12 +21,4 @@ public class Skill extends BaseEntity{
     @Setter
     private String code;
 
-    @ManyToMany
-    @JoinTable(
-            name = "employee_skill_t",
-            joinColumns = @JoinColumn(
-                    name = "employee_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "skill_id", referencedColumnName = "id"))
-    private Collection<Employee> employees;
 }
