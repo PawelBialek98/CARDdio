@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="layout (title, content)" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:replace="${title}">***** ***</title>
+    <!-- MDB icon -->
+    <link rel="icon" th:href="@{/img/car-mechanic.ico}" type="image/x-icon">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" th:href="@{/css/mdb.min.css}">
+    <!-- Your custom styles (optional) -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <header th:replace="layouts/header :: common_header(~{})"></header>
+
+    <main>
+        <div class="container" style="height:1300px;">
+            <div class="row mt-5 pt-5">
+                <div class="col-md-3"></div>
+                <div class="col text-center">
+                    <div th:replace="${content}">
+
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:insert="layouts/footer :: copy"></footer>
+
+    <!-- jQuery -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" th:src="@{/js/popper.min.js}"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" th:src="@{/js/mdb.min.js}"></script>
+</body>
+</html>
