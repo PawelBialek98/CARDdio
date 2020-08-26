@@ -6,15 +6,17 @@
 <body>
 
     <!-- Default form login -->
-    <form class="text-center border border-light p-5" action="#!">
+    <form class="text-center border border-light p-5" action="#" th:action="@{/login}" method="post">
 
         <p class="h4 mb-4">Sign in</p>
 
         <!-- Email -->
-        <input type="email" id="defaultLoginFormEmail" class="form-control mb-4" placeholder="E-mail">
+        <input type="text" id="username"  name="username" class="form-control mb-4"
+               placeholder="UserName" required="true" autofocus="true">
 
         <!-- Password -->
-        <input type="password" id="defaultLoginFormPassword" class="form-control mb-4" placeholder="Password">
+        <input type="password" name="password" id="password" class="form-control mb-4"
+               placeholder="Password" required="true">
 
         <div class="d-flex justify-content-around">
             <div>
@@ -35,17 +37,17 @@
 
         <!-- Register -->
         <p>Not a member?
-            <a href="">Register</a>
+            <a th:href="@{/register}">Register</a>
         </p>
 
         <!-- Social login -->
-        <p>or sign in with:</p>
+        <!--<p>or sign in with:</p>
 
         <a href="#" class="mx-2" role="button"><i class="fab fa-facebook-f light-blue-text"></i></a>
         <a href="#" class="mx-2" role="button"><i class="fab fa-twitter light-blue-text"></i></a>
         <a href="#" class="mx-2" role="button"><i class="fab fa-linkedin-in light-blue-text"></i></a>
         <a href="#" class="mx-2" role="button"><i class="fab fa-github light-blue-text"></i></a>
-
+          -->
     </form>
     <!-- Default form login -->
 </body>

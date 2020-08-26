@@ -1,13 +1,13 @@
 package pl.lodz.pl.it.cardio.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 
 @Entity
 @Table(name="user_t")
@@ -16,6 +16,8 @@ import java.util.Collection;
 //@DiscriminatorColumn(name = "roles")
 @NoArgsConstructor
 @RequiredArgsConstructor
+@Getter
+@Setter
 public class User extends BaseEntity {
 
     @Column(name = "first_name", table = "user_details_t")
@@ -33,12 +35,26 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     @NonNull
+    private String login;
+
+    @Column(nullable = false)
+    @NonNull
     private String password;
 
     @Column(name = "phone_number", table = "user_details_t")
     @NonNull
     @Pattern(regexp = "\\d{9}")
     private String phoneNumber;
+
+    @Column
+    private Boolean activated = false;
+
+    @Column
+    private Boolean locked = false;
+
+    @Column(name = "invalid_login_attempts", nullable = false)
+    @NotNull
+    private int invalidLoginAttempts = 0;
 
     @ManyToMany
     @JoinTable(
@@ -54,14 +70,18 @@ public class User extends BaseEntity {
     //private Employee employee;
 
     //TODO do ukrycia dane biznesowe
+
     @Override
     public String toString() {
         return "User{" +
-                "email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", firstName='" + firstName + '\'' +
+                "firstName='" + firstName + '\'' +
                 ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", activated=" + activated +
+                ", locked=" + locked +
+                ", invalidLoginAttempts=" + invalidLoginAttempts +
                 ", roles=" + roles +
                 "} " + super.toString();
     }

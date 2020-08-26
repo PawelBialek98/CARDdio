@@ -1,7 +1,7 @@
-INSERT INTO user_t (id, email, password, business_key)
-VALUES(1, 'Aliko', 'Dangote', '6a27c4f4-4505-46e1-a510-bf55290cebbe'),
-(2, 'Bill', 'Gates', 'd97af2e7-31da-4547-9847-07fcd5d4f87f'),
-(3, 'Folrunsho', 'Alakija', 'da6c3098-522d-4878-bcdc-b207d3154077');
+INSERT INTO user_t (id, login, email, password, business_key)
+VALUES(1, 'Romek', 'Romek', '$2y$10$jwAj/Hone1I8MZw2jcbu7uxS6kLCO9cRHvP.XhzUz7uw2GUnC.xSW', '6a27c4f4-4505-46e1-a510-bf55290cebbe'),
+(2, 'Bill', 'Bill', 'Gates', 'd97af2e7-31da-4547-9847-07fcd5d4f87f'),
+(3, 'Folrunsho', 'Folrunsho', 'Alakija', 'da6c3098-522d-4878-bcdc-b207d3154077');
 
 INSERT INTO user_details_t (user_id, first_name, last_name, phone_number)
 VALUES(1, 'Aliko', 'Dangote', '123'),

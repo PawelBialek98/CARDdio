@@ -3,7 +3,11 @@ CREATE TABLE user_t (
     business_key UUID,
     version INT DEFAULT 1,
     email VARCHAR(250),
-    password VARCHAR(250)
+    login VARCHAR(250),
+    password VARCHAR(250),
+    activated BOOLEAN,
+    locked BOOLEAN,
+    invalid_login_attempts INT DEFAULT 0
 );
 
 CREATE TABLE user_details_t (
@@ -54,11 +58,6 @@ CREATE TABLE status_t (
      code VARCHAR(4000) NOT NULL
 );
 
-CREATE TABLE employee_skill_t (
-   employee_id INT REFERENCES employee_t(user_id),
-   work_order_type_id INT REFERENCES work_order_type_t(id)
-);
-
 CREATE TABLE position_t (
     id INT AUTO_INCREMENT  PRIMARY KEY,
     business_key UUID,
@@ -72,8 +71,13 @@ CREATE TABLE work_order_type_t (
    version INT DEFAULT 1,
    name VARCHAR(4000) NOT NULL,
    code VARCHAR(4000) NOT NULL,
-   required_time INT NOT NULL DEFAULT 60,
+   required_time INT NOT NULL DEFAULT 60
    --required_skill INT REFERENCES skill_t(id)
+);
+
+CREATE TABLE employee_skill_t (
+    employee_id INT REFERENCES employee_t(user_id),
+    work_order_type_id INT REFERENCES work_order_type_t(id)
 );
 
 CREATE TABLE work_order_t (

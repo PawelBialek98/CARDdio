@@ -2,11 +2,17 @@ package pl.lodz.pl.it.cardio.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.User;
+import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
 import pl.lodz.pl.it.cardio.service.UserService;
 
 import javax.validation.Valid;
@@ -41,17 +47,40 @@ public class UserController {
         return "login/login";
     }
 
+    // Login form
+    @RequestMapping("/login")
+    public String login() {
+        return "login/login";
+    }
+
+    // Login form with error
+    @RequestMapping("/login-error")
+    public String loginError(Model model) {
+        model.addAttribute("loginError", true);
+        return "login/login-error";
+    }
+
     @GetMapping("/register")
     public ModelAndView getRegisterPage(){
         return new ModelAndView("login/register", "user", new UserDto());
     }
 
     @PostMapping("/register")
-    public ModelAndView addUser(@Valid UserDto userDto){
+    public String addUser(@Valid @ModelAttribute("user") UserDto userDto, BindingResult result,
+                          Model model, RedirectAttributes redirectAttributes){
+        if(result.hasErrors()){
+            return "login/register";
+        }
         //return new ModelAndView("register", "user", new UserDto());
         //User user = ObjectMapper.map(userDto, User.class);
-        User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
-        userService.addUser(user);
-        return new ModelAndView("index", "users", userService.getAllUsers());
+        try{
+            User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getLogin(), userDto.getPassword(), userDto.getPhoneNumber());
+            userService.addUser(user);
+        } catch (AppNotFoundException e) {
+            //TODO
+            redirectAttributes.addFlashAttribute("message","Nie siadło!");
+        }
+        model.addAttribute("users", userService.getAllUsers());
+        return "redirect:";
     }
 }
