@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity //- opcjonalna, bo nie wyłączyłem security config
@@ -29,22 +30,32 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
+    @Bean
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(){
+        return new MySimpleUrlAuthenticationSuccessHandler();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().httpBasic().and()
                 .authorizeRequests()
                 .antMatchers("/css/**", "/js/**", "/img/**").permitAll()
+                .antMatchers("/register").permitAll()
+                .antMatchers("/h2-console").permitAll()
                 .antMatchers("/**").hasAnyRole("CLIENT","MECHANIC")
             .and()
                 .formLogin()
                 .loginPage("/login")
-                //.usernameParameter("username")
+                .usernameParameter("email")
                 //.passwordParameter("password")
-                //.loginProcessingUrl("/index")
+                //.loginProcessingUrl("/employee")
                 .failureForwardUrl("/login-error")
                 .permitAll()
             .and()
-                .logout().logoutSuccessUrl("/index");
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/index")
+                .permitAll();
 
         /*http.csrf().disable()
                 .authorizeRequests()

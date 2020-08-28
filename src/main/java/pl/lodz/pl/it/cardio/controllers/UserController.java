@@ -1,6 +1,7 @@
 package pl.lodz.pl.it.cardio.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +17,8 @@ import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
 import pl.lodz.pl.it.cardio.service.UserService;
 
 import javax.validation.Valid;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Controller
 public class UserController {
@@ -50,6 +53,7 @@ public class UserController {
     // Login form
     @RequestMapping("/login")
     public String login() {
+        Logger.getGlobal().log(Level.INFO, new BCryptPasswordEncoder().encode("adminnimda"));
         return "login/login";
     }
 
@@ -74,13 +78,14 @@ public class UserController {
         //return new ModelAndView("register", "user", new UserDto());
         //User user = ObjectMapper.map(userDto, User.class);
         try{
-            User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getLogin(), userDto.getPassword(), userDto.getPhoneNumber());
+            User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
             userService.addUser(user);
         } catch (AppNotFoundException e) {
             //TODO
             redirectAttributes.addFlashAttribute("message","Nie siadło!");
         }
+        //Dodać wysyłanie emaila
         model.addAttribute("users", userService.getAllUsers());
-        return "redirect:";
+        return "login/login";
     }
 }

@@ -3,6 +3,7 @@ package pl.lodz.pl.it.cardio.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.sql.Timestamp;
@@ -30,12 +31,9 @@ public class User extends BaseEntity {
 
     @Column
     @NonNull
+    @Email
     @Pattern(regexp = "^[^\\s\\\\@]+@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.){1,11}[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$")
     private String email;
-
-    @Column(nullable = false)
-    @NonNull
-    private String login;
 
     @Column(nullable = false)
     @NonNull

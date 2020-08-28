@@ -3,7 +3,6 @@ CREATE TABLE user_t (
     business_key UUID,
     version INT DEFAULT 1,
     email VARCHAR(250),
-    login VARCHAR(250),
     password VARCHAR(250),
     activated BOOLEAN,
     locked BOOLEAN,

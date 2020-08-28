@@ -30,14 +30,14 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        User user = userRepository.findByLogin(login);
-        Logger.getGlobal().log(Level.INFO,"dupa" + login + getAuthorities(user.getRoles()).toString());
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+        Logger.getGlobal().log(Level.INFO,"dupa" + email + getAuthorities(user.getRoles()).toString());
         if(user == null){
-            throw new UsernameNotFoundException("No user found with username: " + login);
+            throw new UsernameNotFoundException("No user found with username: " + email);
         }
         return new org.springframework.security.core.userdetails.User(
-                user.getLogin(),
+                user.getEmail(),
                 user.getPassword(),
                 true,
                 true,
