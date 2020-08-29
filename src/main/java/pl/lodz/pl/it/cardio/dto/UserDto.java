@@ -24,4 +24,5 @@ public class UserDto {
     private String lastName;
     @Pattern(regexp = "\\d{9}", message = "{validation.number}")
     private String phoneNumber;
+    private Boolean activated = false;
 }

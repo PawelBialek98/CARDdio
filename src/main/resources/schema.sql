@@ -17,6 +17,13 @@ CREATE TABLE user_details_t (
     phone_number VARCHAR(250)
 );
 
+CREATE TABLE verification_token_t (
+    id INT AUTO_INCREMENT  PRIMARY KEY,
+    user_id INT REFERENCES user_t(id),
+    token VARCHAR,
+    expiry_date DATE
+);
+
 CREATE TABLE role_t(
     id INT AUTO_INCREMENT  PRIMARY KEY,
     business_key UUID,

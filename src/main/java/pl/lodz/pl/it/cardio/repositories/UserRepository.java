@@ -8,4 +8,5 @@ import javax.transaction.Transactional;
 @Transactional
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail(String email);
+    Boolean existsByEmail(String email);
 }

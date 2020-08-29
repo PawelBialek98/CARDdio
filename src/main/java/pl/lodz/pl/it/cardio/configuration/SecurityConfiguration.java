@@ -40,8 +40,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable().httpBasic().and()
                 .authorizeRequests()
                 .antMatchers("/css/**", "/js/**", "/img/**").permitAll()
-                .antMatchers("/register").permitAll()
-                .antMatchers("/h2-console").permitAll()
+                .antMatchers("/register", "/registrationConfirm*", "/badUser.html" ,"/h2-console").permitAll()
                 .antMatchers("/**").hasAnyRole("CLIENT","MECHANIC")
             .and()
                 .formLogin()
@@ -50,12 +49,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //.passwordParameter("password")
                 //.loginProcessingUrl("/employee")
                 .failureForwardUrl("/login-error")
+                .successHandler(myAuthenticationSuccessHandler())
                 .permitAll()
             .and()
                 .logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/index")
                 .permitAll();
+
+        http.headers().frameOptions().disable();
 
         /*http.csrf().disable()
                 .authorizeRequests()

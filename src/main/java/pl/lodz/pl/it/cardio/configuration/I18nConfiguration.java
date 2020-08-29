@@ -10,9 +10,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
-
-import java.util.Locale;
 
 @Configuration
 public class I18nConfiguration implements WebMvcConfigurer {
@@ -43,6 +40,7 @@ public class I18nConfiguration implements WebMvcConfigurer {
         return bean;
     }
 
+    //To pozwoli nam zmieniać język poprzez dodanie do żądania parametru lang
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor lci = new LocaleChangeInterceptor();

@@ -1,7 +1,7 @@
-INSERT INTO user_t (id, email, password, business_key)
-VALUES(1, 'pawelzyrafa@gmail.com', '$2a$10$mXqMy26cyQKbnMed/.hQgO2XhzoxlZLmR1Xs49mCtlzTxcb9LXO4C', '6a27c4f4-4505-46e1-a510-bf55290cebbe'),
-(2, 'test@test.com', 'Gates', 'd97af2e7-31da-4547-9847-07fcd5d4f87f'),
-(3, 'test2@test.com', 'Alakija', 'da6c3098-522d-4878-bcdc-b207d3154077');
+INSERT INTO user_t (id, email, activated, locked, password, business_key)
+VALUES(1, 'pawelzyrafa@gmail.com', true, false, '$2a$10$mXqMy26cyQKbnMed/.hQgO2XhzoxlZLmR1Xs49mCtlzTxcb9LXO4C', '6a27c4f4-4505-46e1-a510-bf55290cebbe'),
+(2, 'test@test.com', true, false, 'Gates', 'd97af2e7-31da-4547-9847-07fcd5d4f87f'),
+(3, 'test2@test.com', true, false, 'Alakija', 'da6c3098-522d-4878-bcdc-b207d3154077');
 
 INSERT INTO user_details_t (user_id, first_name, last_name, phone_number)
 VALUES(1, 'Aliko', 'Dangote', '123'),
