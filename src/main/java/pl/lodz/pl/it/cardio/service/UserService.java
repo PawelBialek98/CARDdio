@@ -14,6 +14,7 @@ import pl.lodz.pl.it.cardio.repositories.RoleRepository;
 import pl.lodz.pl.it.cardio.repositories.UserRepository;
 import pl.lodz.pl.it.cardio.repositories.VerificationTokenRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,11 +22,11 @@ import java.util.logging.Logger;
 @Service
 public class UserService implements IUserService {
 
-    private UserRepository userRepository;
-    private EmployeeRepository employeeRepository;
-    private RoleRepository roleRepository;
-    private VerificationTokenRepository tokenRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
+    private final RoleRepository roleRepository;
+    private final VerificationTokenRepository tokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository, EmployeeRepository employeeRepository, RoleRepository roleRepository,
@@ -57,6 +58,7 @@ public class UserService implements IUserService {
             throw ValueNotUniqueException.createEmailNotUniqueException(user);
         }
         user.setActivated(false);
+        user.setCreateDate(new Date());
         user.setRoles(roleRepository.findByCode("CLIENT").orElseThrow(AppNotFoundException::createRoleNotFoundException));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="layouts/admin/admin_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{adminHeader}">Title</title>
+</head>
+<body>
+
+<ul class="navbar-nav mr-auto">
+    <li class="nav-item active">
+        <a class="nav-link" th:href="@{/client}" th:text="#{myRepairs}">Home <span class="sr-only">(current)</span></a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/newOrder}" th:text="#{newOrder}">New Order<span class="sr-only">(current)</span></a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">Pricing</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">Opinions</a>
+    </li>
+</ul>
+
+<main>
+    <form class="text-center border border-light p-5" action="#"
+          th:action="@{/client/newOrder}"  th:object="${order}" method="post">
+
+        <p class="h4 mb-4">Zgłoś nową naprawę</p>
+
+        <div class="form-row md-form">
+            <!--<label class="required" for="startDate" th:text="#{newOrder.startDate}">Start Date</label>-->
+            <!--<label class="required" for="startDate" th:text="#{newOrder.startDate}">Start Date</label>
+            <input type="datetime-local" id="startDate"
+                   class="form-control mb-4 " th:field="*{startDate}"
+                   th:classappend="${not #lists.isEmpty(#fields.errors('startDate'))} ? is-invalid">
+            <div class="invalid-feedback">
+                <p th:each="error: ${#fields.errors('startDate')}"
+                   th:text="${error}">Invalid data</p>
+            </div>-->
+            <div class="form-group">
+                <label >Begin voorverkoop periode</label>
+                <input type="" name="bday" max="3000-12-31"
+                       min="1000-01-01" class="form-control">
+            </div>
+            <div class="form-group">
+                <label >Einde voorverkoop periode</label>
+                <input type="date" name="bday" min="1000-01-01"
+                       max="3000-12-31" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-row md-form">
+            <label class="required" for="endDate" th:text="#{newOrder.endDate}">Start Date</label>
+            <input type="datetime-local" id="endDate"
+                   class="form-control mb-4 " th:field="*{endDate}"
+                   th:classappend="${not #lists.isEmpty(#fields.errors('endDate'))} ? is-invalid">
+            <div class="invalid-feedback">
+                <p th:each="error: ${#fields.errors('endDate')}"
+                   th:text="${error}">Invalid data</p>
+            </div>
+        </div>
+
+        <div class="form-row md-form">
+            <label class="required" for="description" th:text="#{newOrder.endDate}">Start Date</label>
+            <input type="range" id="description"
+                   class="form-control mb-4 " th:field="*{description}"
+                   th:classappend="${not #lists.isEmpty(#fields.errors('description'))} ? is-invalid">
+            <div class="invalid-feedback">
+                <p th:each="error: ${#fields.errors('description')}"
+                   th:text="${error}">Invalid data</p>
+            </div>
+        </div>
+
+
+        <div class="form-row md-form">
+            <div id="date-picker-example" class="md-form md-outline input-with-post-icon datepicker">
+                <input placeholder="Select date" type="text" id="example" class="form-control">
+                <label for="example">Try me...</label>
+                <i class="fas fa-calendar input-prefix" tabindex=0></i>
+            </div>
+        </div>
+
+
+        <select class="browser-default custom-select">
+            <option selected>Open this select menu</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+        </select>
+
+        <!-- Sign in button -->
+        <button class="btn btn-info btn-block my-4" type="submit">Sign in</button>
+    </form>
+</main>
+
+</body>
+</html>

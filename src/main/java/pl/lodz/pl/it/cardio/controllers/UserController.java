@@ -20,6 +20,7 @@ import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
 import pl.lodz.pl.it.cardio.exception.ValueNotUniqueException;
 import pl.lodz.pl.it.cardio.service.IUserService;
 import pl.lodz.pl.it.cardio.service.UserService;
+import pl.lodz.pl.it.cardio.service.WorkOrderService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -31,18 +32,21 @@ import java.util.logging.Logger;
 @Controller
 public class UserController {
 
-    private IUserService userService;
+    private final IUserService userService;
 
-    private ApplicationEventPublisher eventPublisher;
+    private final WorkOrderService workOrderService;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Qualifier("messageSource")
     @Autowired
     private MessageSource messages;
 
     @Autowired
-    public UserController(UserService userService, ApplicationEventPublisher eventPublisher) {
+    public UserController(UserService userService, ApplicationEventPublisher eventPublisher, WorkOrderService workOrderService) {
         this.userService = userService;
         this.eventPublisher = eventPublisher;
+        this.workOrderService = workOrderService;
     }
 
     @GetMapping
@@ -63,11 +67,6 @@ public class UserController {
     @GetMapping("/signIn")
     public String getLoginPage(){
         return "login/login";
-    }
-
-    @GetMapping("/client")
-    public String getClientPage(){
-        return "client/client";
     }
 
     // Login form
@@ -118,9 +117,7 @@ public class UserController {
 
         Locale locale = request.getLocale();
 
-        Logger.getGlobal().log(Level.INFO, "Wywolanie!");
         VerificationToken verificationToken = userService.getVerificationToken(token);
-        Logger.getGlobal().log(Level.INFO, verificationToken.toString());
         if (verificationToken == null) {
             String message = messages.getMessage("auth.message.invalidToken", null, locale);
             model.addAttribute("message", message);
@@ -136,7 +133,6 @@ public class UserController {
         }
 
         user.setActivated(true);
-        Logger.getGlobal().log(Level.INFO, "Siadło! Zaloguj się!");
         userService.saveRegisteredUser(user);
         return "redirect:/login" + request.getLocale().getLanguage();
     }

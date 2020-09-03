@@ -78,7 +78,7 @@
         <!-- Phone number -->
         <div class="form-row md-form">
             <label for="defaultRegisterPhonePassword" th:text="#{register.phoneNumber}">Phone Number</label>
-            <input type="text" id="defaultRegisterPhonePassword" class="form-control"
+            <input type="tel" id="defaultRegisterPhonePassword" class="form-control"
                    th:field="*{phoneNumber}"
                    th:classappend="${not #lists.isEmpty(#fields.errors('phoneNumber'))} ? is-invalid">
             <div class="invalid-feedback">

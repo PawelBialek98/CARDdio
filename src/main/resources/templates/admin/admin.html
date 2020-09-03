@@ -1,9 +1,57 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="layouts/main_layout :: layout (~{::title}, ~{::h2})" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:replace="layouts/admin/admin_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="#{adminHeader}">Title</title>
 </head>
 <body>
-<h2>Admin Homepage</h2>
+
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+            <a class="nav-link" th:href="@{/admin(lang=en)}" th:text="#{usersList}">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Features</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Pricing</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Opinions</a>
+        </li>
+    </ul>
+
+    <main>
+        <div>
+
+            <div th:unless="${#lists.isEmpty(users)}">
+
+                <h2 th:text="#{usersList}">Users List</h2>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col" th:text="#{firstName}">First Name</th>
+                            <th scope="col" th:text="#{lastName}">Last Name</th>
+                            <th scope="col" th:text="#{email}">Email</th>
+                            <th scope="col" th:text="#{phoneNumber}">Phone Number</th>
+                            <th scope="col" th:text="#{createDate}">Create Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:id="${user.id}" th:each="user : ${users}">
+                        <th scope="row" th:text="${user.id}">#</th>
+                        <td th:text="${user.firstName}">John</td>
+                        <td th:text="${user.lastName}">Wick</td>
+                        <td th:text="${user.email}">johnwick@google.com</td>
+                        <td th:text="${user.phoneNumber}">123123123</td>
+                        <td th:text="${user.createDate}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
 </body>
 </html>

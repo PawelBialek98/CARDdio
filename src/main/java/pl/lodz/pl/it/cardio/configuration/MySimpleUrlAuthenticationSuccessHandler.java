@@ -22,7 +22,7 @@ public class MySimpleUrlAuthenticationSuccessHandler
 
     protected Log logger = LogFactory.getLog(this.getClass());
 
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -54,9 +54,9 @@ public class MySimpleUrlAuthenticationSuccessHandler
     protected String determineTargetUrl(final Authentication authentication) {
 
         Map<String, String> roleTargetUrlMap = new HashMap<>();
-        roleTargetUrlMap.put("ROLE_CLIENT", "client/client.html");
-        roleTargetUrlMap.put("ROLE_ADMINISTRATOR", "admin/admin.html");
-        roleTargetUrlMap.put("ROLE_MECHANIC", "mechanic/mechanic.html");
+        roleTargetUrlMap.put("ROLE_CLIENT", "/client");
+        roleTargetUrlMap.put("ROLE_ADMINISTRATOR", "/admin");
+        roleTargetUrlMap.put("ROLE_MECHANIC", "/mechanic");
 
         final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (final GrantedAuthority grantedAuthority : authorities) {

@@ -9,6 +9,7 @@ import java.util.UUID;
 
 @MappedSuperclass
 @NoArgsConstructor
+@Getter
 public abstract class BaseEntity {
 
     @Id

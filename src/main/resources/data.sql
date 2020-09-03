@@ -1,12 +1,12 @@
-INSERT INTO user_t (id, email, activated, locked, password, business_key)
-VALUES(1, 'pawelzyrafa@gmail.com', true, false, '$2a$10$mXqMy26cyQKbnMed/.hQgO2XhzoxlZLmR1Xs49mCtlzTxcb9LXO4C', '6a27c4f4-4505-46e1-a510-bf55290cebbe'),
-(2, 'test@test.com', true, false, 'Gates', 'd97af2e7-31da-4547-9847-07fcd5d4f87f'),
-(3, 'test2@test.com', true, false, 'Alakija', 'da6c3098-522d-4878-bcdc-b207d3154077');
+INSERT INTO user_t (id, email, activated, locked, password, business_key, create_date)
+VALUES(1, 'pawelzyrafa@gmail.com', true, false, '$2a$10$mXqMy26cyQKbnMed/.hQgO2XhzoxlZLmR1Xs49mCtlzTxcb9LXO4C', '6a27c4f4-4505-46e1-a510-bf55290cebbe', parsedatetime('17-09-2019 18:47:52.69', 'dd-MM-yyyy hh:mm:ss.SS')),
+(2, 'test@test.com', true, false, 'Gates', 'd97af2e7-31da-4547-9847-07fcd5d4f87f', parsedatetime('07-02-2020 10:03:12.13', 'dd-MM-yyyy hh:mm:ss.SS')),
+(3, 'test2@test.com', true, false, 'Alakija', 'da6c3098-522d-4878-bcdc-b207d3154077', parsedatetime('01-08-2020 03:33:55.19', 'dd-MM-yyyy hh:mm:ss.SS'));
 
 INSERT INTO user_details_t (user_id, first_name, last_name, phone_number)
-VALUES(1, 'Aliko', 'Dangote', '123'),
-(2, 'Bill', 'Gates', '345'),
-(3, 'Folrunsho', 'Alakija', '456');
+VALUES(1, 'Aliko', 'Dangote', '123356789'),
+(2, 'Bill', 'Gates', '345555555'),
+(3, 'Folrunsho', 'Alakija', '456123123');
 
 INSERT INTO role_t(id, code, name, is_enabled, business_key)
 VALUES

@@ -6,6 +6,7 @@ CREATE TABLE user_t (
     password VARCHAR(250),
     activated BOOLEAN,
     locked BOOLEAN,
+    create_date TIMESTAMP,
     invalid_login_attempts INT DEFAULT 0
 );
 
@@ -96,7 +97,8 @@ CREATE TABLE work_order_t (
     description VARCHAR(4000),
     position_id INT REFERENCES position_t(id),
     employee_id INT REFERENCES employee_t(user_id),
-    type_id INT REFERENCES work_order_type_t(id)
+    type_id INT REFERENCES work_order_type_t(id),
+    status_id INT REFERENCES status_t(id)
 );
 
 CREATE TABLE opinion_t (

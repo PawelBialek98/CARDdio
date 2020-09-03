@@ -6,7 +6,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 
@@ -27,7 +26,7 @@ public class User extends BaseEntity {
 
     @Column(name = "last_name", table = "user_details_t")
     @NonNull
-    private String lastname;
+    private String lastName;
 
     @Column
     @NonNull
@@ -49,6 +48,9 @@ public class User extends BaseEntity {
 
     @Column
     private Boolean locked = false;
+
+    @Column(name = "create_date")
+    private Date createDate;
 
     @Column(name = "invalid_login_attempts", nullable = false)
     @NotNull
@@ -73,7 +75,7 @@ public class User extends BaseEntity {
     public String toString() {
         return "User{" +
                 "firstName='" + firstName + '\'' +
-                ", lastname='" + lastname + '\'' +
+                ", lastname='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +

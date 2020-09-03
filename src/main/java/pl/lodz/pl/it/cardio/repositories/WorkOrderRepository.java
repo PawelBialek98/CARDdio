@@ -8,6 +8,6 @@ import java.util.Collection;
 
 @Transactional
 public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
-    Collection<WorkOrder> findAllByCustomerId(int id);
+    Collection<WorkOrder> findAllByCustomer_Email(String email);
     Collection<WorkOrder> findAllByWorkerId(int id);
 }
