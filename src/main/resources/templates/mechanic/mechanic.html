@@ -1,9 +1,46 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="layouts/main_layout :: layout (~{::title}, ~{::h2})" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:replace="layouts/mechanic/mechanic_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="#{mechanicHeader}">Title</title>
 </head>
 <body>
-<h2>Mechanic Homepage</h2>
+
+<ul class="navbar-nav mr-auto">
+    <li class="nav-item active">
+        <a class="nav-link" th:href="@{/mechanic}" th:text="#{myRepairs}">Home <span class="sr-only">(current)</span></a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/newOrder}" th:text="#{newOrder}">New Order</a>
+    </li>
+</ul>
+
+<main>
+    <div th:unless="${#lists.isEmpty(repairs)}">
+
+        <h2 >Moje naprawy</h2>
+
+        <table id="dtBasicExample" class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col" >Dzien</th>
+                <th scope="col" >Godzina</th>
+                <th scope="col" >Typ</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:id="${repair.id}" th:each="repair : ${repairs}">
+                <th scope="row" th:text="${repair.id}">#</th>
+                <td th:text="${#dates.format(repair.startDate,'yyyy-MM-dd')}">John</td>
+                <td th:text="${#dates.format(repair.startTime,'HH:mm')}">Wick</td>
+                <td th:text="${repair.workOrderType.name}">johnwick@google.com</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</main>
+
 </body>
 </html>

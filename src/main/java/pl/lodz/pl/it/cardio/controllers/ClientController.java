@@ -1,24 +1,20 @@
 package pl.lodz.pl.it.cardio.controllers;
 
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import pl.lodz.pl.it.cardio.dto.WorkOrderDto;
+import pl.lodz.pl.it.cardio.service.UserService;
 import pl.lodz.pl.it.cardio.service.WorkOrderService;
 
 @Controller
 @RequestMapping("/client")
+@RequiredArgsConstructor
 public class ClientController {
 
     private final WorkOrderService workOrderService;
-
-    @Autowired
-    public ClientController(WorkOrderService workOrderService) {
-        this.workOrderService = workOrderService;
-    }
+    private final UserService userService;
 
     @GetMapping
     public ModelAndView getClientPage(){
@@ -27,8 +23,6 @@ public class ClientController {
 
     @GetMapping("/newOrder")
     public ModelAndView getNewOrderForm(){
-        ModelAndView modelAndView = new ModelAndView("client/newOrder", "order", new WorkOrderDto());
-        modelAndView.addObject("WOTypes", workOrderService.getAllWorkOrderTypeNames());
-        return modelAndView;
+        return new ModelAndView("client/newOrder", "orders", workOrderService.getAllUnAssignedWorkOrders());
     }
 }

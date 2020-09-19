@@ -7,7 +7,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 import pl.lodz.pl.it.cardio.dto.UserDto;
-import pl.lodz.pl.it.cardio.service.IUserService;
 import pl.lodz.pl.it.cardio.service.UserService;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -17,7 +16,7 @@ import java.util.UUID;
 public class RegistrationListener implements
         ApplicationListener<OnRegistrationCompleteEvent> {
 
-    private final IUserService service;
+    private final UserService service;
 
     @Qualifier("messageSource")
     @Autowired
@@ -26,7 +25,7 @@ public class RegistrationListener implements
     private final JavaMailSender mailSender;
 
     @Autowired
-    public RegistrationListener(IUserService userService, JavaMailSender javaMailSender) {
+    public RegistrationListener(UserService userService, JavaMailSender javaMailSender) {
         this.service = userService;
         this.mailSender = javaMailSender;
     }
@@ -48,7 +47,7 @@ public class RegistrationListener implements
         //String message = messages.getMessage("message.regSucc", null, event.getLocale());
 
         SimpleMailMessage email = new SimpleMailMessage();
-        email.setFrom("noreply@baeldung.com");
+        email.setFrom("cardio.contact@google.com");
         email.setTo(recipientAddress);
         email.setSubject(subject);
         email.setText("http://localhost:8080" + confirmationUrl);

@@ -34,9 +34,9 @@ public class WorkOrderType extends BaseEntity{
     @JoinTable(
             name = "employee_skill_t",
             joinColumns = @JoinColumn(
-                    name = "employee_id", referencedColumnName = "id"),
+                    name = "work_order_type_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(
-                    name = "work_order_type_id", referencedColumnName = "id"))
+                    name = "employee_id", referencedColumnName = "id"))
     private Collection<Employee> employees;
 
 }

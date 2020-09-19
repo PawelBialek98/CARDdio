@@ -52,7 +52,7 @@ public class User extends BaseEntity {
     @Column(name = "create_date")
     private Date createDate;
 
-    @Column(name = "invalid_login_attempts", nullable = false)
+    @Column(name = "invalid_login_attempts", nullable = false, columnDefinition = "integer default 0")
     @NotNull
     private int invalidLoginAttempts = 0;
 

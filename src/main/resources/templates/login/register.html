@@ -1,11 +1,28 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="layouts/main_layout :: layout (~{::title}, ~{::form})" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:replace="layouts/main_layout :: layout (~{::title}, ~{::main})" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="#{registerHeader}">Title</title>
 
    <!-- <script src='https://www.google.com/recaptcha/api.js'></script>-->
 </head>
 <body>
+<main>
+
+    <a class="btn btn-danger" th:onclick="'toastr.error(\'' + ${message} + '\');'">Error message</a>
+    <!--<div th:if="${message != null}">
+        <script>
+            /*<![CDATA[*/
+
+            var message = /*[[${message}]]*/ 'default';
+            console.log(message);
+
+            /*]]>*/
+
+            window.onload = function(){
+              toastr.error(message);
+            };
+        </script>
+    </div>-->
 
     <!-- Default form register -->
     <form class="text-center border border-light p-5 needs-validation"
@@ -105,24 +122,6 @@
     </form>
     <!-- Default form register -->
 
-    <!--<script type="text/javascript">
-
-        $(".reqrd").keyup(function(event) {
-            validateInputs();
-        });
-
-        function validateInputs(){
-            var disableButton = false;
-
-            $('.reqrd').each(function() {
-                if ($(this).val().length == 0) {
-                    disableButton = true;
-                }
-            });
-
-            $('#signUpBtn').attr('disabled', disableButton);
-        }
-    </script>-->
-
+</main>
 </body>
 </html>

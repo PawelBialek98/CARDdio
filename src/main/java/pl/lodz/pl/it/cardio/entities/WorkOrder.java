@@ -1,10 +1,12 @@
 package pl.lodz.pl.it.cardio.entities;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.sql.Time;
 import java.util.Date;
 
 @Entity
@@ -13,21 +15,22 @@ import java.util.Date;
 @Setter
 public class WorkOrder extends BaseEntity {
 
-    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false, updatable = false)
-    @ManyToOne(optional = false)
-    @NotNull
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")//, nullable = false, updatable = false)
+    @ManyToOne()//optional = false)
     private User customer;
 
     @Column(name = "start_date")
+    //@NotNull
     private Date startDate;
 
-    @Column(name = "end_date")
-    private Date endDate;
+    @Column(name = "start_time")
+    //@NotNull
+    private Time startTime;
 
     @Column
     private String description;
 
-    @JoinColumn(name = "employee_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @ManyToOne
     private Employee worker;
 
@@ -35,8 +38,7 @@ public class WorkOrder extends BaseEntity {
     @ManyToOne
     private Status currentStatus;
 
-    @JoinColumn(name = "position_id", referencedColumnName = "id")
+    @JoinColumn(name = "type_id", referencedColumnName = "id")
     @ManyToOne
-    private Position position;
-
+    private WorkOrderType workOrderType;
 }

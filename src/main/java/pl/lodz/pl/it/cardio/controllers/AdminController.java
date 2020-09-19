@@ -1,21 +1,18 @@
 package pl.lodz.pl.it.cardio.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import pl.lodz.pl.it.cardio.service.IUserService;
+import pl.lodz.pl.it.cardio.service.UserService;
 
 @Controller
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
-    private final IUserService userService;
-
-    @Autowired
-    public AdminController(IUserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @RequestMapping
     private ModelAndView getMainAdminPage(){

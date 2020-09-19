@@ -1,10 +1,10 @@
 package pl.lodz.pl.it.cardio.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,38 +16,28 @@ import pl.lodz.pl.it.cardio.configuration.OnRegistrationCompleteEvent;
 import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.User;
 import pl.lodz.pl.it.cardio.entities.VerificationToken;
+import pl.lodz.pl.it.cardio.exception.AppBaseException;
 import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
 import pl.lodz.pl.it.cardio.exception.ValueNotUniqueException;
-import pl.lodz.pl.it.cardio.service.IUserService;
 import pl.lodz.pl.it.cardio.service.UserService;
+import pl.lodz.pl.it.cardio.service.UserServiceImpl;
 import pl.lodz.pl.it.cardio.service.WorkOrderService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Controller
+@RequiredArgsConstructor
 public class UserController {
 
-    private final IUserService userService;
-
+    private final UserService userService;
     private final WorkOrderService workOrderService;
-
     private final ApplicationEventPublisher eventPublisher;
 
     @Qualifier("messageSource")
-    @Autowired
-    private MessageSource messages;
-
-    @Autowired
-    public UserController(UserService userService, ApplicationEventPublisher eventPublisher, WorkOrderService workOrderService) {
-        this.userService = userService;
-        this.eventPublisher = eventPublisher;
-        this.workOrderService = workOrderService;
-    }
+    private final MessageSource messages;
 
     @GetMapping
     public ModelAndView getAll(){
@@ -83,8 +73,10 @@ public class UserController {
     }
 
     @GetMapping("/register")
-    public ModelAndView getRegisterPage(){
-        return new ModelAndView("login/register", "user", new UserDto());
+    public ModelAndView getRegisterPage(@ModelAttribute("message") String message){
+        ModelAndView modelAndView =  new ModelAndView("login/register", "user", new UserDto());
+        modelAndView.addObject("message", message);
+        return modelAndView;
     }
 
     @PostMapping("/register")
@@ -93,22 +85,19 @@ public class UserController {
         if(result.hasErrors()){
             return "login/register";
         }
-        //return new ModelAndView("register", "user", new UserDto());
-        //User user = ObjectMapper.map(userDto, User.class);
         try{
             //User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
             userService.addUser(userDto);
             String appUrl = request.getContextPath();
             eventPublisher.publishEvent(new OnRegistrationCompleteEvent(userDto,
                     request.getLocale(), appUrl));
-        } catch (AppNotFoundException | ValueNotUniqueException e) {
-            //TODO
+        } catch (AppBaseException e) {
+            //TODO albo zmienić na modelandview atrybut
             redirectAttributes.addFlashAttribute("message","Nie siadło! " + e.getMessage());
-            return "login/register";
+            return "redirect:/register";
         }
-        //Dodać wysyłanie emaila
         model.addAttribute("users", userService.getAllUsers());
-        return "login/login";
+        return "redirect:/login";
     }
 
     @GetMapping("/registrationConfirm")
