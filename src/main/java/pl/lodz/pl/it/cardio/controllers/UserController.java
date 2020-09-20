@@ -75,7 +75,7 @@ public class UserController {
     @GetMapping("/register")
     public ModelAndView getRegisterPage(@ModelAttribute("message") String message){
         ModelAndView modelAndView =  new ModelAndView("login/register", "user", new UserDto());
-        modelAndView.addObject("message", message);
+        modelAndView.addObject("errorMessage", message);
         return modelAndView;
     }
 
