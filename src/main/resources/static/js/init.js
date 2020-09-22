@@ -1,5 +1,3 @@
-
-
 $(document).ready(function () {
     $('#dt').DataTable();
     $('.dataTables_length').addClass('bs-select');

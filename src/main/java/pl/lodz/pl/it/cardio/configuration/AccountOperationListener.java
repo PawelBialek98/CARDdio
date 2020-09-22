@@ -1,5 +1,6 @@
 package pl.lodz.pl.it.cardio.configuration;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
@@ -13,44 +14,40 @@ import org.springframework.mail.javamail.JavaMailSender;
 import java.util.UUID;
 
 @Component
-public class RegistrationListener implements
-        ApplicationListener<OnRegistrationCompleteEvent> {
+@RequiredArgsConstructor
+public class AccountOperationListener implements
+        ApplicationListener<AccountOperationEvent> {
 
     private final UserService service;
 
     @Qualifier("messageSource")
-    @Autowired
-    private MessageSource messages;
+    private final MessageSource messages;
 
     private final JavaMailSender mailSender;
 
-    @Autowired
-    public RegistrationListener(UserService userService, JavaMailSender javaMailSender) {
-        this.service = userService;
-        this.mailSender = javaMailSender;
-    }
-
     @Override
-    public void onApplicationEvent(OnRegistrationCompleteEvent event) {
+    public void onApplicationEvent(AccountOperationEvent event) {
         this.confirmRegistration(event);
     }
 
-    private void confirmRegistration(OnRegistrationCompleteEvent event) {
+    private void confirmRegistration(AccountOperationEvent event) {
         UserDto user = event.getUser();
         String token = UUID.randomUUID().toString();
         service.createVerificationToken(user, token);
 
         String recipientAddress = user.getEmail();
-        String subject = "Registration Confirmation";
+        String subject = messages.getMessage(event.getMessagePrefix() + ".title", null, event.getLocale());
         String confirmationUrl
-                = event.getAppUrl() + "/registrationConfirm?token=" + token;
-        //String message = messages.getMessage("message.regSucc", null, event.getLocale());
+                = event.getAppUrl() + "/" +
+                messages.getMessage(event.getMessagePrefix() + ".link", null, event.getLocale())
+                + "?token=" + token;
+        String message = messages.getMessage(event.getMessagePrefix() + ".text", null, event.getLocale());
 
         SimpleMailMessage email = new SimpleMailMessage();
         email.setFrom("cardio.contact@google.com");
         email.setTo(recipientAddress);
         email.setSubject(subject);
-        email.setText("http://localhost:8080" + confirmationUrl);
+        email.setText(message + "\n" + "http://localhost:8080" + confirmationUrl);
         mailSender.send(email);
     }
 }

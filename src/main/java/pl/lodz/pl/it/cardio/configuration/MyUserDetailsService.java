@@ -1,5 +1,6 @@
 package pl.lodz.pl.it.cardio.configuration;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,29 +21,22 @@ import java.util.logging.Logger;
 
 @Service("userDetailsService")
 @Transactional
+@RequiredArgsConstructor
 public class MyUserDetailsService implements UserDetailsService {
 
-    private UserRepository userRepository;
-
-    @Autowired
-    public MyUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        Logger.getGlobal().log(Level.INFO,"dupa" + email + getAuthorities(user.getRoles()).toString());
-        if(user == null){
-            throw new UsernameNotFoundException("No user found with username: " + email);
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("No user found with username: " + email));
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
                 user.getActivated(),
                 true,
                 true,
-                true,
+                !user.getLocked(),
                 getAuthorities(user.getRoles())
         );
     }

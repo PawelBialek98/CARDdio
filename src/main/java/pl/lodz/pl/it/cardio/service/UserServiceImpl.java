@@ -3,6 +3,7 @@ package pl.lodz.pl.it.cardio.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.lodz.pl.it.cardio.dto.ChangeUserPasswordDto;
 import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.Employee;
 import pl.lodz.pl.it.cardio.entities.User;
@@ -13,6 +14,7 @@ import pl.lodz.pl.it.cardio.repositories.EmployeeRepository;
 import pl.lodz.pl.it.cardio.repositories.RoleRepository;
 import pl.lodz.pl.it.cardio.repositories.UserRepository;
 import pl.lodz.pl.it.cardio.repositories.VerificationTokenRepository;
+import pl.lodz.pl.it.cardio.utils.ObjectMapper;
 
 import java.util.Date;
 import java.util.List;
@@ -58,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createVerificationToken(UserDto user, String token) {
-        VerificationToken myToken = new VerificationToken(token, userRepository.findByEmail(user.getEmail()));
+        VerificationToken myToken = new VerificationToken(token, userRepository.findByEmail(user.getEmail()).get());
         tokenRepository.save(myToken);
         Logger.getGlobal().log(Level.INFO, myToken.toString());
     }
@@ -72,5 +74,17 @@ public class UserServiceImpl implements UserService {
     public void saveRegisteredUser(User user) {
         //User user = userRepository.findByEmail(userDto.getEmail());
         userRepository.save(user);
+    }
+
+    @Override
+    public UserDto findByEmail(String email) throws AppNotFoundException {
+        return ObjectMapper.map(userRepository.findByEmail(email).orElseThrow(AppNotFoundException::createUserNotFoundException), UserDto.class);
+    }
+
+    @Override
+    public void setNewPassword(ChangeUserPasswordDto changeUserPasswordDto) throws AppNotFoundException {
+        User user = userRepository.findByEmail(changeUserPasswordDto.getEmail()).orElseThrow(AppNotFoundException::createUserNotFoundException);
+        user.setPassword(changeUserPasswordDto.getPassword());
+        userRepository.saveAndFlush(user);
     }
 }

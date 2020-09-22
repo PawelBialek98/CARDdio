@@ -1,5 +1,6 @@
 package pl.lodz.pl.it.cardio.service;
 
+import pl.lodz.pl.it.cardio.dto.ChangeUserPasswordDto;
 import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.Employee;
 import pl.lodz.pl.it.cardio.entities.User;
@@ -21,4 +22,8 @@ public interface UserService {
     VerificationToken getVerificationToken(String VerificationToken);
 
     void saveRegisteredUser(User user);
+
+    UserDto findByEmail(String email) throws AppNotFoundException;
+
+    void setNewPassword(ChangeUserPasswordDto changeUserPasswordDto) throws AppNotFoundException;
 }

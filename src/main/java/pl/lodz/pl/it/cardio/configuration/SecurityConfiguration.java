@@ -1,8 +1,10 @@
 package pl.lodz.pl.it.cardio.configuration;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,16 +16,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 @Configuration
 @EnableWebSecurity //- opcjonalna, bo nie wyłączyłem security config
+@EnableScheduling
+@RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private  MyUserDetailsService myUserDetailsService;
-    private AccessDeniedHandler accessDeniedHandler;
-
-    @Autowired
-    public SecurityConfiguration(MyUserDetailsService myUserDetailsService, AccessDeniedHandler accessDeniedHandler) {
-        this.myUserDetailsService = myUserDetailsService;
-        this.accessDeniedHandler = accessDeniedHandler;
-    }
+    private final MyUserDetailsService myUserDetailsService;
+    private final AccessDeniedHandler accessDeniedHandler;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -39,9 +37,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().httpBasic().and()
                 .authorizeRequests()
-                .antMatchers("/css/**", "/js/**", "/img/**").permitAll()
+                //.antMatchers("/css/**", "/js/**", "/img/**").permitAll()
                 .antMatchers("/register", "/registrationConfirm*", "/badUser.html" ,"/h2-console").permitAll()
-                .antMatchers("/**").hasAnyRole("CLIENT","MECHANIC")
+                .antMatchers("/client**").hasRole("CLIENT")
+                .antMatchers("/mechanic**").hasRole("MECHANIC")
+                .antMatchers("/admin**").hasRole("ADMINISTRATOR")
             .and()
                 .formLogin()
                 .loginPage("/login")
@@ -54,8 +54,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/index")
-                .permitAll();
+                .logoutSuccessUrl("/login")
+                .permitAll()
+            .and()
+                .rememberMe().key("fc0c91ef-b42b-4d51-90c2-2f7ff8149f64");
 
         http.headers().frameOptions().disable();
 

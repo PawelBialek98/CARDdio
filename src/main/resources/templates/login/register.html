@@ -76,7 +76,8 @@
                class="form-control mb-4" placeholder="Login" th:field="*{login}">-->
 
         <!-- Password -->
-        <div class="form-row md-form">
+        <div class="form-row md-form input-with-pre-icon">
+            <i class="fas fa-lock input-prefix"></i>
             <label class="required" for="defaultRegisterFormPassword" th:text="#{register.password}">Password</label>
             <input type="password" id="defaultRegisterFormPassword" class="form-control"
                    aria-describedby="defaultRegisterFormPasswordHelpBlock"
