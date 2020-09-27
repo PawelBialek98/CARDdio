@@ -60,7 +60,6 @@
         var serverContext = window.location.origin;
 
         function resetPass(){
-            console.log("DUPA");
             var email = $("#email").val();
             $.post(serverContext + "/resetPassword",{email: email} ,
                 function(data){

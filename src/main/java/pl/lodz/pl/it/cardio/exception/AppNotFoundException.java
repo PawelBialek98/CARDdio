@@ -4,11 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.lodz.pl.it.cardio.entities.Role;
 import pl.lodz.pl.it.cardio.entities.User;
+import pl.lodz.pl.it.cardio.entities.WorkOrder;
 
 public class AppNotFoundException extends AppBaseException {
 
     public static final String ROLE_MESSAGE_KEY = "exception.roleNotFound";
     public static final String USER_MESSAGE_KEY = "exception.userNotFound";
+    public static final String WORK_ORDER_MESSAGE_KEY = "exception.workOrderNotFound";
 
     @Getter
     @Setter
@@ -23,14 +25,20 @@ public class AppNotFoundException extends AppBaseException {
     }
 
     public static AppNotFoundException createRoleNotFoundException(){
-        AppNotFoundException nfe = new AppNotFoundException(ROLE_MESSAGE_KEY);
+        AppNotFoundException nfe = new AppNotFoundException(resourceBundle.getString(ROLE_MESSAGE_KEY));
         nfe.setObjectClass(Role.class);
         return nfe;
     }
 
     public static AppNotFoundException createUserNotFoundException(){
-        AppNotFoundException nfe = new AppNotFoundException(USER_MESSAGE_KEY);
+        AppNotFoundException nfe = new AppNotFoundException(resourceBundle.getString(USER_MESSAGE_KEY));
         nfe.setObjectClass(User.class);
+        return nfe;
+    }
+
+    public static AppNotFoundException createWorkOrderNotFoundException(){
+        AppNotFoundException nfe = new AppNotFoundException(resourceBundle.getString(WORK_ORDER_MESSAGE_KEY));
+        nfe.setObjectClass(WorkOrder.class);
         return nfe;
     }
 }

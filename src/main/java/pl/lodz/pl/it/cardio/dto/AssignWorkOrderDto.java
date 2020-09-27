@@ -8,6 +8,7 @@ import pl.lodz.pl.it.cardio.entities.WorkOrder;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 public class AssignWorkOrderDto {
@@ -26,4 +27,7 @@ public class AssignWorkOrderDto {
 
     @NotNull
     private EmployeeDto worker;
+
+    @NotNull
+    private UUID businessKey;
 }

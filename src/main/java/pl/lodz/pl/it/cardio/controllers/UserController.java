@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.lodz.pl.it.cardio.configuration.AccountOperationEvent;
 import pl.lodz.pl.it.cardio.configuration.OnResetPasswordCompleteEvent;
 import pl.lodz.pl.it.cardio.dto.ChangeUserPasswordDto;
+import pl.lodz.pl.it.cardio.dto.EditUserDto;
 import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.User;
 import pl.lodz.pl.it.cardio.entities.VerificationToken;
@@ -27,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,6 +41,8 @@ public class UserController {
     private final UserService userService;
     private final WorkOrderService workOrderService;
     private final ApplicationEventPublisher eventPublisher;
+
+    private User userState;
 
     @Qualifier("messageSource")
     private final MessageSource messages;
@@ -63,8 +69,8 @@ public class UserController {
 
     // Login form
     @RequestMapping("/login")
-    public ModelAndView login(@ModelAttribute("message") String message) {
-        return new ModelAndView("login/login", "errorMessage", message);
+    public ModelAndView login(@ModelAttribute("errorMessage") String errorMessage) {
+        return new ModelAndView("login/login", "errorMessage", errorMessage);
     }
 
     // Login form with error
@@ -95,7 +101,7 @@ public class UserController {
                     request.getLocale(), appUrl, "register"));
         } catch (AppBaseException e) {
             //TODO albo zmienić na modelandview atrybut
-            redirectAttributes.addFlashAttribute("message","Nie siadło! " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage","Nie siadło! " + e.getMessage());
             return "redirect:/register";
         }
         model.addAttribute("users", userService.getAllUsers());
@@ -162,7 +168,8 @@ public class UserController {
             return "login/badUser";
         }
 
-        ChangeUserPasswordDto user = ObjectMapper.map(verificationToken.getUser(), ChangeUserPasswordDto.class);
+        userState = verificationToken.getUser();
+        ChangeUserPasswordDto user = ObjectMapper.map(userState, ChangeUserPasswordDto.class);
         Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
             String messageValue = messages.getMessage("auth.message.expired", null, locale);
@@ -178,13 +185,63 @@ public class UserController {
     public String setNewPassword(HttpServletRequest request, @Valid @ModelAttribute("user") ChangeUserPasswordDto userDto,
                                 final Model model, RedirectAttributes redirectAttributes) {
         try{
-            userService.setNewPassword(userDto);
+            userState.setPassword(userDto.getPassword());
+            userService.setNewPassword(userState);
         } catch (AppBaseException e) {
             //redirectAttributes.addFlashAttribute("message", e.getMessage());
             model.addAttribute("errorMessage", e.getMessage());
             return "login/login";
         }
         return "redirect:/login";
+    }
+
+    @GetMapping("/editAccount")
+    public String getEditAccountForm(final Model model, RedirectAttributes redirectAttributes){
+        //EditUserDto user;
+        try{
+            userState = userService.getCurrentUser();
+            //user = ObjectMapper.map(userState,EditUserDto.class);
+            model.addAttribute("user", ObjectMapper.map(userState,EditUserDto.class));
+        } catch (AppBaseException e){
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            return "redirect:/login";
+        }
+        return "login/editOwnData";
+    }
+
+    @PostMapping("/editAccount")
+    public String editAccount(@Valid @ModelAttribute("user") EditUserDto userDto, BindingResult result,
+                              Model model, HttpServletRequest request, RedirectAttributes redirectAttributes){
+        if(result.hasErrors()){
+            return "login/editOwnData";
+        }
+        try{
+            //User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
+            userState.setFirstName(userDto.getFirstName());
+            userState.setLastName(userDto.getLastName());
+            userState.setPhoneNumber(userDto.getPhoneNumber());
+
+            userService.editUser(userState);
+        } catch (AppBaseException e) {
+            redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
+            return redirectRules();
+        }
+        redirectAttributes.addFlashAttribute("message","Success!!");
+        return redirectRules();
+    }
+
+    private String redirectRules(){
+        Set<String> roles = AuthorityUtils.authorityListToSet(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+
+        if(roles.contains("ROLE_ADMINISTRATOR")){
+            return "redirect:/admin";
+        } else if(roles.contains("ROLE_MECHANIC")){
+            return "redirect:/mechanic";
+        } else if(roles.contains("ROLE_CLIENT")){
+            return "redirect:/client";
+        } else {
+            return "redirect:/";
+        }
     }
 
     @Scheduled(cron = "${cron.expression}", zone = "Europe/Warsaw")

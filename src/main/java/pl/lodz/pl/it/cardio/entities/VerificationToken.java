@@ -61,6 +61,4 @@ public class VerificationToken {
         return sb.toString();
     }
 
-
-    // standard constructors, getters and setters
 }

@@ -1,6 +1,8 @@
 package pl.lodz.pl.it.cardio.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.lodz.pl.it.cardio.dto.ChangeUserPasswordDto;
@@ -82,9 +84,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setNewPassword(ChangeUserPasswordDto changeUserPasswordDto) throws AppNotFoundException {
+    public void setNewPassword(User changeUserPasswordDto) throws AppNotFoundException {
         User user = userRepository.findByEmail(changeUserPasswordDto.getEmail()).orElseThrow(AppNotFoundException::createUserNotFoundException);
-        user.setPassword(changeUserPasswordDto.getPassword());
+        user.setPassword(passwordEncoder.encode(changeUserPasswordDto.getPassword()));
         userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    public User getCurrentUser() throws AppNotFoundException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByEmail(authentication.getName()).orElseThrow(AppNotFoundException::createUserNotFoundException);
+    }
+
+    @Override
+    public void editUser(User editUser) throws AppNotFoundException {
+        User user = userRepository.findByEmail(editUser.getEmail()).orElseThrow(AppNotFoundException::createUserNotFoundException);
+        user.setFirstName(editUser.getFirstName());
+        user.setLastName(editUser.getLastName());
+        user.setPhoneNumber(editUser.getPhoneNumber());
+        userRepository.save(user);
     }
 }

@@ -16,11 +16,12 @@ if (navigator.language == 'pl') {
         clear: 'Usuń',
         close: 'Zamknij',
         firstDay: 1,
-        format: 'd mmmm yyyy',
-        formatSubmit: 'yyyy/mm/dd'
+        format: 'yyyy/mm/dd',
+        formatSubmit: 'yyyy/mmmm/dd'
     });
 } else {
     $('.datepicker').datepicker({
+        firstDay: 1,
         min: 0,
         max: false,
         disable: [6, 7]

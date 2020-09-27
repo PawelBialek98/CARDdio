@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
 
 public class AppBaseException extends Exception {
 
-    protected static ResourceBundle resourceBundle = ResourceBundle.getBundle("i18n/messages", LocaleContextHolder.getLocale());
+    protected static ResourceBundle resourceBundle = ResourceBundle.getBundle("i18n/errors", LocaleContextHolder.getLocale());
 
     public AppBaseException(String message) {
         super(message);

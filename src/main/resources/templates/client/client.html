@@ -31,14 +31,12 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col" >Start Date</th>
-                    <th scope="col" >End Date</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:id="${repair.id}" th:each="repair : ${repairs}">
                     <th scope="row" th:text="${repair.id}">#</th>
                     <td th:text="${repair.startDate}">John</td>
-                    <td th:text="${repair.endDate}">Wick</td>
                 </tr>
                 </tbody>
             </table>

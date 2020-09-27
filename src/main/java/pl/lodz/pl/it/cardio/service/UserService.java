@@ -8,8 +8,10 @@ import pl.lodz.pl.it.cardio.entities.VerificationToken;
 import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
 import pl.lodz.pl.it.cardio.exception.ValueNotUniqueException;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Transactional
 public interface UserService {
     List<User> getAllUsers();
 
@@ -25,5 +27,9 @@ public interface UserService {
 
     UserDto findByEmail(String email) throws AppNotFoundException;
 
-    void setNewPassword(ChangeUserPasswordDto changeUserPasswordDto) throws AppNotFoundException;
+    void setNewPassword(User changeUserPasswordDto) throws AppNotFoundException;
+
+    User getCurrentUser() throws AppNotFoundException;
+
+    void editUser(User user) throws AppNotFoundException;
 }

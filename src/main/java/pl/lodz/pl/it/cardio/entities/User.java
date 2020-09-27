@@ -56,7 +56,7 @@ public class User extends BaseEntity {
     @NotNull
     private int invalidLoginAttempts = 0;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role_t",
             joinColumns = @JoinColumn(
