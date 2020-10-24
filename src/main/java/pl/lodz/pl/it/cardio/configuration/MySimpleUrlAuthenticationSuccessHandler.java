@@ -57,6 +57,7 @@ public class MySimpleUrlAuthenticationSuccessHandler
         roleTargetUrlMap.put("ROLE_CLIENT", "/client");
         roleTargetUrlMap.put("ROLE_ADMINISTRATOR", "/admin");
         roleTargetUrlMap.put("ROLE_MECHANIC", "/mechanic");
+        roleTargetUrlMap.put("ROLE_DISPATCHER", "/dispatcher");
 
         final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (final GrantedAuthority grantedAuthority : authorities) {

@@ -17,10 +17,7 @@ public class AssignWorkOrderDto {
     private String id;
 
     @FutureOrPresent
-    private Date startDate;
-
-    @NotNull
-    private String startTime;
+    private Date startDateTime;
 
     @NotNull
     private WorkOrderTypeDto workOrderType;

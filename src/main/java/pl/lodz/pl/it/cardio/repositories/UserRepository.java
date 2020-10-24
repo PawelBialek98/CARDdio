@@ -5,9 +5,11 @@ import pl.lodz.pl.it.cardio.entities.User;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
+import java.util.UUID;
 
 @Transactional
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
+    Optional<User> findByBusinessKey(UUID userBusinessKey);
 }

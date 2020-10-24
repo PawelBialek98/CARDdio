@@ -22,4 +22,10 @@ public interface WorkOrderService {
     WorkOrder getWorkOrderByBusinessKey(UUID workOrderBusinessKey) throws AppNotFoundException;
 
     void assignUserToWorkOrder(UUID orderBusinessKey) throws AppNotFoundException;
+
+    void unassignUserFromWorkOrder(UUID orderBusinessKey) throws AppNotFoundException;
+
+    void changeStatus(UUID fromString, String statusCode) throws AppNotFoundException;
+
+    Collection<WorkOrder> getAllWorkOrders() throws AppNotFoundException;;
 }

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/client/client_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{adminHeader}">Title</title>
+    <title th:text="#{dispatcherHeader}">Title</title>
 </head>
 <body>
 
 <ul class="navbar-nav mr-auto">
     <li class="nav-item active">
-        <a class="nav-link" th:href="@{/client}" th:text="#{myRepairs}">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" th:href="@{/dispatcher}" th:text="#{allRepairs}">Home <span class="sr-only">(current)</span></a>
     </li>
     <li class="nav-item">
         <a class="nav-link" href="#">Features</a>
@@ -22,7 +22,7 @@
 
 <main>
     <div>
-        <h2 >Moje naprawy</h2>
+        <h2 >Wszystkie naprawy</h2>
 
         <div th:unless="${#lists.isEmpty(repairs)}">
 

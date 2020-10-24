@@ -39,8 +39,7 @@
                 <tbody>
                     <tr th:id="${order.id}" th:each="order : ${orders}">
                         <th scope="row" th:text="${order.id}">#</th>
-                        <td th:text="${order.startDate}">John</td>
-                        <td th:text="${order.startTime}">Wick</td>
+                        <td th:text="${#dates.format(order.startDateTime, 'yyyy-MM-dd HH:mm')}">John</td>
                         <td th:text="${order.worker.user.firstName}">John</td>
                         <td th:text="${order.workOrderType.name}">Wick</td>
                         <td th:text="${order.businessKey}">Wick</td>

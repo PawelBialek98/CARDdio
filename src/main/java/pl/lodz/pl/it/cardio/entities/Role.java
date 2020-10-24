@@ -25,7 +25,7 @@ public class Role extends BaseEntity {
     private String name;
 
     @Column
-    private Boolean is_enabled;
+    private Boolean isEnabled;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "roles")
@@ -36,7 +36,7 @@ public class Role extends BaseEntity {
         return "Role{" +
                 "code='" + code + '\'' +
                 ", name='" + name + '\'' +
-                ", is_enabled=" + is_enabled +
+                ", is_enabled=" + isEnabled +
                 "} " + super.toString();
     }
 }

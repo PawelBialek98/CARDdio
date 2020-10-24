@@ -230,6 +230,7 @@ public class UserController {
         return redirectRules();
     }
 
+    @GetMapping("/gohomepage")
     private String redirectRules(){
         Set<String> roles = AuthorityUtils.authorityListToSet(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 
@@ -244,7 +245,7 @@ public class UserController {
         }
     }
 
-    @Scheduled(cron = "${cron.expression}", zone = "Europe/Warsaw")
+    @Scheduled(cron = "${cron.deleteInactiveUsers}", zone = "Europe/Warsaw")
     public void removeInactivatedAccounts() {
 
         long now = System.currentTimeMillis() / 1000;

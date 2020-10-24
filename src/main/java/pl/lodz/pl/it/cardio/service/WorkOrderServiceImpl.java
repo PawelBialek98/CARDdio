@@ -1,5 +1,6 @@
 package pl.lodz.pl.it.cardio.service;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +18,11 @@ import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
@@ -60,19 +66,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     @Override
     public void addWorkOrder(NewWorkOrderDto newWorkOrderDto) {
         WorkOrder wo = new WorkOrder();
-        /*DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            wo.setStartDate(new Time(formatter.parse(newWorkOrderDto.getStartDate()).getDate()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }*/
-        wo.setStartDate(newWorkOrderDto.getStartDate());
-        DateFormat formatter2 = new SimpleDateFormat("HH:mm");
-        try {
-            wo.setStartTime(new Time(formatter2.parse(newWorkOrderDto.getStartTime()).getTime()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
+
+        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(newWorkOrderDto.getStartDate()), LocalTime.parse(newWorkOrderDto.getStartTime()));
+        wo.setStartDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()));
         wo.setWorker(employeeRepository.findByUser_Email(SecurityContextHolder.getContext().getAuthentication().getName()));
         wo.setWorkOrderType(workOrderTypeRepository.findByCode(newWorkOrderDto.getWorkOrderTypeCode()));
         wo.setCurrentStatus(statusRepository.findByCode("WAITING"));
@@ -83,20 +80,43 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     @Override
     public Collection<AssignWorkOrderDto> getAllUnAssignedWorkOrders(){
         //return workOrderRepository.findAllByCustomerIsNullAndStartDateGreaterThanEqual(new Date());
-        return ObjectMapper.mapAll(workOrderRepository.findAllByCustomerIsNullAndStartDateGreaterThanEqual(new Date()), AssignWorkOrderDto.class);
+        return ObjectMapper.mapAll(workOrderRepository.findAllByCustomerIsNullAndStartDateTimeGreaterThanEqual(new Date()), AssignWorkOrderDto.class);
     }
 
     @Override
     public WorkOrder getWorkOrderByBusinessKey(UUID workOrderBusinessKey) throws AppNotFoundException {
-        return workOrderRepository.findByBusinessKey(workOrderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
+        return workOrderRepository.findByBusinessKeyAndCustomerIsNull(workOrderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
     }
 
     @Override
     public void assignUserToWorkOrder(UUID orderBusinessKey) throws AppNotFoundException {
-        WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
+        WorkOrder workOrder = workOrderRepository.findByBusinessKeyAndCustomerIsNull(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         workOrder.setCustomer(userRepository.findByEmail(authentication.getName())
                 .orElseThrow(AppNotFoundException::createUserNotFoundException));
         workOrderRepository.save(workOrder);
+    }
+
+    @Override
+    public void unassignUserFromWorkOrder(UUID orderBusinessKey) throws AppNotFoundException {
+        WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
+        if(workOrder.canBeCancelled()){
+            Logger.getGlobal().log(Level.INFO, new Date().toString());
+            Logger.getGlobal().log(Level.INFO, String.valueOf(workOrder.getStartDateTime().getTime() - new Date().getTime()));
+            workOrder.setCustomer(null);
+            workOrderRepository.save(workOrder);
+        }
+    }
+
+    @Override
+    public void changeStatus(UUID orderBusinessKey, String statusCode) throws AppNotFoundException {
+        WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
+        workOrder.setCurrentStatus(statusRepository.findByCode(statusCode));
+        workOrderRepository.save(workOrder);
+    }
+
+    @Override
+    public Collection<WorkOrder> getAllWorkOrders() throws AppNotFoundException {
+        return workOrderRepository.findAll();
     }
 }

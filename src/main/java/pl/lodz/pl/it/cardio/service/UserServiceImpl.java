@@ -20,6 +20,7 @@ import pl.lodz.pl.it.cardio.utils.ObjectMapper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,5 +104,10 @@ public class UserServiceImpl implements UserService {
         user.setLastName(editUser.getLastName());
         user.setPhoneNumber(editUser.getPhoneNumber());
         userRepository.save(user);
+    }
+
+    @Override
+    public User getUser(UUID userBusinessKey) throws AppNotFoundException {
+        return userRepository.findByBusinessKey(userBusinessKey).orElseThrow(AppNotFoundException::createUserNotFoundException);
     }
 }

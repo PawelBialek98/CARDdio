@@ -1,7 +1,6 @@
 package pl.lodz.pl.it.cardio.configuration;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -12,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
@@ -22,6 +22,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final MyUserDetailsService myUserDetailsService;
     private final AccessDeniedHandler accessDeniedHandler;
+    //private final AuthenticationFailureHandler authenticationFailureHandler;
+    private final AuthenticationSuccessHandler authenticationSuccessHandler;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -42,14 +44,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/client**").hasRole("CLIENT")
                 .antMatchers("/mechanic**").hasRole("MECHANIC")
                 .antMatchers("/admin**").hasRole("ADMINISTRATOR")
+                .antMatchers("/dispatcher**").hasRole("DISPATCHER")
             .and()
                 .formLogin()
                 .loginPage("/login")
                 .usernameParameter("email")
-                //.passwordParameter("password")
-                //.loginProcessingUrl("/employee")
-                .failureForwardUrl("/login-error")
-                .successHandler(myAuthenticationSuccessHandler())
+                .successHandler(authenticationSuccessHandler)
+                //.failureHandler(authenticationFailureHandler)
                 .permitAll()
             .and()
                 .logout()

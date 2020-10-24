@@ -10,8 +10,8 @@ import java.util.Date;
 @Data
 public class NewWorkOrderDto {
 
-    @FutureOrPresent
-    private Date startDate;
+    @NotNull
+    private String startDate;
 
     @NotNull
     private String startTime;

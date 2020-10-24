@@ -2,14 +2,15 @@ package pl.lodz.pl.it.cardio.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.lodz.pl.it.cardio.dto.WorkOrderDto;
-import pl.lodz.pl.it.cardio.entities.WorkOrder;
 import pl.lodz.pl.it.cardio.exception.AppBaseException;
+import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
 import pl.lodz.pl.it.cardio.service.UserService;
 import pl.lodz.pl.it.cardio.service.WorkOrderService;
 import pl.lodz.pl.it.cardio.utils.ObjectMapper;
@@ -17,16 +18,16 @@ import pl.lodz.pl.it.cardio.utils.ObjectMapper;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/client")
+@RequestMapping("/dispatcher")
 @RequiredArgsConstructor
-public class ClientController {
+public class DispatcherController {
 
     private final WorkOrderService workOrderService;
     private final UserService userService;
 
     @GetMapping
-    public ModelAndView getClientPage(){
-        return new ModelAndView("client/client", "repairs", ObjectMapper.mapAll(workOrderService.getAllWorkOrdersForClient(), WorkOrderDto.class));
+    public ModelAndView getDispatcherPage() throws AppNotFoundException {
+        return new ModelAndView("dispatcher/dispatcher", "repairs", ObjectMapper.mapAll(workOrderService.getAllWorkOrders(), WorkOrderDto.class));
     }
 
     @GetMapping("/newOrder")

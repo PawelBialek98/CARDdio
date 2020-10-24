@@ -1,10 +1,10 @@
 package pl.lodz.pl.it.cardio.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Table(name = "status_t")
@@ -16,4 +16,13 @@ public class Status extends BaseEntity{
 
     @Column
     private String code;
+
+    @Column
+    private String colour;
+
+    @Column(name = "status_type")
+    private String statusType;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "statusFrom")
+    private Collection<WorkOrderFlow> workOrderFlow;
 }

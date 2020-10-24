@@ -10,6 +10,7 @@ import pl.lodz.pl.it.cardio.exception.ValueNotUniqueException;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
 
 @Transactional
 public interface UserService {
@@ -32,4 +33,6 @@ public interface UserService {
     User getCurrentUser() throws AppNotFoundException;
 
     void editUser(User user) throws AppNotFoundException;
+
+    User getUser(UUID userBusinessKey) throws AppNotFoundException;
 }

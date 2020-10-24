@@ -40,6 +40,7 @@
                         <a sec:authorize="hasRole('ROLE_ADMINISTRATOR')" class="dropdown-item" th:href="@{/admin}">Admin</a>
                         <a sec:authorize="hasRole('ROLE_MECHANIC')" class="dropdown-item" th:href="@{/mechanic}">Mechanic</a>
                         <a sec:authorize="hasRole('ROLE_CLIENT')" class="dropdown-item" th:href="@{/client}">Client</a>
+                        <a sec:authorize="hasRole('ROLE_DISPATCHER')" class="dropdown-item" th:href="@{/dispatcher}">Dispatcher</a>
                     </div>
                 </li>
                 <li class="nav-item">

@@ -3,7 +3,7 @@ $(document).ready(function () {
     $('.dataTables_length').addClass('bs-select');
 });
 
-if (navigator.language == 'pl') {
+if (navigator.language === 'pl') {
     $('.datepicker').datepicker({
         min: 0,
         max: false,
@@ -16,8 +16,7 @@ if (navigator.language == 'pl') {
         clear: 'Usuń',
         close: 'Zamknij',
         firstDay: 1,
-        format: 'yyyy/mm/dd',
-        formatSubmit: 'yyyy/mmmm/dd'
+        format: 'yyyy-mm-dd'
     });
 } else {
     $('.datepicker').datepicker({

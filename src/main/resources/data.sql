@@ -1,7 +1,7 @@
 INSERT INTO user_t (id, version, email, activated, locked, password, business_key, create_date)
-VALUES(1, 1, 'pawelzyrafa@gmail.com', true, false, '$2a$10$mXqMy26cyQKbnMed/.hQgO2XhzoxlZLmR1Xs49mCtlzTxcb9LXO4C', RAWTOHEX('6a27c4f4-4505-46e1-a510-bf55290cebbe'), parsedatetime('17-09-2019 18:47:52.69', 'dd-MM-yyyy hh:mm:ss.SS')),
-(2, 1,'test@test.com', true, false, '$2a$10$mXqMy26cyQKbnMed/.hQgO2XhzoxlZLmR1Xs49mCtlzTxcb9LXO4C', RAWTOHEX('d97af2e7-31da-4547-9847-07fcd5d4f87f'), parsedatetime('07-02-2020 10:03:12.13', 'dd-MM-yyyy hh:mm:ss.SS')),
-(3, 1,'test2@test.com', true, false, 'Alakija', RAWTOHEX('da6c3098-522d-4878-bcdc-b207d3154077'), parsedatetime('01-08-2020 03:33:55.19', 'dd-MM-yyyy hh:mm:ss.SS'));
+VALUES(1, 1, 'pawelzyrafa@gmail.com', true, false, '$2a$10$mXqMy26cyQKbnMed/.hQgO2XhzoxlZLmR1Xs49mCtlzTxcb9LXO4C', random_uuid(), parsedatetime('17-09-2019 18:47:52.69', 'dd-MM-yyyy hh:mm:ss.SS')),
+(2, 1,'test@test.com', true, false, '$2a$10$mXqMy26cyQKbnMed/.hQgO2XhzoxlZLmR1Xs49mCtlzTxcb9LXO4C', random_uuid(), parsedatetime('07-02-2020 10:03:12.13', 'dd-MM-yyyy hh:mm:ss.SS')),
+(3, 1,'test2@test.com', true, false, 'Alakija', random_uuid(), parsedatetime('01-08-2020 03:33:55.19', 'dd-MM-yyyy hh:mm:ss.SS'));
 
 INSERT INTO user_details_t (user_id, first_name, last_name, phone_number)
 VALUES(1, 'Aliko', 'Dangote', '123356789'),
@@ -10,10 +10,10 @@ VALUES(1, 'Aliko', 'Dangote', '123356789'),
 
 INSERT INTO role_t(id, version, code, name, is_enabled, business_key)
 VALUES
-    (1, 1,'CLIENT', 'Klient', TRUE, RAWTOHEX('58ec21b0-4f8e-4160-b3ee-461baa8b79b3')),
-    (2, 1,'ADMINISTRATOR', 'Admin', TRUE, RAWTOHEX('78dcbc08-1fee-438e-a324-60c9453e56af')),
-    (3, 1,'MECHANIC', 'Mechanik', TRUE, RAWTOHEX('dcdc4e48-4e80-49df-b67a-734da2ae087b')),
-    (4, 1,'OFFICE', 'Biuro', TRUE, RAWTOHEX('ff7801b7-28de-4fd3-be4f-c533a3e5b8b8'));
+    (1, 1,'CLIENT', 'Klient', TRUE, random_uuid()),
+    (2, 1,'ADMINISTRATOR', 'Admin', TRUE, random_uuid()),
+    (3, 1,'MECHANIC', 'Mechanik', TRUE, random_uuid()),
+    (4, 1,'DISPATCHER', 'Dyspozytor', TRUE, random_uuid());
 
 INSERT INTO user_role_t(user_id, role_id)
 VALUES
@@ -32,19 +32,28 @@ VALUES
 (2, 2, parsedatetime('05-02-1999', 'dd-MM-yyyy')),
 (3, 3, parsedatetime('05-02-1999', 'dd-MM-yyyy'));
 
-INSERT INTO status_t(id, business_key, name, code)
+INSERT INTO status_t(id, version, business_key, name, code, colour, status_type)
 VALUES
-(1, RAWTOHEX('0218db7f-5a5f-4a57-9a74-620737f36cf6'), 'Oczękująca', 'WAITING'),
-(2, RAWTOHEX('222b66a4-681a-4907-8b88-5d2fcc52334e'), 'Zaakceptowana', 'ACCEPTED'),
-(3, RAWTOHEX('11e49668-6f32-45eb-9338-be17feeac82c'), 'Rozpoczęta', 'STARTED'),
-(4, RAWTOHEX('b5f2d1ff-bb74-41da-9e2a-24e1b966ca75'), 'Zakończona', 'FINISHED');
+(1, 1, random_uuid(), 'Oczękująca', 'WAITING', '#31d6c8', 'BEFORE'),
+(2, 1, random_uuid(), 'Przypisana', 'ASSIGNED', '#126d94', 'BEFORE'),
+(3, 1, random_uuid(), 'Rozpoczęta', 'STARTED', '#ede351', 'DURING'),
+(4, 1, random_uuid(), 'Zakończona', 'FINISHED', '#22b531', 'AFTER'),
+(5, 1, random_uuid(), 'Anulowana', 'CANCELLED', '#999999', 'AFTER');
 
-INSERT INTO work_order_type_t(id, business_key, name, code, required_time)
+INSERT INTO work_order_type_t(id, version, business_key, name, code, required_time)
 VALUES
-(1, RAWTOHEX('0218db7f-5a5f-4a57-9a74-620737f36cf6'), 'Naprawa Klimatyzacji', 'CLIME', 120),
-(2, RAWTOHEX('222b66a4-681a-4907-8b88-5d2fcc52334e'), 'Uzupełnianie czynnika', 'CLIME_REFUEL', 60),
-(3, RAWTOHEX('11e49668-6f32-45eb-9338-be17feeac82c'), 'Wymiana opon', 'TIRE_CHANGE', 30),
-(4, RAWTOHEX('b5f2d1ff-bb74-41da-9e2a-24e1b966ca75'), 'Czyszczenie wnętrza', 'INTERIOR_CLEANING', 90);
+(1, 1, random_uuid(), 'Naprawa Klimatyzacji', 'CLIME', 120),
+(2, 1, random_uuid(), 'Uzupełnianie czynnika', 'CLIME_REFUEL', 60),
+(3, 1, random_uuid(), 'Wymiana opon', 'TIRE_CHANGE', 30),
+(4, 1, random_uuid(), 'Czyszczenie wnętrza', 'INTERIOR_CLEANING', 90);
+
+INSERT INTO work_order_flow_t(id, status_from_id, status_to_id, can_be_scheduled)
+VALUES
+(1, 1, 2, false),
+(2, 2, 3, true),
+(3, 1, 5, true),
+(4, 3, 4, true),
+(5, 2, 1, false);
 
 INSERT INTO employee_skill_t(employee_id, work_order_type_id)
 VALUES
@@ -54,8 +63,8 @@ VALUES
 (2, 2),
 (2, 4);
 
-INSERT INTO work_order_t(id, business_key, start_date, start_time, employee_id, type_id)
+INSERT INTO work_order_t(id, version, business_key, start_date, employee_id, type_id, status_id)
 VALUES
-(1, RAWTOHEX('0218db7f-5a5f-4a57-9a74-620737f36cf6'), parsedatetime('07-02-2021', 'dd-MM-yyyy'), '14:30', 1, 3),
-(2, RAWTOHEX('222b66a4-681a-4907-8b88-5d2fcc52334e'), parsedatetime('13-05-2023', 'dd-MM-yyyy'), '15:00', 1, 4),
-(3, RAWTOHEX('11e49668-6f32-45eb-9338-be17feeac82c'), parsedatetime('09-03-2020', 'dd-MM-yyyy'), '12:20', 2, 1)
+(1, 1, random_uuid(), parsedatetime('07-02-2021', 'dd-MM-yyyy'), 1, 3, 1),
+(2, 1, random_uuid(), parsedatetime('13-05-2023', 'dd-MM-yyyy'), 1, 4, 2),
+(3, 1, random_uuid(), parsedatetime('09-03-2020', 'dd-MM-yyyy'), 2, 1, 3)

@@ -17,23 +17,29 @@
 <main>
     <div th:unless="${#lists.isEmpty(repairs)}">
 
-        <h2 >Moje naprawy</h2>
+        <h2>Moje naprawy</h2>
 
         <table id="dtBasicExample" class="table table-striped">
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col" >Dzien</th>
-                <th scope="col" >Godzina</th>
+                <th scope="col" >Data</th>
                 <th scope="col" >Typ</th>
+                <th scope="col" >Change status manually</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:id="${repair.id}" th:each="repair : ${repairs}">
+            <tr th:id="${repair.id}" th:each="repair : ${repairs}" th:style="'background-color: '+${repair.currentStatus.colour}+''">
                 <th scope="row" th:text="${repair.id}">#</th>
-                <td th:text="${#dates.format(repair.startDate,'yyyy-MM-dd')}">John</td>
-                <td th:text="${#dates.format(repair.startTime,'HH:mm')}">Wick</td>
+                <td th:text="${#dates.format(repair.startDateTime,'yyyy-MM-dd HH:mm')}">John</td>
                 <td th:text="${repair.workOrderType.name}">johnwick@google.com</td>
+                <td>
+                    <form class="text-center"
+                          action="#" th:action="@{/mechanic/orderDetails}" method="post" novalidate>
+                        <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${repair.businessKey}">
+                        <button type="submit" class="btn btn-primary" >Details</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>
