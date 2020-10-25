@@ -67,4 +67,7 @@ INSERT INTO work_order_t(id, version, business_key, start_date, employee_id, typ
 VALUES
 (1, 1, random_uuid(), parsedatetime('07-02-2021', 'dd-MM-yyyy'), 1, 3, 1),
 (2, 1, random_uuid(), parsedatetime('13-05-2023', 'dd-MM-yyyy'), 1, 4, 2),
-(3, 1, random_uuid(), parsedatetime('09-03-2020', 'dd-MM-yyyy'), 2, 1, 3)
+(3, 1, random_uuid(), parsedatetime('25-10-2020 20:00:00', 'dd-MM-yyyy HH:mm:ss'), 1, 4, 5),
+(4, 1, random_uuid(), parsedatetime('25-10-2010 20:00:00', 'dd-MM-yyyy HH:mm:ss'), 1, 4, 5),
+(5, 1, random_uuid(), parsedatetime('13-05-2023', 'dd-MM-yyyy'), 1, 4, 2),
+(6, 1, random_uuid(), parsedatetime('09-03-2020', 'dd-MM-yyyy'), 2, 1, 3)

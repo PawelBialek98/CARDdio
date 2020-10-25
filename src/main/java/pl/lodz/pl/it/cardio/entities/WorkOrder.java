@@ -1,9 +1,6 @@
 package pl.lodz.pl.it.cardio.entities;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,6 +12,7 @@ import java.util.Date;
 @Getter
 @Setter
 @EqualsAndHashCode
+@ToString
 public class WorkOrder extends BaseEntity {
 
     @JoinColumn(name = "customer_id", referencedColumnName = "id")//, nullable = false, updatable = false)

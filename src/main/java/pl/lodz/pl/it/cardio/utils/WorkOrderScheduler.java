@@ -15,8 +15,10 @@ import pl.lodz.pl.it.cardio.repositories.WorkOrderRepository;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -46,5 +48,26 @@ public class WorkOrderScheduler {
                 .filter(wo -> wo.getCurrentStatus().getStatusType().equals("DURING"))
                 .filter(wo -> wo.getStartDateTime().getTime() + wo.getWorkOrderType().getRequiredTime() * 60 * 1000 - new Date().getTime() < 0)
                 .forEach(workOrder -> workOrder.setCurrentStatus(statusTo));
+    }
+
+    @Scheduled(cron = "${cron.removeCancalled}", zone = "Europe/Warsaw")
+    public void removeCancalledWorkOrders(){
+        Logger.getGlobal().log(Level.INFO, "JAZDA");
+        Collection<WorkOrder> workOrders = workOrderRepository.findAllByCurrentStatus_Code("CANCELLED");
+
+        Logger.getGlobal().log(Level.INFO, workOrders.toString());
+
+        int oldTime = 1000 * 60 * 60 * 24 * 7;
+        workOrders = workOrders.stream()
+                .filter(wo -> new Date().getTime() - wo.getStartDateTime().getTime() > oldTime)
+                .collect(Collectors.toList());
+
+
+        Logger.getGlobal().log(Level.INFO, workOrders.toString());
+
+        //Coooooo???
+        workOrderRepository.deleteAll(workOrders);
+
+        Logger.getGlobal().log(Level.INFO, "Koniec");
     }
 }
