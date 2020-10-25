@@ -25,9 +25,6 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class MyUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private HttpServletRequest request;
-
     private final UserRepository userRepository;
 
     @Override
@@ -35,6 +32,7 @@ public class MyUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("No user found with username: " + email));
 
+        //TODO leci w logach
         if (user.getLocked()) {
             throw new RuntimeException("blocked");
         }
@@ -62,13 +60,5 @@ public class MyUserDetailsService implements UserDetailsService {
         }
 
         return authorities;
-    }
-
-    private String getClientIP() {
-        String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null){
-            return request.getRemoteAddr();
-        }
-        return xfHeader.split(",")[0];
     }
 }

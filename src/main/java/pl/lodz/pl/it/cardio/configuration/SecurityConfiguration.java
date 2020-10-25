@@ -10,9 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity //- opcjonalna, bo nie wyłączyłem security config
@@ -21,9 +21,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final MyUserDetailsService myUserDetailsService;
-    private final AccessDeniedHandler accessDeniedHandler;
+    //private final AccessDeniedHandler accessDeniedHandler;
     //private final AuthenticationFailureHandler authenticationFailureHandler;
-    private final AuthenticationSuccessHandler authenticationSuccessHandler;
+    //private final AuthenticationSuccessHandler authenticationSuccessHandler;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -35,12 +35,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new MySimpleUrlAuthenticationSuccessHandler();
     }
 
+    @Bean
+    public SimpleUrlAuthenticationFailureHandler myAuthenticationFailureHandler(){
+        return new CustomAuthenticationFailureHandler();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().httpBasic().and()
                 .authorizeRequests()
-                //.antMatchers("/css/**", "/js/**", "/img/**").permitAll()
-                .antMatchers("/register", "/registrationConfirm*", "/badUser.html" ,"/h2-console").permitAll()
+                .antMatchers("/login**","/register", "/registrationConfirm*", "/badUser.html" ,"/h2-console").permitAll()
                 .antMatchers("/client**").hasRole("CLIENT")
                 .antMatchers("/mechanic**").hasRole("MECHANIC")
                 .antMatchers("/admin**").hasRole("ADMINISTRATOR")
@@ -49,8 +53,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .usernameParameter("email")
-                .successHandler(authenticationSuccessHandler)
-                //.failureHandler(authenticationFailureHandler)
+                .successHandler(myAuthenticationSuccessHandler())
+                .failureHandler(myAuthenticationFailureHandler())
                 .permitAll()
             .and()
                 .logout()
@@ -61,27 +65,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .rememberMe().key("fc0c91ef-b42b-4d51-90c2-2f7ff8149f64");
 
         http.headers().frameOptions().disable();
-
-        /*http.csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/", "/home", "/about").permitAll()
-                .antMatchers("/admin/**").hasAnyRole("ADMIN")
-                .antMatchers("/user/**").hasAnyRole("USER")
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll()
-                .and()
-                .exceptionHandling().accessDeniedHandler(accessDeniedHandler);*/
-
-
-        //http.authorizeRequests()
-        //        .antMatchers("/css/**", "/js/**", "/img/**"
-        //        , "/*.js", "/*.css", "/*.img", "/layouts/**", "/static/**").permitAll();
     }
 
     @Bean

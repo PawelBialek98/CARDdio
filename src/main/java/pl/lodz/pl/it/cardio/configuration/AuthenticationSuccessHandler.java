@@ -18,21 +18,21 @@ import java.util.logging.Logger;
 public class AuthenticationSuccessHandler implements ApplicationListener<AuthenticationSuccessEvent> {
 
     private final HttpServletRequest request;
-   // private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void onApplicationEvent(AuthenticationSuccessEvent e) {
 
         String email = e.getAuthentication().getName();
 
-        //User user = userRepository.findByEmail(email)
-        //        .orElseThrow(() -> new UsernameNotFoundException("No user found with username: " + email));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("No user found with username: " + email));
 
         Logger.getGlobal().log(Level.WARNING, "Successfull login into: " + email + " from IP adress: " + getClientIP());
 
-        //user.setInvalidLoginAttempts(0);
+        user.setInvalidLoginAttempts(0);
 
-        //userRepository.save(user);
+        userRepository.save(user);
     }
 
     private String getClientIP() {
