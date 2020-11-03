@@ -24,15 +24,14 @@
     <form>
         <div th:unless="${#lists.isEmpty(orders)}">
 
-            <table id="dt" class="table table-responsive-md btn-table" width="100%">
+            <table id="dtMaterialDesignExample" class="table table-responsive-md btn-table" width="100%">
                 <thead>
                     <tr>
                         <th class="th-sm" scope="col">#</th>
                         <th class="th-sm" scope="col" >Start Date</th>
-                        <th class="th-sm" scope="col" >Start Time</th>
+                        <th class="th-sm" scope="col" >Required Time</th>
                         <th class="th-sm" scope="col" >Mechanic name</th>
                         <th class="th-sm" scope="col" >What to do</th>
-                        <th class="th-sm" scope="col" >Business key</th>
                         <th class="th-sm"></th>
                     </tr>
                 </thead>
@@ -40,9 +39,9 @@
                     <tr th:id="${order.id}" th:each="order : ${orders}">
                         <th scope="row" th:text="${order.id}">#</th>
                         <td th:text="${#dates.format(order.startDateTime, 'yyyy-MM-dd HH:mm')}">John</td>
+                        <td th:text="${order.workOrderType.requiredTime}">John</td>
                         <td th:text="${order.worker.user.firstName}">John</td>
                         <td th:text="${order.workOrderType.name}">Wick</td>
-                        <td th:text="${order.businessKey}">Wick</td>
                         <td>
                             <!--<form class="text-center"
                                   action="#" th:action="@{/client/newOrder}" method="post" novalidate>
@@ -82,16 +81,6 @@
                         </td>
                     </tr>
                 </tbody>
-                <tfoot>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col" >Start Date</th>
-                    <th scope="col" >Start Time</th>
-                    <th scope="col" >Mechanic name</th>
-                    <th scope="col" >What to do</th>
-                    <th></th>
-                </tr>
-                </tfoot>
             </table>
         </div>
     </form>

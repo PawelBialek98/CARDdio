@@ -1,6 +1,5 @@
 package pl.lodz.pl.it.cardio.service;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,20 +8,17 @@ import pl.lodz.pl.it.cardio.dto.AssignWorkOrderDto;
 import pl.lodz.pl.it.cardio.dto.NewWorkOrderDto;
 import pl.lodz.pl.it.cardio.entities.WorkOrder;
 import pl.lodz.pl.it.cardio.entities.WorkOrderType;
+import pl.lodz.pl.it.cardio.exception.AppBaseException;
 import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
+import pl.lodz.pl.it.cardio.exception.OrderInterfereException;
 import pl.lodz.pl.it.cardio.repositories.*;
 import pl.lodz.pl.it.cardio.utils.ObjectMapper;
 
 import javax.transaction.Transactional;
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
@@ -52,8 +48,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     @Override
     public Collection<WorkOrder> getAllWorkOrdersForEmployee() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        //Logger.getGlobal().log(Level.INFO, currentPrincipalName);
         return workOrderRepository.findAllByWorker_User_Email(authentication.getName());
     }
 
@@ -64,23 +58,39 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public void addWorkOrder(NewWorkOrderDto newWorkOrderDto) {
+    public void addWorkOrder(NewWorkOrderDto newWorkOrderDto) throws AppBaseException {
         WorkOrder wo = new WorkOrder();
-
 
         LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(newWorkOrderDto.getStartDate()), LocalTime.parse(newWorkOrderDto.getStartTime()));
         wo.setStartDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()));
-        wo.setWorker(employeeRepository.findByUser_Email(SecurityContextHolder.getContext().getAuthentication().getName()));
+        try{
+            wo.setWorker(employeeRepository.findByUser_Email(SecurityContextHolder.getContext().getAuthentication().getName())
+                    .orElseThrow(AppNotFoundException::createUserNotFoundException));
+        } catch (AppNotFoundException e){
+            Logger.getGlobal().log(Level.INFO, "The currently logged in user was not found");
+        }
+
         wo.setWorkOrderType(workOrderTypeRepository.findByCode(newWorkOrderDto.getWorkOrderTypeCode()));
+        wo.setEndDateTime(Date.from(localDateTime.plusMinutes(wo.getWorkOrderType().getRequiredTime()).atZone(ZoneId.systemDefault()).toInstant()));
         wo.setCurrentStatus(statusRepository.findByCode("WAITING"));
-        //workOrderRepository.save(ObjectMapper.map(newWorkOrderDto, WorkOrder.class));
+        //ZAMIENIC DATE NA LOCALDATE?
+        if(workOrderRepository.countInterfere(wo.getStartDateTime(),
+                wo.getEndDateTime(),
+                wo.getCurrentStatus().getCode(),
+                wo.getWorker().getUser().getBusinessKey()) > 0){
+            throw OrderInterfereException.createOrderInterfereException();
+        }
+        if(localDateTime.getHour() < 8 || localDateTime.getHour() > 16){
+            //throw OrderWorkingHourException
+        }
         workOrderRepository.save(wo);
     }
 
     @Override
-    public Collection<AssignWorkOrderDto> getAllUnAssignedWorkOrders(){
+    public Collection<WorkOrder> getAllUnAssignedWorkOrders(){
         //return workOrderRepository.findAllByCustomerIsNullAndStartDateGreaterThanEqual(new Date());
-        return ObjectMapper.mapAll(workOrderRepository.findAllByCustomerIsNullAndStartDateTimeGreaterThanEqual(new Date()), AssignWorkOrderDto.class);
+        return workOrderRepository.findAllUnassignedWorkOrders();
+        //return ObjectMapper.mapAll(workOrderRepository.findAllByCustomerIsNullAndStartDateTimeGreaterThanEqual(new Date()), AssignWorkOrderDto.class);
     }
 
     @Override
@@ -101,8 +111,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     public void unassignUserFromWorkOrder(UUID orderBusinessKey) throws AppNotFoundException {
         WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
         if(workOrder.canBeCancelled()){
-            Logger.getGlobal().log(Level.INFO, new Date().toString());
-            Logger.getGlobal().log(Level.INFO, String.valueOf(workOrder.getStartDateTime().getTime() - new Date().getTime()));
             workOrder.setCustomer(null);
             workOrderRepository.save(workOrder);
         }
@@ -116,7 +124,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public Collection<WorkOrder> getAllWorkOrders() throws AppNotFoundException {
+    public Collection<WorkOrder> getAllWorkOrders() {
         return workOrderRepository.findAll();
     }
 }

@@ -105,11 +105,18 @@
 
     <script th:inline="javascript">
         var errorMessage = [[${errorMessage}]];
+        var message = [[${message}]]
         console.log(errorMessage);
 
         if(errorMessage){
             window.onload = function(){
                 toastr.error(errorMessage);
+            };
+        }
+
+        if(message){
+            window.onload = function(){
+                toastr.success(message);
             };
         }
     </script>

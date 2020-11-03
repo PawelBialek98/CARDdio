@@ -7,18 +7,20 @@
 
 <ul class="navbar-nav mr-auto">
     <li class="nav-item active">
-        <a class="nav-link" th:href="@{/mechanic}" th:text="#{myRepairs}">Home</a>
+        <a class="nav-link" th:href="@{/dispatcher}" th:text="#{myRepairs}">Home</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" th:href="@{/mechanic/newOrder}" th:text="#{newOrder}">New Order<span class="sr-only">(current)</span></a>
+        <a class="nav-link" th:href="@{/dispatcher/newOrder}" th:text="#{newOrder}">New Order<span class="sr-only">(current)</span></a>
     </li>
 </ul>
 
 <main>
-    <form class="text-center border border-light p-5 needs-validation" th:action="@{/mechanic/newOrder}" th:object="${order}"  method="post">
+    <form class="text-center border border-light p-5 needs-validation" th:action="@{/dispatcher/newOrder}" th:object="${order}"  method="post">
+        <h2 th:text="${employee.user.firstName} + ' ' + ${employee.user.lastName}"></h2>
+
         <select class="mdb-select md-form" serchable="" th:field="*{workOrderTypeCode}">
             <option value="" disabled selected th:text="#{newOrder.type}">Choose your option</option>
-            <option th:each="i : ${wot}" th:value="${i.getCode()}" th:text="${i.getName()} + ' (' + ${i.getRequiredTime()} + ' min)'" ></option>
+            <option th:each="i : ${employee.workOrderTypes}" th:value="${i.code}" th:text="${i.name} + ' (' + ${i.getRequiredTime()} + ' min)'" ></option>
         </select>
 
         <div class="md-form md-outline input-with-post-icon datepicker">

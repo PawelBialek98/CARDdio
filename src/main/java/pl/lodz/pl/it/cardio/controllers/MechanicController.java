@@ -12,6 +12,7 @@ import pl.lodz.pl.it.cardio.dto.NewWorkOrderDto;
 import pl.lodz.pl.it.cardio.dto.WorkOrderDto;
 import pl.lodz.pl.it.cardio.entities.WorkOrder;
 import pl.lodz.pl.it.cardio.exception.AppBaseException;
+import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
 import pl.lodz.pl.it.cardio.service.UserService;
 import pl.lodz.pl.it.cardio.service.WorkOrderService;
 import pl.lodz.pl.it.cardio.service.WorkOrderTypeService;
@@ -30,27 +31,34 @@ public class MechanicController {
     private final UserService userService;
 
     @GetMapping
-    public ModelAndView getMechanicPage(@ModelAttribute("errorMessage") String errorMessage){
+    public ModelAndView getMechanicPage(@ModelAttribute("errorMessage") String errorMessage,
+                                        @ModelAttribute("message") String message){
         ModelAndView modelAndView = new ModelAndView("mechanic/mechanic", "repairs", workOrderService.getAllWorkOrdersForEmployee());
         modelAndView.addObject("errorMessage", errorMessage);
+        modelAndView.addObject("message", message);
         return modelAndView;
     }
 
     @GetMapping("/newOrder")
     public ModelAndView getNewOrderForm(){
         ModelAndView modelAndView = new ModelAndView("mechanic/newOrder", "order", new NewWorkOrderDto());
-        //TODO przekazanie do modelu wszystkich typów zadań które może wykonać mechanik bazując na jego umiejestnosciach
         modelAndView.addObject("wot", workOrderTypeService.getAllMyWorkOrderType());
-        //modelAndView.addObject("WOTypes", workOrderService.getAllWorkOrderTypeNames());
         return modelAndView;
     }
 
     @RequestMapping("/newOrder")
-    public String createNewOrder(@Valid @ModelAttribute("order") NewWorkOrderDto newWorkOrderDto, BindingResult result){
+    public String createNewOrder(@Valid @ModelAttribute("order") NewWorkOrderDto newWorkOrderDto,
+                                 BindingResult result, RedirectAttributes redirectAttributes) {
         if(result.hasErrors()){
             return "mechanic/newOrder";
         }
-        workOrderService.addWorkOrder(newWorkOrderDto);
+        try {
+            workOrderService.addWorkOrder(newWorkOrderDto);
+        } catch (AppBaseException e){
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/mechanic";
+        }
+        redirectAttributes.addFlashAttribute("message", "Sucess!!!");
         return "redirect:/mechanic";
     }
 

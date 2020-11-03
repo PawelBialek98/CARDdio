@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="layouts/admin/admin_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{adminHeader}">Title</title>
+</head>
+<body>
+
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+            <a class="nav-link" th:href="@{/dispatcher}">Wszystkie zlecenia</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dispatcher/allEmployees}">Pracownicy<span class="sr-only">(current)</span></a>
+        </li>
+    </ul>
+
+    <main>
+        <div>
+
+            <div th:unless="${#lists.isEmpty(employees)}">
+
+                <h2 th:text="#{usersList}">Users List</h2>
+
+                <table class="table table-striped table-responsive-md btn-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col" th:text="#{firstName}">First Name</th>
+                            <th scope="col" th:text="#{lastName}">Last Name</th>
+                            <th scope="col" th:text="#{email}">Email</th>
+                            <th scope="col" th:text="#{phoneNumber}">Phone Number</th>
+                            <th scope="col">Edycja konta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:id="${user.user.id}" th:each="user : ${employees}">
+                        <th scope="row" th:text="${user.user.id}">#</th>
+                        <td th:text="${user.user.firstName}">John</td>
+                        <td th:text="${user.user.lastName}">Wick</td>
+                        <td th:text="${user.user.email}">johnwick@google.com</td>
+                        <td th:text="${user.user.phoneNumber}">123123123</td>
+                        <td>
+                            <form class="text-center"
+                                  action="#" th:action="@{/dispatcher/newOrder}" method="get" novalidate>
+                                <input type="hidden" name="employeeBusinessKey" th:value="${user.user.businessKey}">
+                                <button type="submit" class="btn-floating light-blue"><i class="fas fa-plus"></i></button>
+                            </form>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

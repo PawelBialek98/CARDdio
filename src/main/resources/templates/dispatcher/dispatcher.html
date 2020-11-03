@@ -31,6 +31,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col" >Start Date</th>
+                    <th scope="col" >End Date</th>
                     <th scope="col" >Options</th>
                 </tr>
                 </thead>
@@ -39,6 +40,7 @@
                     th:style="'background: ' + ${repair.currentStatus.colour}">
                     <th scope="row" th:text="${repair.id}">#</th>
                     <td th:text="${#dates.format(repair.startDate, 'yyyy-MM-dd HH:mm')}">John</td>
+                    <td th:text="${#dates.format(repair.endDate, 'yyyy-MM-dd HH:mm')}">John</td>
                     <td>
                         <div th:if="${repair.isFinalStatus()}">
                             <a>Oceń</a>

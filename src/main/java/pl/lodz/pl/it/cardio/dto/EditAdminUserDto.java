@@ -2,9 +2,10 @@ package pl.lodz.pl.it.cardio.dto;
 
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Data
 public class EditAdminUserDto {
@@ -16,18 +17,15 @@ public class EditAdminUserDto {
     @Pattern(regexp = "\\d{9}", message = "{validation.number}")
     private String phoneNumber;
 
-    private List<String> rolesSet = new ArrayList<>();
+    private Boolean activated;
 
-    /*public List<RolesDto> getRolesSet() {
-        return new ArrayList<>(rolesSet);
-    }
+    private Boolean locked;
 
-    public void setRolesSet(List<RolesDto> roles){
-        rolesSet = new HashSet<>(roles);
-    }*/
+    private Map<String, Boolean> rolesMap;
 
-    private boolean administrator;
-    private boolean client;
-    private boolean office;
-    private boolean mechanic;
+    private String dateBirth;
+
+    private Map<String, Boolean> workOrderTypeMap;
+
+    private Collection<String> workOrderType;
 }

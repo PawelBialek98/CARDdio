@@ -47,6 +47,21 @@
         </div>
     </div>
 
+    <div class="form-row mb-4">
+        <div class="col md-form">
+            <div class="form-check">
+                <input th:type="checkbox" class="form-check-input" id="activated" th:field="*{activated}" checked>
+                <label class="form-check-label" for="activated">activated</label>
+            </div>
+        </div>
+        <div class="col md-form">
+            <div class="form-check">
+                <input th:type="checkbox" class="form-check-input" id="locked" th:field="*{locked}" checked>
+                <label class="form-check-label" for="locked">locked</label>
+            </div>
+        </div>
+    </div>
+
     <table class="table table-borderless">
         <thead>
             <tr>
@@ -55,41 +70,49 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="role, roleStat : ${all_roles}">
-                <th scope="col" th:text="${role.name}">Role name</th>
-                <th scope="row">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" th:field="*{rolesSet}" th:id="${role.code}" th:value="${role.code}" checked>
-                        <label class="form-check-label" th:for="${role.code}"></label>
+           <tr th:each="role : ${user.rolesMap.entrySet()}">
+                <th scope="col" th:text="${role.key}">Role name</th>
+                <th>
+                    <!--<div>
+                        <input th:type="checkbox" class="form-check-input" th:field="*{rolesMap['__${role.key}__']}" th:id="${role.key}" th:value="${role.value}" checked>
+                        <label class="form-check-label" th:for="${role.key}"></label>
+                    </div>-->
+                    <div class="switch">
+                        <label>
+                            Off
+                            <input th:type="checkbox"  th:field="*{rolesMap['__${role.key}__']}" th:id="${role.key}" th:value="${role.value}" checked>
+                            <span class="lever"></span> On
+                        </label>
                     </div>
                 </th>
             </tr>
-            <!--<tr>
-                <th scope="col">CLIENT</th>
-                <th scope="col">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" th:field="*{client}" th:value="${user.client}" checked>
-                    </div>
-                </th>
-            </tr>
-            <tr>
-                <th scope="col" >ADMINISTRATOR</th>
-                <th scope="col">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" th:field="*{administrator}" th:value="${user.administrator}" checked>
-                    </div>
-                </th>
-            </tr>
-            <tr>
-                <th scope="col" >OFFICE</th>
-                <th scope="col">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" th:field="*{office}" th:value="${user.office}" checked>
-                    </div>
-                </th>
-            </tr>-->
         </tbody>
     </table>
+
+    <hr style="border-top: dotted 4px;" />
+
+    <p>Tylko dla mechanika</p>
+    <div>
+        <select class="mdb-select colorful-select dropdown-primary md-form" th:field="*{workOrderType}" th:multiple="multiple" serchable="">
+            <option value="" disabled selected th:text="#{editUserData.employeeSkills}">Choose your option</option>
+            <option th:each="i : ${wot}"
+                    th:field="*{workOrderType}"
+                    th:selected="*{workOrderType.contains('__${i.code}__')}"
+                    th:value="${i.code}" th:text="${i.name}" ></option>
+        </select>
+    </div>
+
+    <div class="form-row md-form input-with-post-icon datepicker">
+        <input th:placeholder="#{editUserData.birthDate}" type="text" id="date"
+               class="form-control" th:field="*{dateBirth}" th:value="*{dateBirth}"
+               th:classappend="${not #lists.isEmpty(#fields.errors('dateBirth'))} ? is-invalid">
+        <label for="date" th:text="#{editUserData.birthDate}"></label>
+        <div class="invalid-feedback">
+            <p th:each="error: ${#fields.errors('dateBirth')}"
+               th:text="${error}">Invalid data</p>
+        </div>
+        <i class="fas fa-calendar input-prefix" tabindex=0></i>
+    </div>
 
     <div class="form-row md-form">
         <div class="col">

@@ -23,6 +23,9 @@ public class WorkOrder extends BaseEntity {
     //@NotNull
     private Date startDateTime;
 
+    @Column(name = "end_date")
+    private Date endDateTime;
+
     @Column
     private String description;
 

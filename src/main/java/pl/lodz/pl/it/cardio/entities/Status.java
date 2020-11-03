@@ -2,10 +2,12 @@ package pl.lodz.pl.it.cardio.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.Collection;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "status_t")
 @Data

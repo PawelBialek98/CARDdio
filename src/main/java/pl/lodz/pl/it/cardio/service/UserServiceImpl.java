@@ -1,6 +1,7 @@
 package pl.lodz.pl.it.cardio.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,7 +11,9 @@ import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.Employee;
 import pl.lodz.pl.it.cardio.entities.User;
 import pl.lodz.pl.it.cardio.entities.VerificationToken;
+import pl.lodz.pl.it.cardio.exception.AppBaseException;
 import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
+import pl.lodz.pl.it.cardio.exception.AppTransactionFailureException;
 import pl.lodz.pl.it.cardio.exception.ValueNotUniqueException;
 import pl.lodz.pl.it.cardio.repositories.EmployeeRepository;
 import pl.lodz.pl.it.cardio.repositories.RoleRepository;
@@ -98,16 +101,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editUser(User editUser) throws AppNotFoundException {
-        User user = userRepository.findByEmail(editUser.getEmail()).orElseThrow(AppNotFoundException::createUserNotFoundException);
-        user.setFirstName(editUser.getFirstName());
-        user.setLastName(editUser.getLastName());
-        user.setPhoneNumber(editUser.getPhoneNumber());
-        userRepository.save(user);
+    public void editUser(User editUser) throws AppNotFoundException, AppTransactionFailureException {
+        try{
+            userRepository.saveAndFlush(editUser);
+        } catch (ObjectOptimisticLockingFailureException e){
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        }
+    }
+
+    @Override
+    public void adminEditUser(User user) throws AppBaseException {
+        userRepository.saveAndFlush(user);
     }
 
     @Override
     public User getUser(UUID userBusinessKey) throws AppNotFoundException {
         return userRepository.findByBusinessKey(userBusinessKey).orElseThrow(AppNotFoundException::createUserNotFoundException);
+    }
+
+    @Override
+    public Employee getEmployee(UUID employeeBusinessKey) throws AppBaseException {
+        return employeeRepository.findByUser_BusinessKey(employeeBusinessKey).orElseThrow(AppNotFoundException::createUserNotFoundException);
+    }
+
+    @Override
+    public boolean isEmployee(UUID userBusinessKey) {
+        return employeeRepository.existsByUser_BusinessKey(userBusinessKey);
+    }
+
+    @Override
+    public void adminEditEmployee(Employee employeeState) {
+        employeeRepository.save(employeeState);
     }
 }

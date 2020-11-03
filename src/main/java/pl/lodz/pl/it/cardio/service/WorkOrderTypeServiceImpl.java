@@ -18,11 +18,21 @@ public class WorkOrderTypeServiceImpl implements WorkOrderTypeService {
     private final WorkOrderTypeRepository workOrderTypeRepository;
 
     @Override
+    public Collection<WorkOrderType> findAll() {
+        return workOrderTypeRepository.findAll();
+    }
+
+    @Override
     public Collection<WorkOrderType> getAllMyWorkOrderType() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //String currentPrincipalName = authentication.getName();
         //Logger.getGlobal().log(Level.INFO, currentPrincipalName);
         return workOrderTypeRepository.findAllByEmployees_User_Email(authentication.getName());
         //return workOrderTypeRepository.findAll();
+    }
+
+    @Override
+    public Collection<WorkOrderType> findAllByCodes(Collection<String> code) {
+        return workOrderTypeRepository.findAllByCodeIn(code);
     }
 }

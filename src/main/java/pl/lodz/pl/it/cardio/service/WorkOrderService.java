@@ -3,6 +3,7 @@ package pl.lodz.pl.it.cardio.service;
 import pl.lodz.pl.it.cardio.dto.AssignWorkOrderDto;
 import pl.lodz.pl.it.cardio.dto.NewWorkOrderDto;
 import pl.lodz.pl.it.cardio.entities.WorkOrder;
+import pl.lodz.pl.it.cardio.exception.AppBaseException;
 import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
 
 import java.util.Collection;
@@ -15,9 +16,9 @@ public interface WorkOrderService {
 
     Collection<String> getAllWorkOrderTypeNames();
 
-    void addWorkOrder(NewWorkOrderDto newWorkOrderDto);
+    void addWorkOrder(NewWorkOrderDto newWorkOrderDto) throws AppBaseException;
 
-    Collection<AssignWorkOrderDto> getAllUnAssignedWorkOrders();
+    Collection<WorkOrder> getAllUnAssignedWorkOrders();
 
     WorkOrder getWorkOrderByBusinessKey(UUID workOrderBusinessKey) throws AppNotFoundException;
 
@@ -27,5 +28,5 @@ public interface WorkOrderService {
 
     void changeStatus(UUID fromString, String statusCode) throws AppNotFoundException;
 
-    Collection<WorkOrder> getAllWorkOrders() throws AppNotFoundException;;
+    Collection<WorkOrder> getAllWorkOrders();
 }

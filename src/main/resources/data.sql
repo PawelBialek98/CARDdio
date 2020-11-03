@@ -1,12 +1,14 @@
 INSERT INTO user_t (id, version, email, activated, locked, password, business_key, create_date)
 VALUES(1, 1, 'pawelzyrafa@gmail.com', true, false, '$2a$10$mXqMy26cyQKbnMed/.hQgO2XhzoxlZLmR1Xs49mCtlzTxcb9LXO4C', random_uuid(), parsedatetime('17-09-2019 18:47:52.69', 'dd-MM-yyyy hh:mm:ss.SS')),
 (2, 1,'test@test.com', true, false, '$2a$10$mXqMy26cyQKbnMed/.hQgO2XhzoxlZLmR1Xs49mCtlzTxcb9LXO4C', random_uuid(), parsedatetime('07-02-2020 10:03:12.13', 'dd-MM-yyyy hh:mm:ss.SS')),
-(3, 1,'test2@test.com', true, false, 'Alakija', random_uuid(), parsedatetime('01-08-2020 03:33:55.19', 'dd-MM-yyyy hh:mm:ss.SS'));
+(3, 1,'test2@test.com', true, false, 'Alakija', random_uuid(), parsedatetime('01-08-2020 03:33:55.19', 'dd-MM-yyyy hh:mm:ss.SS')),
+(4, 1,'test2@test.com', true, false, 'Alakija', random_uuid(), parsedatetime('01-08-2019 03:33:55.19', 'dd-MM-yyyy hh:mm:ss.SS'));
 
 INSERT INTO user_details_t (user_id, first_name, last_name, phone_number)
 VALUES(1, 'Aliko', 'Dangote', '123356789'),
 (2, 'Bill', 'Gates', '345555555'),
-(3, 'Folrunsho', 'Alakija', '456123123');
+(3, 'Folrunsho', 'Alakija', '456123123'),
+(4, 'Paweł', 'Białek', '123456456');
 
 INSERT INTO role_t(id, version, code, name, is_enabled, business_key)
 VALUES
@@ -24,7 +26,8 @@ VALUES
 (2, 1),
 (2, 3),
 (3, 2),
-(3, 3);
+(3, 3),
+(4, 1);
 
 INSERT INTO employee_t(id, user_id, birth_date)
 VALUES

@@ -18,4 +18,6 @@ public class NewWorkOrderDto {
 
     @NotNull
     private String workOrderTypeCode;
+
+    private String employeeCode;
 }

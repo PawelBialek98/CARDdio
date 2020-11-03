@@ -3,10 +3,13 @@ package pl.lodz.pl.it.cardio.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 
@@ -24,7 +27,7 @@ public class Employee implements Serializable {
     @Column(name = "birth_date")
     @Getter
     @Setter
-    private Date birth;
+    private LocalDate birth;
 
     @JoinColumn(name = "user_id", referencedColumnName = "id", updatable = false, nullable = false)
     @OneToOne(optional = false)
@@ -32,9 +35,26 @@ public class Employee implements Serializable {
     @Getter
     private User user;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "employees")
-    private  Collection<WorkOrderType> skills;
+
+    @ManyToMany
+    @JoinTable(
+            name = "employee_skill_t",
+            joinColumns = @JoinColumn(
+                    name = "employee_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "work_order_type_id", referencedColumnName = "id"))
+    @Setter
+    @Getter
+    private  Collection<WorkOrderType> workOrderTypes;
+
+    public Employee(){
+    }
+
+    public Employee(LocalDate birth, @NotNull User user, Collection<WorkOrderType> workOrderTypes) {
+        this.birth = birth;
+        this.user = user;
+        this.workOrderTypes = workOrderTypes;
+    }
 
     @Override
     public String toString() {

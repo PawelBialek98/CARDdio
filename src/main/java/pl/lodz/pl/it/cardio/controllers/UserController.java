@@ -230,12 +230,14 @@ public class UserController {
         return redirectRules();
     }
 
-    @GetMapping("/gohomepage")
+    @GetMapping("/goback")
     private String redirectRules(){
         Set<String> roles = AuthorityUtils.authorityListToSet(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 
         if(roles.contains("ROLE_ADMINISTRATOR")){
             return "redirect:/admin";
+        } else if(roles.contains("ROLE_DISPATCHER")){
+            return "redirect:/dispatcher";
         } else if(roles.contains("ROLE_MECHANIC")){
             return "redirect:/mechanic";
         } else if(roles.contains("ROLE_CLIENT")){

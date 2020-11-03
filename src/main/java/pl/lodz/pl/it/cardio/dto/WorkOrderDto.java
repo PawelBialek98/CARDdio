@@ -18,6 +18,8 @@ public class WorkOrderDto {
     @NotNull
     private Date startDate;
 
+    private Date endDate;
+
     private Time startTime;
 
     private StatusDto currentStatus;

@@ -9,8 +9,7 @@ import java.util.Collection;
 
 @Transactional
 public interface WorkOrderTypeRepository extends JpaRepository<WorkOrderType, Long> {
-
     Collection<WorkOrderType> findAllByEmployees_User_Email(String email);
-
     WorkOrderType findByCode(String code);
+    Collection<WorkOrderType> findAllByCodeIn(Collection<String> code);
 }

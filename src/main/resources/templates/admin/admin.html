@@ -7,7 +7,7 @@
 
     <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-            <a class="nav-link" th:href="@{/admin(lang=en)}" th:text="#{usersList}">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" th:href="@{/admin}" th:text="#{usersList}">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="#">Features</a>
@@ -46,10 +46,8 @@
                         <td th:text="${user.firstName}">John</td>
                         <td th:text="${user.lastName}">Wick</td>
                         <td th:text="${user.email}">johnwick@google.com</td>
-                        <td th:text="${user.businessKey}">123123123</td>
-                        <td th:text="${#dates.format(user.createDate,'yyyy-MM-dd HH:mm:ss')}"></td>
-                        <!--<td th:each="role, iterStat:${user.roles}" th:text="${iterStat.count == 1 ? '[' : ''} + ${role.name} + ${iterStat.count != iterStat.size ? ',' : ']'}">
-                        </td>-->
+                        <td th:text="${user.phoneNumber}">123123123</td>
+                        <td th:text="${#dates.format(user.createDate,'yyyy-MM-dd HH:mm')}"></td>
                         <td>
                             <span th:each="role:${user.roles}"
                                    th:with="allRoles=${role.getName()} + ${roleStat.count != roleStat.size ? ', ' : ''}"

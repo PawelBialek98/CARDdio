@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import pl.lodz.pl.it.cardio.dto.AssignWorkOrderDto;
 import pl.lodz.pl.it.cardio.dto.WorkOrderDto;
 import pl.lodz.pl.it.cardio.entities.WorkOrder;
 import pl.lodz.pl.it.cardio.exception.AppBaseException;
@@ -31,7 +32,7 @@ public class ClientController {
 
     @GetMapping("/newOrder")
     public ModelAndView getNewOrderForm(){
-        return new ModelAndView("client/newOrder", "orders", workOrderService.getAllUnAssignedWorkOrders());
+        return new ModelAndView("client/newOrder", "orders", ObjectMapper.mapAll(workOrderService.getAllUnAssignedWorkOrders(), AssignWorkOrderDto.class));
     }
 
     @PostMapping("/newOrder")

@@ -5,7 +5,9 @@ import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.Employee;
 import pl.lodz.pl.it.cardio.entities.User;
 import pl.lodz.pl.it.cardio.entities.VerificationToken;
+import pl.lodz.pl.it.cardio.exception.AppBaseException;
 import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
+import pl.lodz.pl.it.cardio.exception.AppTransactionFailureException;
 import pl.lodz.pl.it.cardio.exception.ValueNotUniqueException;
 
 import javax.transaction.Transactional;
@@ -32,7 +34,15 @@ public interface UserService {
 
     User getCurrentUser() throws AppNotFoundException;
 
-    void editUser(User user) throws AppNotFoundException;
+    void editUser(User user) throws AppNotFoundException, AppTransactionFailureException;
+
+    void adminEditUser(User user) throws AppBaseException;
 
     User getUser(UUID userBusinessKey) throws AppNotFoundException;
+
+    Employee getEmployee(UUID employeeBusinessKey) throws AppBaseException;
+
+    boolean isEmployee(UUID userBusinessKey);
+
+    void adminEditEmployee(Employee employeeState);
 }
