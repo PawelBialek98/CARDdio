@@ -1,5 +1,7 @@
 package pl.lodz.pl.it.cardio.service;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import pl.lodz.pl.it.cardio.dto.ChangeUserPasswordDto;
 import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.Employee;
@@ -45,4 +47,8 @@ public interface UserService {
     boolean isEmployee(UUID userBusinessKey);
 
     void adminEditEmployee(Employee employeeState);
+
+    int countAllActiveUsers();
+
+    int countAllEmployees();
 }

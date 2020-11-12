@@ -23,7 +23,6 @@ import java.util.UUID;
 public class ClientController {
 
     private final WorkOrderService workOrderService;
-    private final UserService userService;
 
     @GetMapping
     public ModelAndView getClientPage(){
@@ -37,16 +36,12 @@ public class ClientController {
 
     @PostMapping("/newOrder")
     public String assignToOrder(@RequestParam("orderBusinessKey") String orderBusinessKey, RedirectAttributes redirectAttributes){
-        //WorkOrder workOrder;
         try{
-            //workOrder = workOrderService.getWorkOrderByBusinessKey(orderBusinessKey);
             workOrderService.assignUserToWorkOrder(UUID.fromString(orderBusinessKey));
         } catch (AppBaseException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            //model.addAttribute("errorMessage", e.getMessage());
-            return "redirect:/client/newOrder";
+            return "redirect:/client";
         }
-        //model.addAttribute("sucessMessage", "Sucess!!!");
         redirectAttributes.addFlashAttribute("sucessMessage", "Sucess!!!");
         return "redirect:/client";
 
@@ -62,6 +57,5 @@ public class ClientController {
         }
         redirectAttributes.addFlashAttribute("sucessMessage", "Sucess!!!");
         return "redirect:/client";
-
     }
 }

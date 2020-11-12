@@ -1,6 +1,8 @@
 package pl.lodz.pl.it.cardio.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -132,5 +134,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void adminEditEmployee(Employee employeeState) {
         employeeRepository.save(employeeState);
+    }
+
+    @Override
+    public int countAllActiveUsers() {
+        return userRepository.countAllByActivatedIsTrueAndLockedIsFalse();
+    }
+
+    @Override
+    public int countAllEmployees() {
+        return employeeRepository.countAllByUser_LockedIsFalse();
     }
 }

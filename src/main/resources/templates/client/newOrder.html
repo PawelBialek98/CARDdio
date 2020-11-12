@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/client/client_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{adminHeader}">Title</title>
+    <title th:text="#{clientHeader}">Title</title>
 </head>
 <body>
 
@@ -10,13 +10,7 @@
         <a class="nav-link" th:href="@{/client}" th:text="#{myRepairs}">Home</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" th:href="@{/newOrder}" th:text="#{newOrder}">New Order<span class="sr-only">(current)</span></a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#">Pricing</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#">Opinions</a>
+        <a class="nav-link" th:href="@{/client/newOrder}" th:text="#{newOrder}">New Order<span class="sr-only">(current)</span></a>
     </li>
 </ul>
 
@@ -37,7 +31,7 @@
                 </thead>
                 <tbody>
                     <tr th:id="${order.id}" th:each="order : ${orders}">
-                        <th scope="row" th:text="${order.id}">#</th>
+                        <th scope="row" th:text="${orderStat.count}">#</th>
                         <td th:text="${#dates.format(order.startDateTime, 'yyyy-MM-dd HH:mm')}">John</td>
                         <td th:text="${order.workOrderType.requiredTime}">John</td>
                         <td th:text="${order.worker.user.firstName}">John</td>
@@ -50,7 +44,7 @@
                             </form>-->
                             <button type="button" class="btn btn-primary btn-sm m-0"
                                     data-toggle="modal" data-target="#basicExampleModal"
-                                    th:attr="data-target='#basicExampleModal'+${order.businessKey}">Launch modal</button>
+                                    th:attr="data-target='#basicExampleModal'+${order.businessKey}" th:text="#{save}">Launch modal</button>
                             <div class="modal fade" id="basicExampleModal" th:id="basicExampleModal+${order.businessKey}"
                                  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                  aria-hidden="true">

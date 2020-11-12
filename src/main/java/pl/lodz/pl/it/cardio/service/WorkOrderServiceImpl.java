@@ -127,4 +127,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     public Collection<WorkOrder> getAllWorkOrders() {
         return workOrderRepository.findAll();
     }
+
+    @Override
+    public int countAllFinishedWorkOrders() {
+        return workOrderRepository.countAllFinished();
+    }
 }

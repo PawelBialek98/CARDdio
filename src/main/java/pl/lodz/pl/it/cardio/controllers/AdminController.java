@@ -1,9 +1,6 @@
 package pl.lodz.pl.it.cardio.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.jni.Local;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,7 +16,6 @@ import pl.lodz.pl.it.cardio.exception.AppBaseException;
 import pl.lodz.pl.it.cardio.exception.EmptyRoleException;
 import pl.lodz.pl.it.cardio.service.RoleService;
 import pl.lodz.pl.it.cardio.service.UserService;
-import pl.lodz.pl.it.cardio.service.WorkOrderService;
 import pl.lodz.pl.it.cardio.service.WorkOrderTypeService;
 import pl.lodz.pl.it.cardio.utils.ObjectMapper;
 
@@ -27,9 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.logging.Level;
@@ -44,16 +37,13 @@ public class AdminController {
     private final UserService userService;
     private final RoleService roleService;
     private final WorkOrderTypeService workOrderTypeService;
+
     private Employee employeeState;
     private User userState;
 
     @RequestMapping
-    private ModelAndView getMainAdminPage(@ModelAttribute("errorMessage") String errorMessage,
-                                          @ModelAttribute("message") String message){
-        ModelAndView modelAndView = new ModelAndView("admin/admin", "users", ObjectMapper.mapAll(userService.getAllUsers(), ListUsersDto.class));
-        modelAndView.addObject("errorMessage", errorMessage);
-        modelAndView.addObject("message", message);
-        return modelAndView;
+    private ModelAndView getMainAdminPage(){
+        return new ModelAndView("admin/admin", "users", ObjectMapper.mapAll(userService.getAllUsers(), ListUsersDto.class));
     }
 
     @GetMapping("/editAccount")
@@ -165,7 +155,7 @@ public class AdminController {
             }
         } catch (AppBaseException e) {
             redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
-            return "admin/editUserData";
+            return "redirect:/admin";
         }
         redirectAttributes.addFlashAttribute("message","Success!!");
         return "redirect:/admin";

@@ -1,6 +1,8 @@
 package pl.lodz.pl.it.cardio.entities;
 
 import lombok.*;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -18,6 +20,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class User extends BaseEntity {
 
     @Column(name = "first_name", table = "user_details_t")

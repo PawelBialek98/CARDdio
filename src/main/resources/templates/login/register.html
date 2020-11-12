@@ -57,6 +57,7 @@
 
         <!-- E-mail -->
         <div class="form-row md-form">
+            <i class="fas fa-envelope prefix"></i>
             <label class="required" for="email" th:text="#{register.email}">Email</label>
             <input type="email" id="email"
                    class="form-control mb-4 " th:field="*{email}"
@@ -76,8 +77,8 @@
                class="form-control mb-4" placeholder="Login" th:field="*{login}">-->
 
         <!-- Password -->
-        <div class="form-row md-form input-with-pre-icon">
-            <i class="fas fa-lock input-prefix"></i>
+        <div class="form-row md-form">
+            <i class="fas fa-lock prefix"></i>
             <label class="required" for="defaultRegisterFormPassword" th:text="#{register.password}">Password</label>
             <input type="password" id="defaultRegisterFormPassword" class="form-control"
                    aria-describedby="defaultRegisterFormPasswordHelpBlock"
@@ -95,6 +96,7 @@
 
         <!-- Phone number -->
         <div class="form-row md-form">
+            <i class="fas fa-phone prefix"></i>
             <label for="defaultRegisterPhonePassword" th:text="#{register.phoneNumber}">Phone Number</label>
             <input type="tel" id="defaultRegisterPhonePassword" class="form-control"
                    th:field="*{phoneNumber}"

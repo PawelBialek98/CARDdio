@@ -10,6 +10,6 @@ public class AppTransactionFailureException extends AppBaseException {
     }
 
     public static AppTransactionFailureException createOptimisticLockingException(Throwable cause){
-        return new AppTransactionFailureException("message", cause);
+        return new AppTransactionFailureException("messageXDD", cause);
     }
 }

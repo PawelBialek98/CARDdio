@@ -9,15 +9,6 @@
         <li class="nav-item active">
             <a class="nav-link" th:href="@{/admin}" th:text="#{usersList}">Home <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Features</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Pricing</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Opinions</a>
-        </li>
     </ul>
 
     <main>
@@ -42,7 +33,7 @@
                     </thead>
                     <tbody>
                     <tr th:id="${user.id}" th:each="user : ${users}">
-                        <th scope="row" th:text="${user.id}">#</th>
+                        <th scope="row" th:text="${userStat.count}">#</th>
                         <td th:text="${user.firstName}">John</td>
                         <td th:text="${user.lastName}">Wick</td>
                         <td th:text="${user.email}">johnwick@google.com</td>

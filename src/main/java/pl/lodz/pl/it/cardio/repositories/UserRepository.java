@@ -1,5 +1,7 @@
 package pl.lodz.pl.it.cardio.repositories;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import pl.lodz.pl.it.cardio.entities.User;
 
@@ -12,4 +14,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
     Optional<User> findByBusinessKey(UUID userBusinessKey);
+    int countAllByActivatedIsTrueAndLockedIsFalse();
 }

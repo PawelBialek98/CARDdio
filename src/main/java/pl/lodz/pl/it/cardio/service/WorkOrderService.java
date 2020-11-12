@@ -29,4 +29,6 @@ public interface WorkOrderService {
     void changeStatus(UUID fromString, String statusCode) throws AppNotFoundException;
 
     Collection<WorkOrder> getAllWorkOrders();
+
+    int countAllFinishedWorkOrders();
 }

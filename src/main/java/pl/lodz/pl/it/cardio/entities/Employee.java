@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,6 +19,7 @@ import java.util.Date;
 @Table(name = "employee_t")
 //@PrimaryKeyJoinColumn(name = "user_id")
 //public class Employee extends User {
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Employee implements Serializable {
 
     @Id

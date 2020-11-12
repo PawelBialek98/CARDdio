@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -36,6 +39,7 @@ import java.util.logging.Logger;
 
 @Controller
 @RequiredArgsConstructor
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserController {
 
     private final UserService userService;
@@ -49,35 +53,15 @@ public class UserController {
 
     @GetMapping
     public ModelAndView getAll(){
-        return new ModelAndView("index", "users", userService.getAllUsers());
+        ModelAndView modelAndView = new ModelAndView("index", "numOfUsers", userService.countAllActiveUsers());
+        modelAndView.addObject("numOfEmployees", userService.countAllEmployees());
+        modelAndView.addObject("numOfAllRepairs", workOrderService.countAllFinishedWorkOrders());
+        return modelAndView;
     }
 
-    @GetMapping("/employee")
-    public ModelAndView getAllEmployee(){
-        return new ModelAndView("index", "users", userService.getAllEmployee());
-    }
-
-    /*@GetMapping("/main")
-    public String getMainLayout(){
-        return "layouts/main_layout";
-    }*/
-
-    @GetMapping("/signIn")
-    public String getLoginPage(){
-        return "login/login";
-    }
-
-    // Login form
     @RequestMapping("/login")
     public ModelAndView login(@ModelAttribute("errorMessage") String errorMessage) {
         return new ModelAndView("login/login", "errorMessage", errorMessage);
-    }
-
-    // Login form with error
-    @RequestMapping("/login-error")
-    public String loginError(Model model) {
-        model.addAttribute("loginError", true);
-        return "login/login-error";
     }
 
     @GetMapping("/register")

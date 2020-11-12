@@ -1,75 +1,92 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/client/client_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{adminHeader}">Title</title>
+    <title th:text="#{clientHeader}">Title</title>
 </head>
 <body>
 
 <ul class="navbar-nav mr-auto">
     <li class="nav-item active">
-        <a class="nav-link" th:href="@{/client}" th:text="#{myRepairs}">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" th:href="@{/client}" th:text="#{myVisits}">Home <span class="sr-only">(current)</span></a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="#">Features</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#">Pricing</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#">Opinions</a>
+        <a class="nav-link" th:href="@{/client/newOrder}" th:text="#{newOrder}">Features</a>
     </li>
 </ul>
 
 <main>
     <div>
-        <h2 >Moje naprawy</h2>
+        <div th:if="${#lists.isEmpty(repairs)}">
+            <!--Section: Content-->
+            <section class="px-md-5 mx-md-5 text-center border border-light p-5 dark-grey-text">
+                <div class="row d-flex justify-content-center">
+                    <div>
+                        <h3 class="font-weight-bold">Empty!</h3>
+                        <p class="text-muted">
+                            Nie masz jeszcze żadnych wizyt
+                            jeżeli potrzebujesz dokonać rezerwacji
+                            kliknij w przycisk poniżej
+                        </p>
 
+                        <a class="btn btn-info btn-md ml-0 mb-5" th:href="@{/client/newOrder}" role="button" th:text="#{newOrder}">Start now<i class="fa fa-magic ml-2"></i></a>
+                    </div>
+                    <!--Grid column-->
+
+                </div>
+                <!--Grid row-->
+
+            </section>
+        </div>
         <div th:unless="${#lists.isEmpty(repairs)}">
+            <h2 th:text="#{myRepairs}">Moje naprawy</h2>
 
             <table class="table table-striped btn-table">
                 <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col" >Start Date</th>
-                    <th scope="col" >Options</th>
+                    <th scope="col" th:text="#{startDate}">Start Date</th>
+                    <th scope="col" th:text="#{status}">Status</th>
+                    <th scope="col" th:text="#{estimatedDuration} + ' (min)'">EstimatedTime</th>
+                    <th scope="col" th:text="#{options}">Options</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:id="${repair.id}" th:each="repair : ${repairs}"
                     th:style="'background: ' + ${repair.currentStatus.colour}">
-                    <th scope="row" th:text="${repair.id}">#</th>
+                    <th scope="row" th:text="${repairStat.count}">#</th>
                     <td th:text="${#dates.format(repair.startDate, 'yyyy-MM-dd HH:mm')}">John</td>
+                    <td th:text="${repair.currentStatus.name}"></td>
+                    <td th:text="${repair.workOrderType.requiredTime}"></td>
                     <td>
-                        <div th:if="${repair.isFinalStatus()}">
+                        <!--<div th:if="${repair.isFinalStatus()}">
                             <a>Oceń</a>
-                        </div>
+                        </div>-->
                         <div th:if="${repair.canBeCancalled()}">
-                            <button type="button" class="btn btn-primary btn-sm m-0"
+                            <button type="button" class="btn btn-danger btn-sm m-0"
                                     data-toggle="modal" data-target="#basicExampleModal"
-                                    th:attr="data-target='#basicExampleModal'+${repair.businessKey}">Launch modal</button>
+                                    th:attr="data-target='#basicExampleModal'+${repair.businessKey}"
+                                    th:text="#{cancel}">cancel</button>
                             <div class="modal fade" id="basicExampleModal" th:id="basicExampleModal+${repair.businessKey}"
                                  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                  aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                            <h5 class="modal-title" id="exampleModalLabel" th:text="#{cancel}">Modal title</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <div class="modal-body">
+                                        <div class="modal-body" th:text="#{areYouSureCancel}">
                                             Are You sure???
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{no}">Close</button>
                                             <form class="text-center"
                                                   action="#" th:action="@{/client/cancelOrder}" method="post" novalidate>
                                                 <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${repair.businessKey}">
-                                                <button type="submit" class="btn btn-primary" >Save changes</button>
+                                                <button type="submit" class="btn btn-primary" th:text="#{yes}">Save changes</button>
                                             </form>
-                                            <!--<a type="button" class="btn btn-outline" th:href="@{/client/newOrder/{orderBusinessKey}(orderBusinessKey=${order.businessKey})}"><i class="fa fa-check"></i>&nbsp;Yes</a>-->
-                                            <!--<button type="button" class="btn btn-primary">Save changes</button>-->
                                         </div>
                                     </div>
                                 </div>

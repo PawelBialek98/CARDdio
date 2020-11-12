@@ -29,4 +29,6 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
     int countInterfere(Date startDate, Date endDate, String currentStatusCode, UUID employeeBusinessKey);
     @Query("SELECT wo FROM WorkOrder wo WHERE wo.currentStatus.code = 'WAITING'")
     Collection<WorkOrder> findAllUnassignedWorkOrders();
+    @Query("SELECT count(wo) FROM WorkOrder wo WHERE wo.currentStatus.code = 'AFTER'")
+    int countAllFinished();
 }
