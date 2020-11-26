@@ -49,6 +49,7 @@
 
     <script th:inline="javascript">
         var errorMessage = [[${errorMessage}]];
+        var message = [[${message}]];
         var errorMessage2 = [[${session[SPRING_SECURITY_LAST_EXCEPTION]}]];
         var isError = [[${param.error}]];
 
@@ -57,6 +58,12 @@
                 toastr.error(errorMessage);
             };
         }
+        if(message){
+            window.onload = function(){
+                toastr.success(message);
+            };
+        }
+
         if(isError == "true"){
             window.onload = function(){
                 toastr.error(errorMessage2);

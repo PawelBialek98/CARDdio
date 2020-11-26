@@ -1,17 +1,13 @@
 package pl.lodz.pl.it.cardio.service;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import pl.lodz.pl.it.cardio.dto.ChangeUserPasswordDto;
+import pl.lodz.pl.it.cardio.dto.ResetMailDto;
 import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.Employee;
 import pl.lodz.pl.it.cardio.entities.User;
 import pl.lodz.pl.it.cardio.entities.VerificationToken;
-import pl.lodz.pl.it.cardio.exception.AppBaseException;
-import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
-import pl.lodz.pl.it.cardio.exception.AppTransactionFailureException;
-import pl.lodz.pl.it.cardio.exception.ValueNotUniqueException;
+import pl.lodz.pl.it.cardio.exception.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -22,21 +18,19 @@ public interface UserService {
 
     List<Employee> getAllEmployee();
 
-    void addUser(UserDto userDto) throws AppNotFoundException, ValueNotUniqueException;
+    void addUser(UserDto userDto, HttpServletRequest request) throws AppNotFoundException, ValueNotUniqueException;
 
-    void createVerificationToken(UserDto user, String token);
+    void createVerificationToken(UserDto user, String token,  String type);
 
-    VerificationToken getVerificationToken(String VerificationToken);
+    void activateAccount(String token) throws AppNotFoundException, TokenExpiredException;
 
-    void saveRegisteredUser(User user);
-
-    UserDto findByEmail(String email) throws AppNotFoundException;
+    User findByEmail(String email) throws AppNotFoundException;
 
     void setNewPassword(User changeUserPasswordDto) throws AppNotFoundException;
 
     User getCurrentUser() throws AppNotFoundException;
 
-    void editUser(User user) throws AppNotFoundException, AppTransactionFailureException;
+    void editUser(User user) throws AppTransactionFailureException;
 
     void adminEditUser(User user) throws AppBaseException;
 
@@ -51,4 +45,10 @@ public interface UserService {
     int countAllActiveUsers();
 
     int countAllEmployees();
+
+    void resetPassword(ResetMailDto userEmail, HttpServletRequest request) throws AppNotFoundException;
+
+    User verifyToken(String token) throws AppNotFoundException, TokenExpiredException;
+
+    void removeInactivatedAccounts();
 }

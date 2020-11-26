@@ -1,11 +1,8 @@
 package pl.lodz.pl.it.cardio.entities;
 
-import lombok.Data;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.RequestMapping;
-import pl.lodz.pl.it.cardio.dto.UserDto;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -17,6 +14,7 @@ import java.util.Date;
 @Setter
 @Table(name = "verification_token_t")
 public class VerificationToken {
+
     private static final int EXPIRATION = 60 * 24;
 
     @Id
@@ -27,6 +25,9 @@ public class VerificationToken {
     @Column
     private String token;
 
+    @Column
+    private String type;
+
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
@@ -34,19 +35,21 @@ public class VerificationToken {
     @Column(name = "expiry_date")
     private Date expiryDate;
 
-    public VerificationToken(String token, User user) {
+    public VerificationToken(String token, User user, String type) {
         this.token = token;
-        this.user =user;
-        this.expiryDate = calculateExpiryDate(EXPIRATION);
+        this.user = user;
+        this.type = type;
+        this.expiryDate = calculateExpiryDate();
+
     }
 
     public VerificationToken() {
     }
 
-    private Date calculateExpiryDate(int expiryTimeInMinutes) {
+    private Date calculateExpiryDate() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Timestamp(cal.getTime().getTime()));
-        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
+        cal.add(Calendar.MINUTE, VerificationToken.EXPIRATION);
         return new Date(cal.getTime().getTime());
     }
 

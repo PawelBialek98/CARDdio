@@ -2,7 +2,6 @@ package pl.lodz.pl.it.cardio.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -13,18 +12,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pl.lodz.pl.it.cardio.configuration.AccountOperationEvent;
-import pl.lodz.pl.it.cardio.configuration.OnResetPasswordCompleteEvent;
 import pl.lodz.pl.it.cardio.dto.ChangeUserPasswordDto;
 import pl.lodz.pl.it.cardio.dto.EditUserDto;
+import pl.lodz.pl.it.cardio.dto.ResetMailDto;
 import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.User;
 import pl.lodz.pl.it.cardio.entities.VerificationToken;
 import pl.lodz.pl.it.cardio.exception.AppBaseException;
+import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
 import pl.lodz.pl.it.cardio.service.UserService;
 import pl.lodz.pl.it.cardio.service.WorkOrderService;
 import pl.lodz.pl.it.cardio.utils.ObjectMapper;
@@ -44,7 +42,6 @@ public class UserController {
 
     private final UserService userService;
     private final WorkOrderService workOrderService;
-    private final ApplicationEventPublisher eventPublisher;
 
     private User userState;
 
@@ -60,15 +57,16 @@ public class UserController {
     }
 
     @RequestMapping("/login")
-    public ModelAndView login(@ModelAttribute("errorMessage") String errorMessage) {
-        return new ModelAndView("login/login", "errorMessage", errorMessage);
+    public ModelAndView login(@ModelAttribute("errorMessage") String errorMessage,
+                              @ModelAttribute("message") String message) {
+        ModelAndView modelAndView = new ModelAndView("login/login", "errorMessage", errorMessage);
+        modelAndView.addObject("message", message);
+        return modelAndView;
     }
 
     @GetMapping("/register")
-    public ModelAndView getRegisterPage(@ModelAttribute("message") String message){
-        ModelAndView modelAndView =  new ModelAndView("login/register", "user", new UserDto());
-        modelAndView.addObject("errorMessage", message);
-        return modelAndView;
+    public ModelAndView getRegisterPage(){
+        return new ModelAndView("login/register", "user", new UserDto());
     }
 
     @PostMapping("/register")
@@ -79,112 +77,84 @@ public class UserController {
         }
         try{
             //User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
-            userService.addUser(userDto);
-            String appUrl = request.getContextPath();
-            eventPublisher.publishEvent(new AccountOperationEvent(userDto,
-                    request.getLocale(), appUrl, "register"));
+            userService.addUser(userDto, request);
         } catch (AppBaseException e) {
-            //TODO albo zmienić na modelandview atrybut
-            redirectAttributes.addFlashAttribute("errorMessage","Nie siadło! " + e.getMessage());
-            return "redirect:/register";
+            model.addAttribute("errorMessage",e.getMessage());
+            return "login/register";
         }
-        model.addAttribute("users", userService.getAllUsers());
+        redirectAttributes.addFlashAttribute("message","SUPER!");
         return "redirect:/login";
     }
 
     @GetMapping("/registrationConfirm")
-    public String confirmRegistration
-            (WebRequest request, Model model, @RequestParam("token") String token) {
-
-        Locale locale = request.getLocale();
-
-        VerificationToken verificationToken = userService.getVerificationToken(token);
-        if (verificationToken == null) {
-            String message = messages.getMessage("auth.message.invalidToken", null, locale);
-            model.addAttribute("message", message);
-            return "login/badUser";
-        }
-
-        User user = verificationToken.getUser();
-        Calendar cal = Calendar.getInstance();
-        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-            String messageValue = messages.getMessage("auth.message.expired", null, locale);
-            model.addAttribute("message", messageValue);
-            return "login/badUser";
-        }
-
-        user.setActivated(true);
-        userService.saveRegisteredUser(user);
-        return "redirect:/login" + request.getLocale().getLanguage();
-    }
-
-    @GetMapping("/resetPassword")
-    public String getResetPasswordPage(){
-        return "login/resetPassword";
-    }
-
-    @PostMapping("/resetPassword")
-    public String resetPassword(HttpServletRequest request, @RequestParam("email") String userEmail,
-                                final Model model, RedirectAttributes redirectAttributes) {
-        UserDto userDto;
+    public String confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token,
+                                      RedirectAttributes redirectAttributes) {
         try{
-            userDto = userService.findByEmail(userEmail);
-            String appUrl = request.getContextPath();
-            eventPublisher.publishEvent(new AccountOperationEvent(userDto,
-                    request.getLocale(), appUrl, "resetPassword"));
-        } catch (AppBaseException e) {
-            //redirectAttributes.addFlashAttribute("message", e.getMessage());
-            model.addAttribute("errorMessage", e.getMessage());
-            return "login/resetPassword";
+            userService.activateAccount(token);
+        } catch (AppBaseException e){
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/login";
         }
+        redirectAttributes.addFlashAttribute("message",messages.getMessage("auth.message.success", null, request.getLocale()));
         return "redirect:/login";
     }
 
+    @GetMapping("/resetPassword")
+    public ModelAndView getResetPasswordPage(){
+        return new ModelAndView("login/resetPassword", "mail", new ResetMailDto());
+    }
+
+    @PostMapping("/resetPassword")
+    public String resetPassword(HttpServletRequest request, @Valid  @ModelAttribute("mail") ResetMailDto userEmail, BindingResult bindingResult,
+                                final Model model) {
+        if(bindingResult.hasErrors()){
+            return "login/resetPassword";
+        }
+        try{
+            userService.resetPassword(userEmail, request) ;
+        } catch (AppBaseException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "login/resetPassword";
+        }
+        model.addAttribute("errorMessage",  messages.getMessage("resetPassword.checkMailBox", null, request.getLocale()));
+        return "login/login";
+    }
+
     @GetMapping("/setNewPassword")
-    public String getNewPasswordForm(WebRequest request, Model model, @RequestParam("token") String token) {
+    public String getNewPasswordForm(WebRequest request, Model model, @RequestParam("token") String token, RedirectAttributes redirectAttributes) {
 
-        Locale locale = request.getLocale();
-
-        VerificationToken verificationToken = userService.getVerificationToken(token);
-        if (verificationToken == null) {
-            String message = messages.getMessage("auth.message.invalidToken", null, locale);
-            model.addAttribute("message", message);
-            return "login/badUser";
+        try{
+            userState = userService.verifyToken(token);
+            model.addAttribute("user", ObjectMapper.map(userState, ChangeUserPasswordDto.class));
+        } catch (AppBaseException e){
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/login";
         }
-
-        userState = verificationToken.getUser();
-        ChangeUserPasswordDto user = ObjectMapper.map(userState, ChangeUserPasswordDto.class);
-        Calendar cal = Calendar.getInstance();
-        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-            String messageValue = messages.getMessage("auth.message.expired", null, locale);
-            model.addAttribute("message", messageValue);
-            return "login/badUser";
-        }
-
-        model.addAttribute("user", user);
         return "login/changePassword";
     }
 
     @PostMapping("/setNewPassword")
-    public String setNewPassword(HttpServletRequest request, @Valid @ModelAttribute("user") ChangeUserPasswordDto userDto,
+    public String setNewPassword(HttpServletRequest request, @Valid @ModelAttribute("user") ChangeUserPasswordDto userDto, BindingResult bindingResult,
                                 final Model model, RedirectAttributes redirectAttributes) {
+        if(bindingResult.hasErrors()){
+            return "login/changePassword";
+        }
+
         try{
             userState.setPassword(userDto.getPassword());
             userService.setNewPassword(userState);
         } catch (AppBaseException e) {
-            //redirectAttributes.addFlashAttribute("message", e.getMessage());
-            model.addAttribute("errorMessage", e.getMessage());
-            return "login/login";
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/login";
         }
+        redirectAttributes.addFlashAttribute("message", messages.getMessage("resetPassword.success", null, request.getLocale()));
         return "redirect:/login";
     }
 
     @GetMapping("/editAccount")
     public String getEditAccountForm(final Model model, RedirectAttributes redirectAttributes){
-        //EditUserDto user;
         try{
             userState = userService.getCurrentUser();
-            //user = ObjectMapper.map(userState,EditUserDto.class);
             model.addAttribute("user", ObjectMapper.map(userState,EditUserDto.class));
         } catch (AppBaseException e){
             redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -200,7 +170,6 @@ public class UserController {
             return "login/editOwnData";
         }
         try{
-            //User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
             userState.setFirstName(userDto.getFirstName());
             userState.setLastName(userDto.getLastName());
             userState.setPhoneNumber(userDto.getPhoneNumber());
@@ -210,7 +179,7 @@ public class UserController {
             redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
             return redirectRules();
         }
-        redirectAttributes.addFlashAttribute("message","Success!!");
+        redirectAttributes.addFlashAttribute("message",messages.getMessage("editAccount.success", null, request.getLocale()));
         return redirectRules();
     }
 
@@ -230,14 +199,4 @@ public class UserController {
             return "redirect:/";
         }
     }
-
-    @Scheduled(cron = "${cron.deleteInactiveUsers}", zone = "Europe/Warsaw")
-    public void removeInactivatedAccounts() {
-
-        long now = System.currentTimeMillis() / 1000;
-        Logger.getGlobal().log(Level.INFO,
-                "schedule tasks using cron jobs - " + now);
-    }
-
-
 }

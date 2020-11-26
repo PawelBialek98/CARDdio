@@ -33,7 +33,7 @@ public class AccountOperationListener implements
     private void confirmRegistration(AccountOperationEvent event) {
         UserDto user = event.getUser();
         String token = UUID.randomUUID().toString();
-        service.createVerificationToken(user, token);
+        service.createVerificationToken(user, token, event.getMessagePrefix());
 
         String recipientAddress = user.getEmail();
         String subject = messages.getMessage(event.getMessagePrefix() + ".title", null, event.getLocale());

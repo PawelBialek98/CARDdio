@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import pl.lodz.pl.it.cardio.entities.User;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,4 +16,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByEmail(String email);
     Optional<User> findByBusinessKey(UUID userBusinessKey);
     int countAllByActivatedIsTrueAndLockedIsFalse();
+    List<User> findAllByActivatedIsFalse();
 }

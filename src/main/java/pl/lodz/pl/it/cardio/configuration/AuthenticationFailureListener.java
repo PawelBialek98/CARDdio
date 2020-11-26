@@ -31,7 +31,7 @@ public class AuthenticationFailureListener {
         Logger.getGlobal().log(Level.WARNING, "Someone trys to log in to account: " + email + " from IP adress: " + getClientIP());
 
         user.setInvalidLoginAttempts(user.getInvalidLoginAttempts() + 1);
-        if(user.getInvalidLoginAttempts() == 3){
+        if(user.getInvalidLoginAttempts() >= 3 && !user.getLocked()){
             user.setLocked(true);
         }
 

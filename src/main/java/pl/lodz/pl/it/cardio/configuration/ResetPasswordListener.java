@@ -38,7 +38,7 @@ public class ResetPasswordListener implements
     private void confirmRegistration(OnResetPasswordCompleteEvent event) {
         UserDto user = event.getUser();
         String token = UUID.randomUUID().toString();
-        service.createVerificationToken(user, token);
+        //service.createVerificationToken(user, token);
 
         String recipientAddress = user.getEmail();
         String subject = "Reset Password";

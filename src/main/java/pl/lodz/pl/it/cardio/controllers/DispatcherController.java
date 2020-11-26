@@ -1,7 +1,11 @@
 package pl.lodz.pl.it.cardio.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,9 +31,17 @@ public class DispatcherController {
     private final WorkOrderService workOrderService;
     private final UserService userService;
 
+    @Qualifier("messageSource")
+    private final MessageSource messages;
+
+
     @GetMapping
-    public ModelAndView getDispatcherPage() {
-        return new ModelAndView("dispatcher/dispatcher", "repairs", ObjectMapper.mapAll(workOrderService.getAllWorkOrders(), WorkOrderDto.class));
+    public ModelAndView getDispatcherPage(@ModelAttribute("errorMessage") String errorMessage,
+                                          @ModelAttribute("message") String message) {
+        ModelAndView modelAndView = new ModelAndView("dispatcher/dispatcher", "repairs", ObjectMapper.mapAll(workOrderService.getAllWorkOrders(), WorkOrderDto.class));
+        modelAndView.addObject("errorMessage", errorMessage);
+        modelAndView.addObject("message", message);
+        return modelAndView;
     }
 
     @GetMapping("/allEmployees")
@@ -39,16 +51,15 @@ public class DispatcherController {
 
 
     @GetMapping("/newOrder")
-    public ModelAndView getNewOrderForm(@RequestParam("employeeBusinessKey") String employeeBusinessKey, RedirectAttributes redirectAttributes){
-        ModelAndView modelAndView = new ModelAndView("dispatcher/newOrder", "order", new NewWorkOrderDto());
+    public String getNewOrderForm(@RequestParam("employeeBusinessKey") String employeeBusinessKey, final Model model, RedirectAttributes redirectAttributes){
+        model.addAttribute("order", new NewWorkOrderDto());
         try{
-            Employee emp = userService.getEmployee(UUID.fromString(employeeBusinessKey));
-            modelAndView.addObject("employee", ObjectMapper.map(userService.getEmployee(UUID.fromString(employeeBusinessKey)),EmployeeDto.class));
+            model.addAttribute("employee", ObjectMapper.map(userService.getEmployee(UUID.fromString(employeeBusinessKey)),EmployeeDto.class));
         } catch (AppBaseException e){
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return getDispatcherPage();
+            return "redirect:/dispatcher";
         }
-        return modelAndView;
+        return "dispatcher/newOrder";
     }
 
     @PostMapping("/newOrder")
@@ -60,10 +71,10 @@ public class DispatcherController {
         try {
             workOrderService.addWorkOrder(newWorkOrderDto);
         } catch (AppBaseException e) {
-            redirectAttributes.addFlashAttribute("sucessMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/dispatcher";
         }
-        redirectAttributes.addFlashAttribute("sucessMessage", "Sucess!!!");
+        redirectAttributes.addFlashAttribute("message", messages.getMessage("newOrder.success", null, LocaleContextHolder.getLocale()));
         return "redirect:/dispatcher";
     }
 

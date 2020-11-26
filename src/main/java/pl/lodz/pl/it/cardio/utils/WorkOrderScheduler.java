@@ -42,6 +42,7 @@ public class WorkOrderScheduler {
                 .filter(wo -> wo.getCurrentStatus().getStatusType().equals("BEFORE"))
                 .filter(wo -> wo.getStartDateTime().getTime() - new Date().getTime() < 0)
                 .forEach(workOrder -> workOrder.setCurrentStatus(statusTo));
+        //TODO przerzucić do query
 
         workOrderRepository.findAllByCurrentStatus_Code(statusFrom.getCode())
                 .stream()
@@ -65,7 +66,6 @@ public class WorkOrderScheduler {
 
         Logger.getGlobal().log(Level.INFO, workOrders.toString());
 
-        //Coooooo???
         workOrderRepository.deleteAll(workOrders);
 
         Logger.getGlobal().log(Level.INFO, "Koniec");

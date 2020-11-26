@@ -48,7 +48,7 @@
                         <div th:if="${repair.canBeCancalled()}">
                             <button type="button" class="btn btn-primary btn-sm m-0"
                                     data-toggle="modal" data-target="#basicExampleModal"
-                                    th:attr="data-target='#basicExampleModal'+${repair.businessKey}">Launch modal</button>
+                                    th:attr="data-target='#basicExampleModal'+${repair.businessKey}">Cancel</button>
                             <div class="modal fade" id="basicExampleModal" th:id="basicExampleModal+${repair.businessKey}"
                                  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                  aria-hidden="true">

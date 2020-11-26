@@ -1,19 +1,19 @@
 package pl.lodz.pl.it.cardio.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pl.lodz.pl.it.cardio.dto.EditUserDto;
 import pl.lodz.pl.it.cardio.dto.NewWorkOrderDto;
 import pl.lodz.pl.it.cardio.dto.WorkOrderDto;
 import pl.lodz.pl.it.cardio.entities.WorkOrder;
 import pl.lodz.pl.it.cardio.exception.AppBaseException;
-import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
-import pl.lodz.pl.it.cardio.service.UserService;
 import pl.lodz.pl.it.cardio.service.WorkOrderService;
 import pl.lodz.pl.it.cardio.service.WorkOrderTypeService;
 import pl.lodz.pl.it.cardio.utils.ObjectMapper;
@@ -28,7 +28,9 @@ public class MechanicController {
 
     private final WorkOrderService workOrderService;
     private final WorkOrderTypeService workOrderTypeService;
-    private final UserService userService;
+
+    @Qualifier("messageSource")
+    private final MessageSource messages;
 
     @GetMapping
     public ModelAndView getMechanicPage(@ModelAttribute("errorMessage") String errorMessage,
@@ -58,7 +60,7 @@ public class MechanicController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/mechanic";
         }
-        redirectAttributes.addFlashAttribute("message", "Sucess!!!");
+        redirectAttributes.addFlashAttribute("message", messages.getMessage("newOrder.success", null, LocaleContextHolder.getLocale()));
         return "redirect:/mechanic";
     }
 
@@ -70,7 +72,8 @@ public class MechanicController {
             WorkOrder workOrder = workOrderService.getWorkOrderByBusinessKey(UUID.fromString(orderBusinessKey));
             model.addAttribute("workOrder", ObjectMapper.map(workOrder, WorkOrderDto.class));
         } catch (AppBaseException e) {
-            model.addAttribute("errorMessage", e.getMessage());
+            //model.addAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
             return "redirect:/mechanic";
         }
         return "mechanic/orderDetails";
@@ -86,7 +89,7 @@ public class MechanicController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/mechanic";
         }
-        redirectAttributes.addFlashAttribute("sucessMessage", "Sucess!!!");
+        redirectAttributes.addFlashAttribute("message", messages.getMessage("order.changeStatus.success", null, LocaleContextHolder.getLocale()));
         return "redirect:/mechanic";
     }
 }
