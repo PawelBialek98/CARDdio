@@ -27,4 +27,15 @@ public class Status extends BaseEntity{
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "statusFrom")
     private Collection<WorkOrderFlow> workOrderFlow;
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Status{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", code='").append(code).append('\'');
+        sb.append(", colour='").append(colour).append('\'');
+        sb.append(", statusType='").append(statusType).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -3,6 +3,7 @@ package pl.lodz.pl.it.cardio.entities;
 import lombok.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.context.annotation.SessionScope;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -14,13 +15,10 @@ import java.util.Date;
 @Entity
 @Table(name="user_t")
 @SecondaryTable(name = "user_details_t", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "user_id")})
-//@Inheritance(strategy=InheritanceType.JOINED)
-//@DiscriminatorColumn(name = "roles")
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Getter
 @Setter
-@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class User extends BaseEntity {
 
     @Column(name = "first_name", table = "user_details_t")

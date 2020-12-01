@@ -88,17 +88,17 @@
 
 <script th:inline="javascript">
     var errorMessage = [[${errorMessage}]];
-    var sucessMessage = [[${sucessMessage}]];
-    console.log(errorMessage);
+    var message = [[${message}]]
 
     if(errorMessage){
         window.onload = function(){
             toastr.error(errorMessage);
         };
     }
-    if(sucessMessage){
+
+    if(message){
         window.onload = function(){
-            toastr.success(sucessMessage);
+            toastr.success(message);
         };
     }
 </script>

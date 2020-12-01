@@ -18,12 +18,9 @@ public abstract class BaseEntity {
     private Integer id;
 
     @Version
-    private Integer version;
+    private final Integer version = 1;
 
-    //@Convert("uuidConverter")
-    //@TypeConverter(name = "uuidConverter", dataType = Object.class, objectType = UUID.class)
     @Column(name = "business_key", nullable = false)
-    @Getter
     private final UUID businessKey = UUID.randomUUID();
 
     @Override

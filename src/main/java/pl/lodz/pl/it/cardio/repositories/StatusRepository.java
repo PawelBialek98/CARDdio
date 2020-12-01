@@ -5,8 +5,9 @@ import org.springframework.stereotype.Repository;
 import pl.lodz.pl.it.cardio.entities.Status;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Transactional
 public interface StatusRepository extends JpaRepository<Status, Long> {
-    Status findByCode(String code);
+    Optional<Status> findByCode(String code);
 }

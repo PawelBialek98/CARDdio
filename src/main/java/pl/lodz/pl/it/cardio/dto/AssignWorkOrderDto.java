@@ -23,7 +23,7 @@ public class AssignWorkOrderDto {
     private WorkOrderTypeDto workOrderType;
 
     @NotNull
-    private EmployeeDto worker;
+    private EmployeeDto employee;
 
     @NotNull
     private UUID businessKey;

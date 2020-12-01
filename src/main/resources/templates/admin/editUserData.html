@@ -116,7 +116,7 @@
 
     <div class="form-row md-form">
         <div class="col">
-            <button th:href="@{/goback}" class="btn btn-info mt-4 mb-2 btn-block">Cancel</button>
+            <button onclick="window.history.back(); return false;" class="btn btn-info mt-4 mb-2 btn-block" th:text="#{cancel}">Cancel</button>
         </div>
         <div class="col">
             <button id="saveChanges" class="btn btn-info mt-4 mb-2 btn-block" type="submit" th:text="#{save}">Edit</button>

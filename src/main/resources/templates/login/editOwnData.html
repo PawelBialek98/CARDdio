@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/main_layout :: layout(~{::title}, ~{::form})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{loginHeader}">Title</title>
+    <title th:text="#{editAccount}">Title</title>
 </head>
 <body>
 
@@ -49,7 +49,10 @@
 
     <div class="form-row md-form">
         <div class="col">
-            <button th:href="@{/goback}" class="btn btn-info mt-4 mb-2 btn-block">Cancell</button>
+            <!--<button onclick="return goBack()" class="btn btn-info mt-4 mb-2 btn-block">Cancel</button>-->
+            <button
+                    class="btn btn-info mt-4 mb-2 btn-block"
+                    onclick="window.history.back(); return false;" th:text="#{cancel}"></button>
         </div>
         <div class="col">
             <button id="saveChanges" class="btn btn-info mt-4 mb-2 btn-block" type="submit" th:text="#{save}">Edit</button>

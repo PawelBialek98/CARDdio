@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+
+//TODO do usunięcia
 @Entity
 @Table(name = "position_t")
 public class Position extends BaseEntity {

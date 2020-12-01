@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="layouts/mechanic/mechanic_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:replace="layouts/dispatcher/dispatcher_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{mechanicHeader}">Title</title>
+    <title th:text="#{dispatcherHeader}">Title</title>
 </head>
 <body>
 
 <ul class="navbar-nav mr-auto">
     <li class="nav-item active">
-        <a class="nav-link" th:href="@{/dispatcher}" th:text="#{myRepairs}">Home</a>
+        <a class="nav-link" th:href="@{/dispatcher}" th:text="#{allRepairs}">Home</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" th:href="@{/dispatcher/newOrder}" th:text="#{newOrder}">New Order<span class="sr-only">(current)</span></a>
+        <a class="nav-link" th:href="@{/dispatcher/allEmployees}"  th:text="#{employees}">Pracownicy<span class="sr-only">(current)</span></a>
     </li>
 </ul>
 

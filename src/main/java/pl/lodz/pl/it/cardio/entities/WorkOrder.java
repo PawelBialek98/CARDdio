@@ -31,7 +31,7 @@ public class WorkOrder extends BaseEntity {
 
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @ManyToOne
-    private Employee worker;
+    private Employee employee;
 
     @JoinColumn(name = "status_id", referencedColumnName = "id")
     @ManyToOne

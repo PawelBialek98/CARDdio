@@ -30,6 +30,4 @@ public class WorkOrderFlow {
 
     @Column(name = "can_be_scheduled")
     private Boolean canBeScheduled;
-
-
 }

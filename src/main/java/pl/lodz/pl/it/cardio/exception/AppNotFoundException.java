@@ -2,10 +2,7 @@ package pl.lodz.pl.it.cardio.exception;
 
 import lombok.Getter;
 import lombok.Setter;
-import pl.lodz.pl.it.cardio.entities.Role;
-import pl.lodz.pl.it.cardio.entities.User;
-import pl.lodz.pl.it.cardio.entities.VerificationToken;
-import pl.lodz.pl.it.cardio.entities.WorkOrder;
+import pl.lodz.pl.it.cardio.entities.*;
 
 public class AppNotFoundException extends AppBaseException {
 
@@ -13,6 +10,7 @@ public class AppNotFoundException extends AppBaseException {
     public static final String USER_MESSAGE_KEY = "exception.userNotFound";
     public static final String WORK_ORDER_MESSAGE_KEY = "exception.workOrderNotFound";
     public static final String TOKEN_MESSAGE_KEY = "exception.tokenNotFound";
+    public static final String STATUS_MESSAGE_KEY = "exception.statusNotFound";
 
     @Getter
     @Setter
@@ -47,6 +45,12 @@ public class AppNotFoundException extends AppBaseException {
     public static AppNotFoundException createTokenNotFoundException(){
         AppNotFoundException nfe = new AppNotFoundException(resourceBundle.getString(TOKEN_MESSAGE_KEY));
         nfe.setObjectClass(VerificationToken.class);
+        return nfe;
+    }
+
+    public static AppNotFoundException createStatusNotFoundException(){
+        AppNotFoundException nfe = new AppNotFoundException(resourceBundle.getString(STATUS_MESSAGE_KEY));
+        nfe.setObjectClass(Status.class);
         return nfe;
     }
 }

@@ -20,9 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@Transactional
 @RequiredArgsConstructor
-@Controller
 @Service
 public class WorkOrderScheduler {
 
@@ -31,43 +29,43 @@ public class WorkOrderScheduler {
 
     @Scheduled(cron = "${cron.changeStatus}", zone = "Europe/Warsaw")
     public void changeWorkOrderStatus(){
-        workOrderFlowRepository.findAllByCanBeScheduledIsTrue().stream().filter(WorkOrderFlow::getCanBeScheduled)
+        Logger.getGlobal().log(Level.INFO, "Change Work Order Status script - started");
+
+        workOrderFlowRepository.findAllByCanBeScheduledIsTrue()
                 .forEach(workOrderFlow -> changeStatus(workOrderFlow.getStatusFrom(), workOrderFlow.getStatusTo()));
+
+        Logger.getGlobal().log(Level.INFO, "Change Work Order Status script - finished");
 
     }
 
+    //TODO REFActoring
     private void changeStatus(Status statusFrom, Status statusTo){
-        workOrderRepository.findAllByCurrentStatus_Code(statusFrom.getCode())
-                .stream()
-                .filter(wo -> wo.getCurrentStatus().getStatusType().equals("BEFORE"))
-                .filter(wo -> wo.getStartDateTime().getTime() - new Date().getTime() < 0)
-                .forEach(workOrder -> workOrder.setCurrentStatus(statusTo));
-        //TODO przerzucić do query
+        Collection<WorkOrder> workOrdersBefore = workOrderRepository.findAllByCurrentStatus_CodeAndCurrentStatus_StatusType(statusFrom.getCode(), "BEFORE");
+        workOrdersBefore = workOrdersBefore.stream().filter(wo -> wo.getStartDateTime().getTime() - new Date().getTime() < 0).collect(Collectors.toList());
+        workOrdersBefore.forEach(workOrder -> workOrder.setCurrentStatus(statusTo));
+        workOrderRepository.saveAll(workOrdersBefore);
 
-        workOrderRepository.findAllByCurrentStatus_Code(statusFrom.getCode())
-                .stream()
-                .filter(wo -> wo.getCurrentStatus().getStatusType().equals("DURING"))
-                .filter(wo -> wo.getStartDateTime().getTime() + wo.getWorkOrderType().getRequiredTime() * 60 * 1000 - new Date().getTime() < 0)
-                .forEach(workOrder -> workOrder.setCurrentStatus(statusTo));
+
+        Collection<WorkOrder> workOrdersDuring = workOrderRepository.findAllByCurrentStatus_CodeAndCurrentStatus_StatusType(statusFrom.getCode(), "DURING");
+        workOrdersDuring = workOrdersDuring.stream().filter(wo -> wo.getEndDateTime().getTime() - new Date().getTime() < 0).collect(Collectors.toList());
+        workOrdersDuring.forEach(workOrder -> workOrder.setCurrentStatus(statusTo));
+        workOrderRepository.saveAll(workOrdersDuring);
     }
 
     @Scheduled(cron = "${cron.removeCancalled}", zone = "Europe/Warsaw")
     public void removeCancalledWorkOrders(){
-        Logger.getGlobal().log(Level.INFO, "JAZDA");
-        Collection<WorkOrder> workOrders = workOrderRepository.findAllByCurrentStatus_Code("CANCELLED");
 
-        Logger.getGlobal().log(Level.INFO, workOrders.toString());
+        Logger.getGlobal().log(Level.INFO, "Remove Cancelled Work Orders script - started");
+
+        Collection<WorkOrder> workOrders = workOrderRepository.findAllByCurrentStatus_Code("CANCELLED");
 
         int oldTime = 1000 * 60 * 60 * 24 * 7;
         workOrders = workOrders.stream()
                 .filter(wo -> new Date().getTime() - wo.getStartDateTime().getTime() > oldTime)
                 .collect(Collectors.toList());
 
-
-        Logger.getGlobal().log(Level.INFO, workOrders.toString());
-
         workOrderRepository.deleteAll(workOrders);
 
-        Logger.getGlobal().log(Level.INFO, "Koniec");
+        Logger.getGlobal().log(Level.INFO, "Remove Cancelled Work Orders script - finished");
     }
 }

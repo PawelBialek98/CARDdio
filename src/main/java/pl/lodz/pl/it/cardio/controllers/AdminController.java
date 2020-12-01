@@ -43,9 +43,17 @@ public class AdminController {
 
     @RequestMapping
     private ModelAndView getMainAdminPage(){
-        return new ModelAndView("admin/admin", "users", ObjectMapper.mapAll(userService.getAllUsers(), ListUsersDto.class));
+        return new ModelAndView("admin/admin", "users", userService.getAllUsers());
     }
 
+    @GetMapping("/allSkills")
+    public ModelAndView getAllSkills(){
+        //return new ModelAndView("admin/allSkills", "skills", ObjectMapper.mapAll(workOrderTypeService.findAll())
+        return null;
+    }
+
+
+    //TODO przenieść to do serwisu
     @GetMapping("/editAccount")
     public String getEditAccountForm(@RequestParam("userBusinessKey") String userBusinessKey, final @NotNull Model model, RedirectAttributes redirectAttributes){
         try{
@@ -69,15 +77,11 @@ public class AdminController {
                     rolesMap.put(role.getCode(), false);
                 }
             }
-            Employee tmp;
-            //if(userState.getRoles().stream().map(Role::getCode).collect(Collectors.toList()).contains("MECHANIC")){
             if(employeeState != null){
-                tmp = userService.getEmployee(UUID.fromString(userBusinessKey));
-                editAdminUserDto.setDateBirth(tmp.getBirth().toString());
-                //editAdminUserDto.setWorkOrderType(tmp.getWorkOrderTypes().stream().map(WorkOrderType::getCode).collect(Collectors.toList()));
+                editAdminUserDto.setDateBirth(employeeState.getBirth().toString());
 
                 for(WorkOrderType wot : workOrderTypeService.findAll()){
-                    if(tmp.getWorkOrderTypes().stream().map(WorkOrderType::getCode).collect(Collectors.toList()).contains(wot.getCode())) {
+                    if(employeeState.getWorkOrderTypes().stream().map(WorkOrderType::getCode).collect(Collectors.toList()).contains(wot.getCode())) {
                         wotMap.put(wot.getCode(),true);
                         wotList.add(wot.getCode());
                     }else {
@@ -92,9 +96,6 @@ public class AdminController {
             editAdminUserDto.setWorkOrderTypeMap(wotMap);
             editAdminUserDto.setRolesMap(rolesMap);
             editAdminUserDto.setWorkOrderType(wotList);
-
-            Logger.getGlobal().log(Level.INFO, editAdminUserDto.toString());
-            Logger.getGlobal().log(Level.INFO, editAdminUserDto.toString());
 
             model.addAttribute("user", editAdminUserDto);
             model.addAttribute("wot", ObjectMapper.mapAll(workOrderTypeService.findAll(), WorkOrderTypeDto.class));
@@ -123,7 +124,6 @@ public class AdminController {
             userState.setActivated(userDto.getActivated());
 
             Collection<String> newRoles = new ArrayList<>();
-            Logger.getGlobal().log(Level.INFO, userDto.toString());
             if(userDto.getRolesMap().values().stream().allMatch(Objects::isNull)){
                 throw EmptyRoleException.createEmptyRoleException();
             }
@@ -160,5 +160,6 @@ public class AdminController {
         redirectAttributes.addFlashAttribute("message","Success!!");
         return "redirect:/admin";
     }
+
 
 }

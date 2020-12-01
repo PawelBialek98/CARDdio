@@ -24,6 +24,10 @@ public class WorkOrderDto {
 
     private StatusDto currentStatus;
 
+    private UserDto customer;
+
+    private EmployeeDto employee;
+
     private WorkOrderTypeDto workOrderType;
 
     public boolean isFinalStatus(){

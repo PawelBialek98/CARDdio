@@ -20,6 +20,7 @@ import pl.lodz.pl.it.cardio.service.UserService;
 import pl.lodz.pl.it.cardio.service.WorkOrderService;
 import pl.lodz.pl.it.cardio.utils.ObjectMapper;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ public class DispatcherController {
     @GetMapping
     public ModelAndView getDispatcherPage(@ModelAttribute("errorMessage") String errorMessage,
                                           @ModelAttribute("message") String message) {
-        ModelAndView modelAndView = new ModelAndView("dispatcher/dispatcher", "repairs", ObjectMapper.mapAll(workOrderService.getAllWorkOrders(), WorkOrderDto.class));
+        ModelAndView modelAndView = new ModelAndView("dispatcher/dispatcher", "repairs", workOrderService.getAllWorkOrders());
         modelAndView.addObject("errorMessage", errorMessage);
         modelAndView.addObject("message", message);
         return modelAndView;
@@ -46,7 +47,7 @@ public class DispatcherController {
 
     @GetMapping("/allEmployees")
     public ModelAndView allEmployees() {
-        return new ModelAndView("dispatcher/allEmployees", "employees", ObjectMapper.mapAll(userService.getAllEmployee(), EmployeeDto.class));
+        return new ModelAndView("dispatcher/allEmployees", "employees", userService.getAllEmployee());
     }
 
 
@@ -79,14 +80,14 @@ public class DispatcherController {
     }
 
     @PostMapping("/cancelOrder")
-    public String cancelOrder(@RequestParam("orderBusinessKey") String orderBusinessKey, RedirectAttributes redirectAttributes){
+    public String cancelOrder(HttpServletRequest request, @RequestParam("orderBusinessKey") String orderBusinessKey, RedirectAttributes redirectAttributes){
         try{
             workOrderService.unassignUserFromWorkOrder(UUID.fromString(orderBusinessKey));
         } catch (AppBaseException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/dispatcher";
         }
-        redirectAttributes.addFlashAttribute("sucessMessage", "Sucess!!!");
+        redirectAttributes.addFlashAttribute("message", messages.getMessage("cancelOrder.success", null, request.getLocale()));
         return "redirect:/dispatcher";
 
     }

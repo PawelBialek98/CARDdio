@@ -76,7 +76,6 @@ public class UserController {
             return "login/register";
         }
         try{
-            //User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
             userService.addUser(userDto, request);
         } catch (AppBaseException e) {
             model.addAttribute("errorMessage",e.getMessage());
@@ -87,7 +86,7 @@ public class UserController {
     }
 
     @GetMapping("/registrationConfirm")
-    public String confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token,
+    public String confirmRegistration(WebRequest request, @RequestParam("token") String token,
                                       RedirectAttributes redirectAttributes) {
         try{
             userService.activateAccount(token);
@@ -121,7 +120,7 @@ public class UserController {
     }
 
     @GetMapping("/setNewPassword")
-    public String getNewPasswordForm(WebRequest request, Model model, @RequestParam("token") String token, RedirectAttributes redirectAttributes) {
+    public String getNewPasswordForm(Model model, @RequestParam("token") String token, RedirectAttributes redirectAttributes) {
 
         try{
             userState = userService.verifyToken(token);
@@ -135,7 +134,7 @@ public class UserController {
 
     @PostMapping("/setNewPassword")
     public String setNewPassword(HttpServletRequest request, @Valid @ModelAttribute("user") ChangeUserPasswordDto userDto, BindingResult bindingResult,
-                                final Model model, RedirectAttributes redirectAttributes) {
+                                 RedirectAttributes redirectAttributes) {
         if(bindingResult.hasErrors()){
             return "login/changePassword";
         }
@@ -165,7 +164,7 @@ public class UserController {
 
     @PostMapping("/editAccount")
     public String editAccount(@Valid @ModelAttribute("user") EditUserDto userDto, BindingResult result,
-                              Model model, HttpServletRequest request, RedirectAttributes redirectAttributes){
+                               HttpServletRequest request, RedirectAttributes redirectAttributes){
         if(result.hasErrors()){
             return "login/editOwnData";
         }

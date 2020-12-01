@@ -66,11 +66,11 @@ VALUES
 (2, 2),
 (2, 4);
 
-INSERT INTO work_order_t(id, version, business_key, start_date, end_date, employee_id, type_id, status_id)
+INSERT INTO work_order_t(id, version, business_key, start_date, end_date, employee_id, type_id, status_id, CUSTOMER_ID)
 VALUES
-(1, 1, random_uuid(), parsedatetime('25-10-2021 15:00:00', 'dd-MM-yyyy HH:mm:ss'), parsedatetime('25-10-2021 17:00:00', 'dd-MM-yyyy HH:mm:ss'), 1, 3, 1),
-(2, 1, random_uuid(), parsedatetime('13-05-2023', 'dd-MM-yyyy'), parsedatetime('13-05-2023', 'dd-MM-yyyy'), 1, 4, 2),
-(3, 1, random_uuid(), parsedatetime('25-10-2020 20:00:00', 'dd-MM-yyyy HH:mm:ss'), parsedatetime('25-10-2020 20:00:00', 'dd-MM-yyyy HH:mm:ss'), 1, 4, 5),
-(4, 1, random_uuid(), parsedatetime('25-10-2010 20:00:00', 'dd-MM-yyyy HH:mm:ss'), parsedatetime('25-10-2020 20:00:00', 'dd-MM-yyyy HH:mm:ss'),1, 4, 5),
-(5, 1, random_uuid(), parsedatetime('13-05-2023', 'dd-MM-yyyy'), parsedatetime('13-05-2023', 'dd-MM-yyyy'), 1, 4, 2),
-(6, 1, random_uuid(), parsedatetime('09-03-2020', 'dd-MM-yyyy'), parsedatetime('09-03-2020', 'dd-MM-yyyy'), 2, 1, 3)
+(1, 1, random_uuid(), parsedatetime('25-10-2021 15:00:00', 'dd-MM-yyyy HH:mm:ss'), parsedatetime('25-10-2021 17:00:00', 'dd-MM-yyyy HH:mm:ss'), 1, 3, 1, null),
+(2, 1, random_uuid(), parsedatetime('13-05-2023', 'dd-MM-yyyy'), parsedatetime('13-05-2023', 'dd-MM-yyyy'), 1, 4, 2, 1),
+(3, 1, random_uuid(), parsedatetime('25-10-2020 20:00:00', 'dd-MM-yyyy HH:mm:ss'), parsedatetime('25-10-2020 20:00:00', 'dd-MM-yyyy HH:mm:ss'), 1, 4, 5, null),
+(4, 1, random_uuid(), parsedatetime('25-10-2010 20:00:00', 'dd-MM-yyyy HH:mm:ss'), parsedatetime('25-10-2020 20:00:00', 'dd-MM-yyyy HH:mm:ss'),1, 4, 5, null),
+(5, 1, random_uuid(), parsedatetime('13-05-2023', 'dd-MM-yyyy'), parsedatetime('13-05-2023', 'dd-MM-yyyy'), 1, 4, 2, 1),
+(6, 1, random_uuid(), parsedatetime('09-03-2020', 'dd-MM-yyyy'), parsedatetime('09-03-2020', 'dd-MM-yyyy'), 2, 1, 3, 1)

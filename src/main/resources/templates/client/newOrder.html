@@ -34,14 +34,9 @@
                         <th scope="row" th:text="${orderStat.count}">#</th>
                         <td th:text="${#dates.format(order.startDateTime, 'yyyy-MM-dd HH:mm')}">John</td>
                         <td th:text="${order.workOrderType.requiredTime}">John</td>
-                        <td th:text="${order.worker.user.firstName}">John</td>
+                        <td th:text="${order.employee.user.firstName}">John</td>
                         <td th:text="${order.workOrderType.name}">Wick</td>
                         <td>
-                            <!--<form class="text-center"
-                                  action="#" th:action="@{/client/newOrder}" method="post" novalidate>
-                                <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${order.businessKey}">
-                                <button type="submit" class="btn btn-primary" >Save changes</button>
-                            </form>-->
                             <button type="button" class="btn btn-primary btn-sm m-0"
                                     data-toggle="modal" data-target="#basicExampleModal"
                                     th:attr="data-target='#basicExampleModal'+${order.businessKey}" th:text="#{save}">Launch modal</button>
@@ -66,8 +61,6 @@
                                                 <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${order.businessKey}">
                                                 <button type="submit" class="btn btn-primary" >Save changes</button>
                                             </form>
-                                            <!--<a type="button" class="btn btn-outline" th:href="@{/client/newOrder/{orderBusinessKey}(orderBusinessKey=${order.businessKey})}"><i class="fa fa-check"></i>&nbsp;Yes</a>-->
-                                            <!--<button type="button" class="btn btn-primary">Save changes</button>-->
                                         </div>
                                     </div>
                                 </div>

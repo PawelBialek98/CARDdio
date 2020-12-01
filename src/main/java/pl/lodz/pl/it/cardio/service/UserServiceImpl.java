@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.lodz.pl.it.cardio.configuration.AccountOperationEvent;
 import pl.lodz.pl.it.cardio.dto.ChangeUserPasswordDto;
+import pl.lodz.pl.it.cardio.dto.EmployeeDto;
 import pl.lodz.pl.it.cardio.dto.ResetMailDto;
 import pl.lodz.pl.it.cardio.dto.UserDto;
 import pl.lodz.pl.it.cardio.entities.Employee;
@@ -42,24 +43,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Employee> getAllEmployee(){
-        return employeeRepository.findAll();
+    public List<EmployeeDto> getAllEmployee(){
+        return ObjectMapper.mapAll(employeeRepository.findAll(), EmployeeDto.class);
     }
 
     @Override
-    public void addUser(UserDto userDto, HttpServletRequest request) throws AppNotFoundException, ValueNotUniqueException{
-        //TODO - parametr systemowy
+    public void addUser(UserDto userDto, HttpServletRequest request) throws AppNotFoundException, ValueNotUniqueException, AppTransactionFailureException {
         User user =  new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
-        //ArrayList<Role> roles = new ArrayList<>();
-        //roles.add(roleRepository.findByCode("CLIENT"));
         if(userRepository.existsByEmail(user.getEmail())){
             throw ValueNotUniqueException.createEmailNotUniqueException(user);
         }
         user.setActivated(false);
         user.setCreateDate(new Date());
-        user.setRoles(roleRepository.findByCode("CLIENT").orElseThrow(AppNotFoundException::createRoleNotFoundException));
+        user.setRoles(roleRepository.findByCode("CLIENT").orElseThrow(AppNotFoundException::createStatusNotFoundException));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        try{
+            userRepository.save(user);
+        } catch (ObjectOptimisticLockingFailureException e){
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        }
 
         eventPublisher.publishEvent(new AccountOperationEvent(userDto,
                 request.getLocale(), request.getContextPath(), "register"));
@@ -72,7 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void activateAccount(String token) throws AppNotFoundException, TokenExpiredException {
+    public void activateAccount(String token) throws AppNotFoundException, TokenExpiredException, AppTransactionFailureException {
 
         VerificationToken verificationToken = tokenRepository.findByToken(token).orElseThrow(AppNotFoundException::createTokenNotFoundException);
 
@@ -89,7 +91,11 @@ public class UserServiceImpl implements UserService {
 
         user.setActivated(true);
 
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (ObjectOptimisticLockingFailureException e){
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        }
     }
 
     @Override
@@ -98,10 +104,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setNewPassword(User changeUserPasswordDto) throws AppNotFoundException {
+    public void setNewPassword(User changeUserPasswordDto) throws AppNotFoundException, AppTransactionFailureException {
         User user = userRepository.findByEmail(changeUserPasswordDto.getEmail()).orElseThrow(AppNotFoundException::createUserNotFoundException);
         user.setPassword(passwordEncoder.encode(changeUserPasswordDto.getPassword()));
-        userRepository.saveAndFlush(user);
+        try{
+            userRepository.saveAndFlush(user);
+        } catch (ObjectOptimisticLockingFailureException e){
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        }
     }
 
     @Override
@@ -120,11 +130,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void adminEditUser(User user) throws AppBaseException {
-        userRepository.saveAndFlush(user);
-    }
-
-    @Override
     public User getUser(UUID userBusinessKey) throws AppNotFoundException {
         return userRepository.findByBusinessKey(userBusinessKey).orElseThrow(AppNotFoundException::createUserNotFoundException);
     }
@@ -140,8 +145,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void adminEditEmployee(Employee employeeState) {
-        employeeRepository.save(employeeState);
+    public void adminEditEmployee(Employee employeeState) throws AppTransactionFailureException {
+        try{
+            employeeRepository.save(employeeState);
+        }  catch (ObjectOptimisticLockingFailureException e){
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        }
     }
 
     @Override
@@ -175,7 +184,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void removeInactivatedAccounts() {
-        userRepository.deleteAll(userRepository.findAllByActivatedIsFalse());
+    public void removeInactivatedAccounts() throws AppTransactionFailureException {
+        try{
+            userRepository.deleteAll(userRepository.findAllByActivatedIsFalse());
+        } catch (ObjectOptimisticLockingFailureException e){
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        }
+
     }
 }

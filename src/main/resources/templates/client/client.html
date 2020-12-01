@@ -46,6 +46,7 @@
                     <th scope="col">#</th>
                     <th scope="col" th:text="#{startDate}">Start Date</th>
                     <th scope="col" th:text="#{status}">Status</th>
+                    <th scope="col" th:text="#{name}">Status</th>
                     <th scope="col" th:text="#{estimatedDuration} + ' (min)'">EstimatedTime</th>
                     <th scope="col" th:text="#{options}">Options</th>
                 </tr>
@@ -56,11 +57,9 @@
                     <th scope="row" th:text="${repairStat.count}">#</th>
                     <td th:text="${#dates.format(repair.startDate, 'yyyy-MM-dd HH:mm')}">John</td>
                     <td th:text="${repair.currentStatus.name}"></td>
+                    <td th:text="${repair.workOrderType.name}"></td>
                     <td th:text="${repair.workOrderType.requiredTime}"></td>
                     <td>
-                        <!--<div th:if="${repair.isFinalStatus()}">
-                            <a>Oceń</a>
-                        </div>-->
                         <div th:if="${repair.canBeCancalled()}">
                             <button type="button" class="btn btn-danger btn-sm m-0"
                                     data-toggle="modal" data-target="#basicExampleModal"
@@ -81,11 +80,11 @@
                                             Are You sure???
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{no}">Close</button>
+                                            <button type="button" class="btn btn-secondary btn-sm m-0" data-dismiss="modal" th:text="#{no}">Close</button>
                                             <form class="text-center"
                                                   action="#" th:action="@{/client/cancelOrder}" method="post" novalidate>
                                                 <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${repair.businessKey}">
-                                                <button type="submit" class="btn btn-primary" th:text="#{yes}">Save changes</button>
+                                                <button type="submit" class="btn btn-primary btn-sm m-0" th:text="#{yes}">Save changes</button>
                                             </form>
                                         </div>
                                     </div>

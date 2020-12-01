@@ -9,6 +9,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+
+//TODO do usunięcia!
 @Entity
 @Table(name = "opinion_t")
 public class Opinion extends BaseEntity{

@@ -1,16 +1,16 @@
 package pl.lodz.pl.it.cardio.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import pl.lodz.pl.it.cardio.dto.AssignWorkOrderDto;
 import pl.lodz.pl.it.cardio.dto.NewWorkOrderDto;
+import pl.lodz.pl.it.cardio.dto.WorkOrderDto;
 import pl.lodz.pl.it.cardio.entities.WorkOrder;
 import pl.lodz.pl.it.cardio.entities.WorkOrderType;
-import pl.lodz.pl.it.cardio.exception.AppBaseException;
-import pl.lodz.pl.it.cardio.exception.AppNotFoundException;
-import pl.lodz.pl.it.cardio.exception.OrderInterfereException;
+import pl.lodz.pl.it.cardio.exception.*;
 import pl.lodz.pl.it.cardio.repositories.*;
 import pl.lodz.pl.it.cardio.utils.ObjectMapper;
 
@@ -38,17 +38,15 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     private final UserRepository userRepository;
 
     @Override
-    public Collection<WorkOrder> getAllWorkOrdersForClient() {
+    public Collection<WorkOrderDto> getAllWorkOrdersForClient() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        Logger.getGlobal().log(Level.INFO, currentPrincipalName);
-        return workOrderRepository.findAllByCustomer_Email(authentication.getName());
+        return ObjectMapper.mapAll(workOrderRepository.findAllByCustomer_Email(authentication.getName()),WorkOrderDto.class);
     }
 
     @Override
     public Collection<WorkOrder> getAllWorkOrdersForEmployee() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return workOrderRepository.findAllByWorker_User_Email(authentication.getName());
+        return workOrderRepository.findAllByEmployee_User_Email(authentication.getName());
     }
 
     @Override
@@ -64,7 +62,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(newWorkOrderDto.getStartDate()), LocalTime.parse(newWorkOrderDto.getStartTime()));
         wo.setStartDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()));
         try{
-            wo.setWorker(employeeRepository.findByUser_Email(SecurityContextHolder.getContext().getAuthentication().getName())
+            wo.setEmployee(employeeRepository.findByUser_Email(SecurityContextHolder.getContext().getAuthentication().getName())
                     .orElseThrow(AppNotFoundException::createUserNotFoundException));
         } catch (AppNotFoundException e){
             Logger.getGlobal().log(Level.INFO, "The currently logged in user was not found");
@@ -72,12 +70,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         wo.setWorkOrderType(workOrderTypeRepository.findByCode(newWorkOrderDto.getWorkOrderTypeCode()));
         wo.setEndDateTime(Date.from(localDateTime.plusMinutes(wo.getWorkOrderType().getRequiredTime()).atZone(ZoneId.systemDefault()).toInstant()));
-        wo.setCurrentStatus(statusRepository.findByCode("WAITING"));
+        wo.setCurrentStatus(statusRepository.findByCode("WAITING").orElseThrow(AppNotFoundException::createStatusNotFoundException));
         //ZAMIENIC DATE NA LOCALDATE?
         if(workOrderRepository.countInterfere(wo.getStartDateTime(),
                 wo.getEndDateTime(),
                 wo.getCurrentStatus().getCode(),
-                wo.getWorker().getUser().getBusinessKey()) > 0){
+                wo.getEmployee().getUser().getBusinessKey()) > 0){
             throw OrderInterfereException.createOrderInterfereException();
         }
         if(localDateTime.getHour() < 8 || localDateTime.getHour() > 16){
@@ -87,10 +85,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public Collection<WorkOrder> getAllUnAssignedWorkOrders(){
-        //return workOrderRepository.findAllByCustomerIsNullAndStartDateGreaterThanEqual(new Date());
-        return workOrderRepository.findAllUnassignedWorkOrders();
-        //return ObjectMapper.mapAll(workOrderRepository.findAllByCustomerIsNullAndStartDateTimeGreaterThanEqual(new Date()), AssignWorkOrderDto.class);
+    public Collection<AssignWorkOrderDto> getAllUnAssignedWorkOrders(){
+        return ObjectMapper.mapAll(workOrderRepository.findAllUnassignedWorkOrders(new Date()),AssignWorkOrderDto.class);
     }
 
     @Override
@@ -99,33 +95,49 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public void assignUserToWorkOrder(UUID orderBusinessKey) throws AppNotFoundException {
+    public void assignUserToWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, AppTransactionFailureException {
         WorkOrder workOrder = workOrderRepository.findByBusinessKeyAndCustomerIsNull(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         workOrder.setCustomer(userRepository.findByEmail(authentication.getName())
                 .orElseThrow(AppNotFoundException::createUserNotFoundException));
-        workOrderRepository.save(workOrder);
-    }
-
-    @Override
-    public void unassignUserFromWorkOrder(UUID orderBusinessKey) throws AppNotFoundException {
-        WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
-        if(workOrder.canBeCancelled()){
-            workOrder.setCustomer(null);
+        workOrder.setCurrentStatus(statusRepository.findByCode("ASSIGNED").orElseThrow(AppNotFoundException::createStatusNotFoundException));
+        try{
             workOrderRepository.save(workOrder);
+        } catch (ObjectOptimisticLockingFailureException e){
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
         }
     }
 
     @Override
-    public void changeStatus(UUID orderBusinessKey, String statusCode) throws AppNotFoundException {
+    public void unassignUserFromWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, TooLateCancellationException, AppTransactionFailureException {
         WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
-        workOrder.setCurrentStatus(statusRepository.findByCode(statusCode));
-        workOrderRepository.save(workOrder);
+        if(workOrder.canBeCancelled()){
+            workOrder.setCustomer(null);
+            workOrder.setCurrentStatus(statusRepository.findByCode("WAITING").orElseThrow(AppNotFoundException::createStatusNotFoundException));
+            try{
+                workOrderRepository.save(workOrder);
+            } catch (ObjectOptimisticLockingFailureException e){
+                throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+            }
+        } else {
+            throw TooLateCancellationException.createTooLateCancellationException(workOrder);
+        }
     }
 
     @Override
-    public Collection<WorkOrder> getAllWorkOrders() {
-        return workOrderRepository.findAll();
+    public void changeStatus(UUID orderBusinessKey, String statusCode) throws AppNotFoundException, AppTransactionFailureException {
+        WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
+        workOrder.setCurrentStatus(statusRepository.findByCode(statusCode).orElseThrow(AppNotFoundException::createStatusNotFoundException));
+        try {
+            workOrderRepository.save(workOrder);
+        } catch (ObjectOptimisticLockingFailureException e){
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        }
+    }
+
+    @Override
+    public Collection<WorkOrderDto> getAllWorkOrders() {
+        return ObjectMapper.mapAll(workOrderRepository.findAll(),WorkOrderDto.class);
     }
 
     @Override

@@ -72,7 +72,6 @@ public class MechanicController {
             WorkOrder workOrder = workOrderService.getWorkOrderByBusinessKey(UUID.fromString(orderBusinessKey));
             model.addAttribute("workOrder", ObjectMapper.map(workOrder, WorkOrderDto.class));
         } catch (AppBaseException e) {
-            //model.addAttribute("errorMessage", e.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
             return "redirect:/mechanic";
         }

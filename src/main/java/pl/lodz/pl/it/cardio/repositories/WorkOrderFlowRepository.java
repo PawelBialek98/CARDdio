@@ -11,4 +11,5 @@ import java.util.Collection;
 public interface WorkOrderFlowRepository extends JpaRepository<WorkOrderFlow, Long> {
     @Query("select wof from WorkOrderFlow wof where wof.canBeScheduled = true")
     Collection<WorkOrderFlow> findAllByCanBeScheduledIsTrue();
+
 }

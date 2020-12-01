@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import pl.lodz.pl.it.cardio.exception.AppTransactionFailureException;
 import pl.lodz.pl.it.cardio.service.UserService;
 
 import javax.transaction.Transactional;
@@ -20,7 +21,11 @@ public class AccountScheduler {
     public void removeInactivatedAccounts() {
 
         Logger.getGlobal().log(Level.INFO, "Remove inactivated accounts script - strted");
-        userService.removeInactivatedAccounts();
+        try{
+            userService.removeInactivatedAccounts();
+        } catch (AppTransactionFailureException e){
+            Logger.getGlobal().log(Level.INFO, "Remove inactivated accounts script - failed!\nMessage:\n" + e.getMessage());
+        }
         Logger.getGlobal().log(Level.INFO, "Remove inactivated accounts script - finished");
     }
 
