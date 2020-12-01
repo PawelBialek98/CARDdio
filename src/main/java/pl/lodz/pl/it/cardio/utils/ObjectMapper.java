@@ -1,6 +1,8 @@
 package pl.lodz.pl.it.cardio.utils;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,6 +14,7 @@ public class ObjectMapper {
 
     static {
         modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
     }
 
     private ObjectMapper() {

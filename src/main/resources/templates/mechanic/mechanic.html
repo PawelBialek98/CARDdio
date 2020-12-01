@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="layouts/mechanic/mechanic_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{mechanicHeader}">Title</title>
+</head>
+<body>
+
+<ul class="navbar-nav mr-auto">
+    <li class="nav-item active">
+        <a class="nav-link" th:href="@{/mechanic}" th:text="#{myRepairs}">Home <span class="sr-only">(current)</span></a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/mechanic/newOrder}" th:text="#{newOrder}">New Order</a>
+    </li>
+</ul>
+
+<main>
+    <div th:unless="${#lists.isEmpty(repairs)}">
+
+        <h2>Moje naprawy</h2>
+
+        <table id="dtBasicExample" class="table table-striped btn-table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col" >Początek</th>
+                <th scope="col" >Koniec</th>
+                <th scope="col" >Typ</th>
+                <th scope="col" >Change status manually</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:id="${repair.id}" th:each="repair : ${repairs}" th:style="'background-color: '+${repair.currentStatus.colour}+''">
+                <th scope="row" th:text="${repair.id}">#</th>
+                <td th:text="${#dates.format(repair.startDateTime,'yyyy-MM-dd HH:mm')}">John</td>
+                <td th:text="${#dates.format(repair.endDateTime,'yyyy-MM-dd HH:mm')}">John</td>
+                <td th:text="${repair.workOrderType.name}">johnwick@google.com</td>
+                <td>
+                    <form class="text-center"
+                          action="#" th:action="@{/mechanic/orderDetails}" method="post" novalidate>
+                        <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${repair.businessKey}">
+                        <button type="submit" class="btn btn-primary" >Details</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</main>
+
+</body>
+</html>

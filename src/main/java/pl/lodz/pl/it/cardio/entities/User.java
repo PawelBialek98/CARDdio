@@ -1,21 +1,24 @@
 package pl.lodz.pl.it.cardio.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.context.annotation.SessionScope;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Collection;
+import java.util.Date;
 
 @Entity
 @Table(name="user_t")
 @SecondaryTable(name = "user_details_t", pkJoinColumns = {@PrimaryKeyJoinColumn(name = "user_id")})
-//@Inheritance(strategy=InheritanceType.JOINED)
-//@DiscriminatorColumn(name = "roles")
 @NoArgsConstructor
 @RequiredArgsConstructor
+@Getter
+@Setter
 public class User extends BaseEntity {
 
     @Column(name = "first_name", table = "user_details_t")
@@ -24,10 +27,11 @@ public class User extends BaseEntity {
 
     @Column(name = "last_name", table = "user_details_t")
     @NonNull
-    private String lastname;
+    private String lastName;
 
     @Column
     @NonNull
+    @Email
     @Pattern(regexp = "^[^\\s\\\\@]+@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.){1,11}[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$")
     private String email;
 
@@ -40,7 +44,20 @@ public class User extends BaseEntity {
     @Pattern(regexp = "\\d{9}")
     private String phoneNumber;
 
-    @ManyToMany
+    @Column
+    private Boolean activated = false;
+
+    @Column
+    private Boolean locked = false;
+
+    @Column(name = "create_date")
+    private Date createDate;
+
+    @Column(name = "invalid_login_attempts", nullable = false, columnDefinition = "integer default 0")
+    @NotNull
+    private int invalidLoginAttempts = 0;
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role_t",
             joinColumns = @JoinColumn(
@@ -54,14 +71,18 @@ public class User extends BaseEntity {
     //private Employee employee;
 
     //TODO do ukrycia dane biznesowe
+
     @Override
     public String toString() {
         return "User{" +
-                "email='" + email + '\'' +
+                "firstName='" + firstName + '\'' +
+                ", lastname='" + lastName + '\'' +
+                ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastname='" + lastname + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", activated=" + activated +
+                ", locked=" + locked +
+                ", invalidLoginAttempts=" + invalidLoginAttempts +
                 ", roles=" + roles +
                 "} " + super.toString();
     }

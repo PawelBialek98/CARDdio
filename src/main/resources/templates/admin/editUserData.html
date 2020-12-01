@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="layouts/main_layout :: layout(~{::title}, ~{::form})" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{loginHeader}">Title</title>
+</head>
+<body>
+
+<form class="text-center border border-light p-5"
+      action="#" th:action="@{/admin/editAccount}" th:object="${user}" method="post" novalidate>
+
+    <p class="h4 mb-4" th:text="#{editUserData}">Edit data</p>
+
+    <div class="form-row mb-4">
+        <div class="col md-form">
+            <!-- First name -->
+            <label class="required" for="defaultRegisterFormFirstName" th:text="#{register.firstName}">First Name</label>
+            <input type="text" id="defaultRegisterFormFirstName" class="form-control "
+                   th:field="*{firstName}"
+                   th:classappend="${not #lists.isEmpty(#fields.errors('firstName'))} ? is-invalid">
+            <div class="invalid-feedback">
+                <p th:each="error: ${#fields.errors('firstName')}"
+                   th:text="${error}">Invalid data</p>
+            </div>
+        </div>
+        <div class="col md-form">
+            <!-- Last name -->
+            <label class="required" for="defaultRegisterFormLastName" th:text="#{register.lastName}">Last Name</label>
+            <input type="text" id="defaultRegisterFormLastName" class="form-control "
+                   th:field="*{lastName}"
+                   th:classappend="${not #lists.isEmpty(#fields.errors('lastName'))} ? is-invalid">
+            <div class="invalid-feedback">
+                <p th:each="error: ${#fields.errors('lastName')}"
+                   th:text="${error}">Invalid data</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phone number -->
+    <div class="form-row md-form">
+        <label for="defaultRegisterPhonePassword" th:text="#{register.phoneNumber}">Phone Number</label>
+        <input type="tel" id="defaultRegisterPhonePassword" class="form-control"
+               th:field="*{phoneNumber}"
+               th:classappend="${not #lists.isEmpty(#fields.errors('phoneNumber'))} ? is-invalid">
+        <div class="invalid-feedback">
+            <p th:each="error: ${#fields.errors('phoneNumber')}"
+               th:text="${error}">Invalid data</p>
+        </div>
+    </div>
+
+    <div class="form-row mb-4">
+        <div class="col md-form">
+            <div class="form-check">
+                <input th:type="checkbox" class="form-check-input" id="activated" th:field="*{activated}" checked>
+                <label class="form-check-label" for="activated">activated</label>
+            </div>
+        </div>
+        <div class="col md-form">
+            <div class="form-check">
+                <input th:type="checkbox" class="form-check-input" id="locked" th:field="*{locked}" checked>
+                <label class="form-check-label" for="locked">locked</label>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-borderless">
+        <thead>
+            <tr>
+                <th scope="col">Role name</th>
+                <th scope="col">OFF/ON</th>
+            </tr>
+        </thead>
+        <tbody>
+           <tr th:each="role : ${user.rolesMap.entrySet()}">
+                <th scope="col" th:text="${role.key}">Role name</th>
+                <th>
+                    <!--<div>
+                        <input th:type="checkbox" class="form-check-input" th:field="*{rolesMap['__${role.key}__']}" th:id="${role.key}" th:value="${role.value}" checked>
+                        <label class="form-check-label" th:for="${role.key}"></label>
+                    </div>-->
+                    <div class="switch">
+                        <label>
+                            Off
+                            <input th:type="checkbox"  th:field="*{rolesMap['__${role.key}__']}" th:id="${role.key}" th:value="${role.value}" checked>
+                            <span class="lever"></span> On
+                        </label>
+                    </div>
+                </th>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr style="border-top: dotted 4px;" />
+
+    <p>Tylko dla mechanika</p>
+    <div>
+        <select class="mdb-select colorful-select dropdown-primary md-form" th:field="*{workOrderType}" th:multiple="multiple" serchable="">
+            <option value="" disabled selected th:text="#{editUserData.employeeSkills}">Choose your option</option>
+            <option th:each="i : ${wot}"
+                    th:field="*{workOrderType}"
+                    th:selected="*{workOrderType.contains('__${i.code}__')}"
+                    th:value="${i.code}" th:text="${i.name}" ></option>
+        </select>
+    </div>
+
+    <div class="form-row md-form input-with-post-icon datepicker">
+        <input th:placeholder="#{editUserData.birthDate}" type="text" id="date"
+               class="form-control" th:field="*{dateBirth}" th:value="*{dateBirth}"
+               th:classappend="${not #lists.isEmpty(#fields.errors('dateBirth'))} ? is-invalid">
+        <label for="date" th:text="#{editUserData.birthDate}"></label>
+        <div class="invalid-feedback">
+            <p th:each="error: ${#fields.errors('dateBirth')}"
+               th:text="${error}">Invalid data</p>
+        </div>
+        <i class="fas fa-calendar input-prefix" tabindex=0></i>
+    </div>
+
+    <div class="form-row md-form">
+        <div class="col">
+            <button onclick="window.history.back(); return false;" class="btn btn-info mt-4 mb-2 btn-block" th:text="#{cancel}">Cancel</button>
+        </div>
+        <div class="col">
+            <button id="saveChanges" class="btn btn-info mt-4 mb-2 btn-block" type="submit" th:text="#{save}">Edit</button>
+        </div>
+    </div>
+</form>
+<!-- Default form register -->
+</body>
+</html>

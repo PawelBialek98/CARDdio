@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="layouts/mechanic/mechanic_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{mechanicHeader}">Title</title>
+</head>
+<body>
+
+<ul class="navbar-nav mr-auto">
+    <li class="nav-item active">
+        <a class="nav-link" th:href="@{/mechanic}" th:text="#{myRepairs}">Home</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/mechanic/newOrder}" th:text="#{newOrder}">New Order<span class="sr-only">(current)</span></a>
+    </li>
+</ul>
+
+<main>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col">
+                <p>Typ zlecenia</p>
+            </div>
+            <div class="col">
+                <p th:text="*{workOrder.workOrderType.name}"></p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col">
+                <p>Status zlecenia</p>
+            </div>
+            <div class="col">
+                <p th:text="*{workOrder.currentStatus.name}"></p>
+            </div>
+        </div>
+
+        <div th:if="${workOrder.currentStatus.statusType != 'AFTER'}" class="row justify-content-center align-content-center">
+            <div class="col align-middle">
+                <p>Zmien status</p>
+            </div>
+            <div class="col align-middle">
+                <form class="text-center"
+                      action="#" th:action="@{/mechanic/changeStatus}" method="post" novalidate>
+                    <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${workOrder.businessKey}">
+                    <select class="mdb-select md-form" id="statusCode" name="statusCode">
+                        <option value="" disabled selected>Change Status</option>
+                        <option th:each="i : ${workOrder.currentStatus.workOrderFlow}" th:value="${i.statusTo.code}" th:text="${i.statusTo.name}"></option>
+                    </select>
+                    <button type="submit" class="btn btn-primary" >Save changes</button>
+                </form>
+            </div>
+        <div>
+    </div>
+
+</main>
+</body>
+</html>

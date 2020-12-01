@@ -1,37 +1,53 @@
 package pl.lodz.pl.it.cardio.entities;
 
+import lombok.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.sql.Time;
 import java.util.Date;
 
 @Entity
 @Table(name = "work_order_t")
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class WorkOrder extends BaseEntity {
 
-    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false, updatable = false)
-    @ManyToOne(optional = false)
-    @NotNull
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")//, nullable = false, updatable = false)
+    @ManyToOne()//optional = false)
     private User customer;
 
     @Column(name = "start_date")
-    private Date startDate;
+    //@NotNull
+    private Date startDateTime;
 
     @Column(name = "end_date")
-    private Date endDate;
+    private Date endDateTime;
 
     @Column
     private String description;
 
-    @JoinColumn(name = "employee_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
     @ManyToOne
-    private Employee worker;
+    private Employee employee;
 
     @JoinColumn(name = "status_id", referencedColumnName = "id")
     @ManyToOne
     private Status currentStatus;
 
-    @JoinColumn(name = "position_id", referencedColumnName = "id")
+    @JoinColumn(name = "type_id", referencedColumnName = "id")
     @ManyToOne
-    private Position position;
+    private WorkOrderType workOrderType;
 
+    /**
+     * Metoda wylicza czy można anulować rezerwację na daną naprawę.
+     * Można anulować maksymalnie do 1h przed faktyczną wizytą
+     *
+     * @return flaga mówiąca czy można anulować rezewację
+     */
+    public boolean canBeCancelled(){
+        return startDateTime.getTime() - new Date().getTime() > 3600000;
+    }
 }
