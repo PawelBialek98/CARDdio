@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="layouts/main_layout :: layout(~{::title}, ~{::form})" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:replace="layouts/admin/admin_main :: layout(~{::title}, ~{::form}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="#{loginHeader}">Title</title>
 </head>
 <body>
+<ul class="navbar-nav mr-auto">
+    <li class="nav-item active">
+        <a class="nav-link" th:href="@{/admin}" th:text="#{usersList}">Home <span class="sr-only">(current)</span></a>
+    </li>
+</ul>
 
 <form class="text-center border border-light p-5"
       action="#" th:action="@{/admin/editAccount}" th:object="${user}" method="post" novalidate>

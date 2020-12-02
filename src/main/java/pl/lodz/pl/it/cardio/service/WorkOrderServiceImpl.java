@@ -90,8 +90,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public WorkOrder getWorkOrderByBusinessKey(UUID workOrderBusinessKey) throws AppNotFoundException {
-        return workOrderRepository.findByBusinessKeyAndCustomerIsNull(workOrderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
+    public WorkOrderDto getWorkOrderByBusinessKey(UUID workOrderBusinessKey) throws AppNotFoundException {
+        return ObjectMapper.map(workOrderRepository.findByBusinessKeyAndCustomerIsNull(workOrderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException),WorkOrderDto.class);
     }
 
     @Override

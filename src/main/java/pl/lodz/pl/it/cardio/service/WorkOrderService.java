@@ -23,7 +23,7 @@ public interface WorkOrderService {
 
     Collection<AssignWorkOrderDto> getAllUnAssignedWorkOrders();
 
-    WorkOrder getWorkOrderByBusinessKey(UUID workOrderBusinessKey) throws AppNotFoundException;
+    WorkOrderDto getWorkOrderByBusinessKey(UUID workOrderBusinessKey) throws AppNotFoundException;
 
     void assignUserToWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, AppTransactionFailureException;
 

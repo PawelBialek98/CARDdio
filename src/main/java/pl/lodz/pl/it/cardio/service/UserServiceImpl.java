@@ -3,6 +3,8 @@ package pl.lodz.pl.it.cardio.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -115,12 +117,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PostAuthorize("returnObject.email == authentication.principal.username")
     public User getCurrentUser() throws AppNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findByEmail(authentication.getName()).orElseThrow(AppNotFoundException::createUserNotFoundException);
     }
 
     @Override
+    @PreAuthorize("editUser.email == authentication.principal.username or hasRole('ROLE_ADMINISTRATOR')")
     public void editUser(User editUser) throws AppTransactionFailureException {
         try{
             userRepository.saveAndFlush(editUser);

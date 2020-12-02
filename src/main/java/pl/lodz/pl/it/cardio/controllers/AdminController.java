@@ -1,6 +1,8 @@
 package pl.lodz.pl.it.cardio.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
 public class AdminController {
 
     private final UserService userService;
@@ -41,8 +44,8 @@ public class AdminController {
     private Employee employeeState;
     private User userState;
 
-    @RequestMapping
-    private ModelAndView getMainAdminPage(){
+    @GetMapping
+    public ModelAndView getMainAdminPage(){
         return new ModelAndView("admin/admin", "users", userService.getAllUsers());
     }
 

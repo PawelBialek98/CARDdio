@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/mechanic")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_MECHANIC')")
 public class MechanicController {
 
     private final WorkOrderService workOrderService;
@@ -69,8 +71,7 @@ public class MechanicController {
                                final Model model,
                                RedirectAttributes redirectAttributes){
         try{
-            WorkOrder workOrder = workOrderService.getWorkOrderByBusinessKey(UUID.fromString(orderBusinessKey));
-            model.addAttribute("workOrder", ObjectMapper.map(workOrder, WorkOrderDto.class));
+            model.addAttribute("workOrder", workOrderService.getWorkOrderByBusinessKey(UUID.fromString(orderBusinessKey)));
         } catch (AppBaseException e) {
             redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
             return "redirect:/mechanic";

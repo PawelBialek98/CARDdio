@@ -3,6 +3,7 @@ package pl.lodz.pl.it.cardio.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/client")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ROLE_CLIENT')")
 public class ClientController {
 
     private final WorkOrderService workOrderService;

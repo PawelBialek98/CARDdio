@@ -25,9 +25,4 @@ public class MyErrorController implements ErrorController {
     public String getErrorPath() {
         return null;
     }
-
-    @ExceptionHandler({AppBaseException.class})
-    public String handleException(AppBaseException exception, RedirectAttributes redirectAttributes){
-        return "empty";
-    }
 }

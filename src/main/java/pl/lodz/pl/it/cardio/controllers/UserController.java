@@ -6,6 +6,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -151,6 +153,7 @@ public class UserController {
     }
 
     @GetMapping("/editAccount")
+    //@PostAuthorize("model.getAttribute(\"user\"). == authentication.principal.username")
     public String getEditAccountForm(final Model model, RedirectAttributes redirectAttributes){
         try{
             userState = userService.getCurrentUser();
