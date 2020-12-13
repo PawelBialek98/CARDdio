@@ -55,8 +55,6 @@ public class AdminController {
         return null;
     }
 
-
-    //TODO przenieść to do serwisu
     @GetMapping("/editAccount")
     public String getEditAccountForm(@RequestParam("userBusinessKey") String userBusinessKey, final @NotNull Model model, RedirectAttributes redirectAttributes){
         try{
@@ -66,39 +64,7 @@ public class AdminController {
             } else {
                 userState = userService.getUser(UUID.fromString(userBusinessKey));
             }
-            Collection<Role> roles = roleService.getAllRoles();
-            HashMap<String, Boolean> rolesMap = new HashMap<>();
-            HashMap<String, Boolean> wotMap = new HashMap<>();
-            List<String> wotList = new ArrayList<>();
-
-            EditAdminUserDto editAdminUserDto = ObjectMapper.map(userState, EditAdminUserDto.class);
-
-            for(Role role : roles){
-                if(userState.getRoles().stream().map(Role::getCode).collect(Collectors.toList()).contains(role.getCode())) {
-                    rolesMap.put(role.getCode(),true);
-                }else {
-                    rolesMap.put(role.getCode(), false);
-                }
-            }
-            if(employeeState != null){
-                editAdminUserDto.setDateBirth(employeeState.getBirth().toString());
-
-                for(WorkOrderType wot : workOrderTypeService.findAll()){
-                    if(employeeState.getWorkOrderTypes().stream().map(WorkOrderType::getCode).collect(Collectors.toList()).contains(wot.getCode())) {
-                        wotMap.put(wot.getCode(),true);
-                        wotList.add(wot.getCode());
-                    }else {
-                        wotMap.put(wot.getCode(), false);
-                    }
-                }
-            } else {
-                for(WorkOrderType wot : workOrderTypeService.findAll()){
-                    wotMap.put(wot.getCode(), false);
-                }
-            }
-            editAdminUserDto.setWorkOrderTypeMap(wotMap);
-            editAdminUserDto.setRolesMap(rolesMap);
-            editAdminUserDto.setWorkOrderType(wotList);
+            EditAdminUserDto editAdminUserDto = userService.prepareEditUser(employeeState, userState);
 
             model.addAttribute("user", editAdminUserDto);
             model.addAttribute("wot", ObjectMapper.mapAll(workOrderTypeService.findAll(), WorkOrderTypeDto.class));
@@ -109,6 +75,7 @@ public class AdminController {
         return "admin/editUserData";
     }
 
+    //TODO przenieść to do serwisu
     @PostMapping("/editAccount")
     public String editAccount(@Valid @ModelAttribute("user") EditAdminUserDto userDto,
                               BindingResult result,

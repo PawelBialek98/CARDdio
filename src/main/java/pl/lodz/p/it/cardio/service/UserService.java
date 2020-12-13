@@ -1,5 +1,6 @@
 package pl.lodz.p.it.cardio.service;
 
+import pl.lodz.p.it.cardio.dto.EditAdminUserDto;
 import pl.lodz.p.it.cardio.dto.EmployeeDto;
 import pl.lodz.p.it.cardio.dto.ResetMailDto;
 import pl.lodz.p.it.cardio.dto.UserDto;
@@ -49,4 +50,6 @@ public interface UserService {
     User verifyToken(String token) throws AppNotFoundException, TokenExpiredException;
 
     void removeInactivatedAccounts() throws AppTransactionFailureException;
+
+    EditAdminUserDto prepareEditUser(Employee employeeState, User userState);
 }

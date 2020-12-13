@@ -3,26 +3,25 @@ package pl.lodz.p.it.cardio.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.lodz.p.it.cardio.dto.EditAdminUserDto;
 import pl.lodz.p.it.cardio.dto.EmployeeDto;
 import pl.lodz.p.it.cardio.dto.ResetMailDto;
+import pl.lodz.p.it.cardio.entities.*;
 import pl.lodz.p.it.cardio.exception.*;
-import pl.lodz.p.it.cardio.repositories.EmployeeRepository;
-import pl.lodz.p.it.cardio.repositories.RoleRepository;
-import pl.lodz.p.it.cardio.repositories.UserRepository;
-import pl.lodz.p.it.cardio.repositories.VerificationTokenRepository;
+import pl.lodz.p.it.cardio.repositories.*;
 import pl.lodz.p.it.cardio.utils.ObjectMapper;
 import pl.lodz.p.it.cardio.configuration.AccountOperationEvent;
 import pl.lodz.p.it.cardio.dto.UserDto;
-import pl.lodz.p.it.cardio.entities.Employee;
-import pl.lodz.p.it.cardio.entities.User;
-import pl.lodz.p.it.cardio.entities.VerificationToken;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +31,9 @@ public class UserServiceImpl implements UserService {
     private final EmployeeRepository employeeRepository;
     private final RoleRepository roleRepository;
     private final VerificationTokenRepository tokenRepository;
+    private final WorkOrderTypeRepository workOrderTypeRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher eventPublisher;
-
 
     @Override
     public List<User> getAllUsers(){
@@ -114,14 +113,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    //@PostAuthorize("returnObject.email == authentication.principal.username")
+    @PostAuthorize("returnObject.email == authentication.principal.username")
     public User getCurrentUser() throws AppNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findByEmail(authentication.getName()).orElseThrow(AppNotFoundException::createUserNotFoundException);
     }
 
     @Override
-    //@PreAuthorize("editUser.email == authentication.principal.username or hasRole('ADMINISTRATOR')")
+    @PreAuthorize("#editUser.email == authentication.principal.username || hasRole('ROLE_ADMINISTRATOR')")
     public void editUser(User editUser) throws AppTransactionFailureException {
         try{
             userRepository.saveAndFlush(editUser);
@@ -192,5 +191,44 @@ public class UserServiceImpl implements UserService {
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
         }
 
+    }
+
+    @Override
+    public EditAdminUserDto prepareEditUser(Employee employeeState, User userState) {
+        Collection<Role> roles = roleRepository.findAll();
+        HashMap<String, Boolean> rolesMap = new HashMap<>();
+        HashMap<String, Boolean> wotMap = new HashMap<>();
+        List<String> wotList = new ArrayList<>();
+
+        EditAdminUserDto editAdminUserDto = ObjectMapper.map(userState, EditAdminUserDto.class);
+
+        for(Role role : roles){
+            if(userState.getRoles().stream().map(Role::getCode).collect(Collectors.toList()).contains(role.getCode())) {
+                rolesMap.put(role.getCode(),true);
+            }else {
+                rolesMap.put(role.getCode(), false);
+            }
+        }
+        if(employeeState != null){
+            editAdminUserDto.setDateBirth(employeeState.getBirth().toString());
+
+            for(WorkOrderType wot : workOrderTypeRepository.findAll()){
+                if(employeeState.getWorkOrderTypes().stream().map(WorkOrderType::getCode).collect(Collectors.toList()).contains(wot.getCode())) {
+                    wotMap.put(wot.getCode(),true);
+                    wotList.add(wot.getCode());
+                }else {
+                    wotMap.put(wot.getCode(), false);
+                }
+            }
+        } else {
+            for(WorkOrderType wot : workOrderTypeRepository.findAll()){
+                wotMap.put(wot.getCode(), false);
+            }
+        }
+        editAdminUserDto.setWorkOrderTypeMap(wotMap);
+        editAdminUserDto.setRolesMap(rolesMap);
+        editAdminUserDto.setWorkOrderType(wotList);
+
+        return editAdminUserDto;
     }
 }
