@@ -8,7 +8,7 @@
         <version>2.3.3.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>pl.lodz.pl.it</groupId>
+    <groupId>pl.lodz.p.it</groupId>
     <artifactId>cardio</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>cardio</name>
