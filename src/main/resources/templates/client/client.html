@@ -22,7 +22,7 @@
                 <div class="row d-flex justify-content-center">
                     <div>
                         <h3 class="font-weight-bold">Empty!</h3>
-                        <p class="text-muted">
+                        <p class="text-muted" th:text="#{emptyClientRepairs}">
                             Nie masz jeszcze żadnych wizyt
                             jeżeli potrzebujesz dokonać rezerwacji
                             kliknij w przycisk poniżej
@@ -56,8 +56,8 @@
                     th:style="'background: ' + ${repair.currentStatus.colour}">
                     <th scope="row" th:text="${repairStat.count}">#</th>
                     <td th:text="${#dates.format(repair.startDate, 'yyyy-MM-dd HH:mm')}">John</td>
-                    <td th:text="${repair.currentStatus.name}"></td>
-                    <td th:text="${repair.workOrderType.name}"></td>
+                    <td th:text="#{${repair.currentStatus.code}}"></td>
+                    <td th:text="#{${repair.workOrderType.code}}"></td>
                     <td th:text="${repair.workOrderType.requiredTime}"></td>
                     <td>
                         <div th:if="${repair.canBeCancalled()}">

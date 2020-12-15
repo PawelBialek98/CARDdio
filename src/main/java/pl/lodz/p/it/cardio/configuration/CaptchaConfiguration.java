@@ -1,16 +1,14 @@
 package pl.lodz.p.it.cardio.configuration;
 
-/*import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "google.recaptcha.key")
-@Getter
-@Setter
+@Data
 public class CaptchaConfiguration {
 
     private String site;
     private String secret;
-}*/
+}

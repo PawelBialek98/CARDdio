@@ -20,7 +20,7 @@ public class I18nConfiguration implements WebMvcConfigurer {
         //sessionLocaleResolver.setDefaultLocale(new Locale("pl"));
         //return sessionLocaleResolver;
 
-        //Bierze język na podstawie ciasteczka, ale można zmienić dodając do żądania parametr langw
+        //Bierze język na podstawie ciasteczka, ale można zmienić dodając do żądania parametr lang
         return new CookieLocaleResolver();
     }
 

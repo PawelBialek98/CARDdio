@@ -6,7 +6,7 @@
 <body>
 
 <ul class="navbar-nav mr-auto">
-    <li class="nav-item active">
+    <li class="nav-item">
         <a class="nav-link" th:href="@{/dispatcher}" th:text="#{allRepairs}">Home</a>
     </li>
     <li class="nav-item">
@@ -20,7 +20,7 @@
 
         <select class="mdb-select md-form" serchable="" th:field="*{workOrderTypeCode}">
             <option value="" disabled selected th:text="#{newOrder.type}">Choose your option</option>
-            <option th:each="i : ${employee.workOrderTypes}" th:value="${i.code}" th:text="${i.name} + ' (' + ${i.getRequiredTime()} + ' min)'" ></option>
+            <option th:each="i : ${employee.workOrderTypes}" th:value="${i.code}" th:text="#{${i.code}} + ' (' + ${i.getRequiredTime()} + ' min)'" ></option>
         </select>
 
         <div class="md-form md-outline input-with-post-icon datepicker">
@@ -48,7 +48,7 @@
 
 
         <button id="submit" class="btn btn-info mt-4 mb-2 btn-block"
-                type="submit" >Create</button>
+                type="submit" th:class="#{save}">Create</button>
     </form>
 </main>
 </body>

@@ -1,4 +1,4 @@
-package pl.lodz.p.it.cardio.configuration;
+package pl.lodz.p.it.cardio.events.accountOperation;
 
 import lombok.Getter;
 import lombok.Setter;

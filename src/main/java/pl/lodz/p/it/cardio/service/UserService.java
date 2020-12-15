@@ -52,4 +52,6 @@ public interface UserService {
     void removeInactivatedAccounts() throws AppTransactionFailureException;
 
     EditAdminUserDto prepareEditUser(Employee employeeState, User userState);
+
+    void adminEditUser(User userState, Employee employeeState, EditAdminUserDto userDto) throws EmptyRoleException, AppTransactionFailureException;
 }

@@ -2,29 +2,10 @@
 <html lang="en" th:replace="layouts/main_layout :: layout (~{::title}, ~{::main})" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="#{registerHeader}">Title</title>
-
-   <!-- <script src='https://www.google.com/recaptcha/api.js'></script>-->
 </head>
 <body>
 <main>
 
-    <!--<a class="btn btn-danger" th:onclick="'toastr.error(\'' + ${message} + '\');'">Error message</a>
-    <div th:if="${message != null}">
-        <script>
-            /*<![CDATA[*/
-
-            var message = /*[[${message}]]*/ 'default';
-            console.log(message);
-
-            /*]]>*/
-
-            window.onload = function(){
-              toastr.error(message);
-            };
-        </script>
-    </div>-->
-
-    <!-- Default form register -->
     <form class="text-center border border-light p-5 needs-validation"
           action="#" th:action="@{/register}" th:object="${user}" method="post" novalidate>
 
@@ -107,23 +88,16 @@
             </div>
         </div>
 
-        <!-- Newsletter -->
-        <!--<div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="defaultRegisterFormNewsletter">
-            <label class="custom-control-label" for="defaultRegisterFormNewsletter">Subscribe to our newsletter</label>
-        </div>-->
-        <!--<div class="form-row mb-4">
-            <div class="g-recaptcha col-sm-5"
+        <!--<div class="form-row md-form justify-content-center align-content-center">
+            <div class="g-recaptcha"
                  th:attr="data-sitekey=${@captchaConfiguration.getSite()}"></div>
             <span id="captchaError" class="alert alert-danger col-sm-4"
                   style="display:none"></span>
         </div>-->
 
-        <!-- Sign up button -->
         <button id="signUpBtn" class="btn btn-info mt-4 mb-2 btn-block" type="submit" th:text="#{register.signIn}">Sign in</button>
 
     </form>
-    <!-- Default form register -->
 
 </main>
 </body>

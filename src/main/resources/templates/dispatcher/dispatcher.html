@@ -16,7 +16,7 @@
 
 <main>
     <div>
-        <h2>Wszystkie naprawy</h2>
+        <h2 th:text="#{allRepairs}">Wszystkie naprawy</h2>
 
         <div th:unless="${#lists.isEmpty(repairs)}">
 
@@ -24,12 +24,12 @@
                 <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col" >Start Date</th>
-                    <th scope="col" >End Date</th>
+                    <th scope="col" th:text="#{startDate}">Start Date</th>
+                    <th scope="col" th:text="#{endDate}">End Date</th>
                     <th scope="col" th:text="#{client}">Client</th>
-                    <th scope="col" >Employee</th>
-                    <th scope="col" >Name</th>
-                    <th scope="col" >Options</th>
+                    <th scope="col" th:text="#{mechanicName}">Employee</th>
+                    <th scope="col" th:text="#{orderType}">Name</th>
+                    <th scope="col" th:text="#{options}">Options</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -40,11 +40,8 @@
                     <td th:text="${#dates.format(repair.endDate, 'yyyy-MM-dd HH:mm')}">John</td>
                     <td th:text="${repair.customer} ? ${repair.customer.firstName + ' ' + repair.customer.lastName} : ''">John</td>
                     <td th:text="${repair?.employee?.user?.firstName + ' ' + repair?.employee?.user?.lastName}">John</td>
-                    <td th:text="${repair.workOrderType.name}">John</td>
+                    <td th:text="#{${repair.workOrderType.code}}">John</td>
                     <td>
-                        <!--<div th:if="${repair.isFinalStatus()}">
-                            <a>Oceń</a>
-                        </div>-->
                         <div th:if="${repair.canBeCancalled()}">
                             <button type="button" class="btn btn-danger btn-sm m-0"
                                     data-toggle="modal" data-target="#basicExampleModal"

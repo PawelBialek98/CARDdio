@@ -1,4 +1,4 @@
-package pl.lodz.p.it.cardio.configuration;
+package pl.lodz.p.it.cardio.events.accountOperation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,10 +26,6 @@ public class AccountOperationListener implements
 
     @Override
     public void onApplicationEvent(AccountOperationEvent event) {
-        this.confirmRegistration(event);
-    }
-
-    private void confirmRegistration(AccountOperationEvent event) {
         UserDto user = event.getUser();
         String token = UUID.randomUUID().toString();
         service.createVerificationToken(user, token, event.getMessagePrefix());

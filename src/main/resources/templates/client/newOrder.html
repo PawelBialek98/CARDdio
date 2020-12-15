@@ -6,10 +6,10 @@
 <body>
 
 <ul class="navbar-nav mr-auto">
-    <li class="nav-item active">
+    <li class="nav-item">
         <a class="nav-link" th:href="@{/client}" th:text="#{myRepairs}">Home</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item active">
         <a class="nav-link" th:href="@{/client/newOrder}" th:text="#{newOrder}">New Order<span class="sr-only">(current)</span></a>
     </li>
 </ul>
@@ -22,10 +22,10 @@
                 <thead>
                     <tr>
                         <th class="th-sm" scope="col">#</th>
-                        <th class="th-sm" scope="col" >Start Date</th>
-                        <th class="th-sm" scope="col" >Required Time</th>
-                        <th class="th-sm" scope="col" >Mechanic name</th>
-                        <th class="th-sm" scope="col" >What to do</th>
+                        <th class="th-sm" scope="col" th:text="#{startDate}">Start Date</th>
+                        <th class="th-sm" scope="col" th:text="#{estimatedDuration}">Required Time</th>
+                        <th class="th-sm" scope="col" th:text="#{mechanicName}">Mechanic name</th>
+                        <th class="th-sm" scope="col" th:text="#{orderType}">What to do</th>
                         <th class="th-sm"></th>
                     </tr>
                 </thead>
@@ -33,33 +33,33 @@
                     <tr th:id="${order.id}" th:each="order : ${orders}">
                         <th scope="row" th:text="${orderStat.count}">#</th>
                         <td th:text="${#dates.format(order.startDateTime, 'yyyy-MM-dd HH:mm')}">John</td>
-                        <td th:text="${order.workOrderType.requiredTime}">John</td>
+                        <td th:text="${order.workOrderType.requiredTime} + min">John</td>
                         <td th:text="${order.employee.user.firstName}">John</td>
-                        <td th:text="${order.workOrderType.name}">Wick</td>
+                        <td th:text="#{${order.workOrderType.code}}">Wick</td>
                         <td>
                             <button type="button" class="btn btn-primary btn-sm m-0"
                                     data-toggle="modal" data-target="#basicExampleModal"
-                                    th:attr="data-target='#basicExampleModal'+${order.businessKey}" th:text="#{save}">Launch modal</button>
+                                    th:attr="data-target='#basicExampleModal'+${order.businessKey}" th:text="#{choose}">Launch modal</button>
                             <div class="modal fade" id="basicExampleModal" th:id="basicExampleModal+${order.businessKey}"
                                  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                  aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                            <h5 class="modal-title" id="exampleModalLabel" th:text="#{choose}">Modal title</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <div class="modal-body">
+                                        <div class="modal-body" th:text="#{confirmOrder}">
                                             Are You sure???
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}">Close</button>
                                             <form class="text-center"
                                                   action="#" th:action="@{/client/newOrder}" method="post" novalidate>
                                                 <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${order.businessKey}">
-                                                <button type="submit" class="btn btn-primary" >Save changes</button>
+                                                <button type="submit" class="btn btn-primary" th:text="#{save}">Save changes</button>
                                             </form>
                                         </div>
                                     </div>

@@ -27,8 +27,8 @@
                             <th scope="col" th:text="#{email}">Email</th>
                             <th scope="col" th:text="#{phoneNumber}">Phone Number</th>
                             <th scope="col" th:text="#{createDate}">Create Date</th>
-                            <th scope="col">pozimy dostepu</th>
-                            <th scope="col">Edycja konta</th>
+                            <th scope="col" th:text="#{roles}">pozimy dostepu</th>
+                            <th scope="col" th:text="#{editAccount}">Edycja konta</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,7 +41,7 @@
                         <td th:text="${#dates.format(user.createDate,'yyyy-MM-dd HH:mm')}"></td>
                         <td>
                             <span th:each="role:${user.roles}"
-                                   th:with="allRoles=${role.getName()} + ${roleStat.count != roleStat.size ? ', ' : ''}"
+                                   th:with="allRoles=#{${role.getCode()}} + ${roleStat.count != roleStat.size ? ', ' : ''}"
                                    th:text="${allRoles}">
                             </span>
                         </td>

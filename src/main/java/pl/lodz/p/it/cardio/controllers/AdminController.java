@@ -49,12 +49,6 @@ public class AdminController {
         return new ModelAndView("admin/admin", "users", userService.getAllUsers());
     }
 
-    @GetMapping("/allSkills")
-    public ModelAndView getAllSkills(){
-        //return new ModelAndView("admin/allSkills", "skills", ObjectMapper.mapAll(workOrderTypeService.findAll())
-        return null;
-    }
-
     @GetMapping("/editAccount")
     public String getEditAccountForm(@RequestParam("userBusinessKey") String userBusinessKey, final @NotNull Model model, RedirectAttributes redirectAttributes){
         try{
@@ -75,7 +69,6 @@ public class AdminController {
         return "admin/editUserData";
     }
 
-    //TODO przenieść to do serwisu
     @PostMapping("/editAccount")
     public String editAccount(@Valid @ModelAttribute("user") EditAdminUserDto userDto,
                               BindingResult result,
@@ -84,45 +77,7 @@ public class AdminController {
             return "admin/editUserData";
         }
         try{
-            userState.setFirstName(userDto.getFirstName());
-            userState.setLastName(userDto.getLastName());
-            userState.setPhoneNumber(userDto.getPhoneNumber());
-            if(!userState.getLocked() && userDto.getLocked()){
-                userState.setInvalidLoginAttempts(0);
-            }
-            userState.setLocked(userDto.getLocked());
-            userState.setActivated(userDto.getActivated());
-
-            Collection<String> newRoles = new ArrayList<>();
-            if(userDto.getRolesMap().values().stream().allMatch(Objects::isNull)){
-                throw EmptyRoleException.createEmptyRoleException();
-            }
-
-            for(Map.Entry<String,Boolean> roleMap : userDto.getRolesMap().entrySet()){
-                if(null != roleMap.getValue()){
-                    newRoles.add(roleMap.getKey());
-                }
-            }
-
-            userState.setRoles(roleService.getAllRolesByCodes(newRoles));
-            userService.editUser(userState);
-
-            if(newRoles.contains("MECHANIC")){
-                LocalDate tmp = LocalDate.now();
-                try{
-                    tmp = LocalDate.parse(userDto.getDateBirth());
-                } catch (DateTimeParseException re){
-                    Logger.getGlobal().log(Level.INFO, "Wrong date format! " + userDto.getDateBirth());
-                }
-                Collection<WorkOrderType> wot = workOrderTypeService.findAllByCodes(userDto.getWorkOrderType());
-                if(employeeState != null){
-                    employeeState.setBirth(tmp);
-                    employeeState.setWorkOrderTypes(wot);
-                } else {
-                    employeeState = new Employee(tmp,userState,wot);
-                }
-                userService.adminEditEmployee(employeeState);
-            }
+            userService.adminEditUser(userState, employeeState, userDto);
         } catch (AppBaseException e) {
             redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
             return "redirect:/admin";

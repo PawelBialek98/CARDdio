@@ -6,7 +6,7 @@
 <body>
 
 <ul class="navbar-nav mr-auto">
-    <li class="nav-item active">
+    <li class="nav-item">
         <a class="nav-link" th:href="@{/mechanic}" th:text="#{myRepairs}">Home</a>
     </li>
     <li class="nav-item">
@@ -15,41 +15,46 @@
 </ul>
 
 <main>
-    <div class="container">
+    <div class="container text-center border border-light p-5">
         <div class="row justify-content-center">
             <div class="col">
-                <p>Typ zlecenia</p>
+                <p th:text="#{orderType}">Typ zlecenia</p>
             </div>
             <div class="col">
-                <p th:text="*{workOrder.workOrderType.name}"></p>
+                <p th:text="#{*{workOrder.workOrderType.code}}"></p>
             </div>
         </div>
 
         <div class="row justify-content-center">
             <div class="col">
-                <p>Status zlecenia</p>
+                <p th:text="#{orderStatus}">Status zlecenia</p>
             </div>
             <div class="col">
-                <p th:text="*{workOrder.currentStatus.name}"></p>
+                <p th:text="#{*{workOrder.currentStatus.code}}"></p>
             </div>
         </div>
 
         <div th:if="${workOrder.currentStatus.statusType != 'AFTER'}" class="row justify-content-center align-content-center">
             <div class="col align-middle">
-                <p>Zmien status</p>
+                <p th:text="#{order.changeStatus}">Zmien status</p>
             </div>
             <div class="col align-middle">
-                <form class="text-center"
+                <form class="text-center row"
                       action="#" th:action="@{/mechanic/changeStatus}" method="post" novalidate>
                     <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${workOrder.businessKey}">
-                    <select class="mdb-select md-form" id="statusCode" name="statusCode">
-                        <option value="" disabled selected>Change Status</option>
-                        <option th:each="i : ${workOrder.currentStatus.workOrderFlow}" th:value="${i.statusTo.code}" th:text="${i.statusTo.name}"></option>
+                    <select class="mdb-select md-form col" id="statusCode" name="statusCode">
+                        <option value="" th:text="#{order.changeStatus}" disabled selected>Change Status</option>
+                        <option th:each="i : ${workOrder.currentStatus.workOrderFlow}" th:value="${i.statusTo.code}" th:text="#{${i.statusTo.code}}"></option>
                     </select>
-                    <button type="submit" class="btn btn-primary" >Save changes</button>
+                    <button type="submit" class="btn-sm btn-primary col mt-4 mb-2" th:text="#{save}">Save changes</button>
                 </form>
             </div>
-        <div>
+        </div>
+        <div class="row justify-content-center align-content-center">
+            <div class="col">
+                <button onclick="window.history.back(); return false;" class="btn btn-info mt-4 mb-2 btn-block" th:text="#{goBack}">Cancel</button>
+            </div>
+        </div>
     </div>
 
 </main>

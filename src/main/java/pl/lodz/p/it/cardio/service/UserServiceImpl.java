@@ -2,6 +2,7 @@ package pl.lodz.p.it.cardio.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,11 +17,15 @@ import pl.lodz.p.it.cardio.entities.*;
 import pl.lodz.p.it.cardio.exception.*;
 import pl.lodz.p.it.cardio.repositories.*;
 import pl.lodz.p.it.cardio.utils.ObjectMapper;
-import pl.lodz.p.it.cardio.configuration.AccountOperationEvent;
+import pl.lodz.p.it.cardio.events.accountOperation.AccountOperationEvent;
 import pl.lodz.p.it.cardio.dto.UserDto;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +58,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setActivated(false);
         user.setCreateDate(new Date());
+        //TODO przenieść do parmetrów systemowych
         user.setRoles(roleRepository.findByCode("CLIENT").orElseThrow(AppNotFoundException::createStatusNotFoundException));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         try{
@@ -148,7 +154,7 @@ public class UserServiceImpl implements UserService {
     public void adminEditEmployee(Employee employeeState) throws AppTransactionFailureException {
         try{
             employeeRepository.save(employeeState);
-        }  catch (ObjectOptimisticLockingFailureException e){
+        } catch (ObjectOptimisticLockingFailureException e){
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
         }
     }
@@ -195,6 +201,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public EditAdminUserDto prepareEditUser(Employee employeeState, User userState) {
+        ResourceBundle roleResourceBundle = ResourceBundle.getBundle("i18n/roles", LocaleContextHolder.getLocale());
+
         Collection<Role> roles = roleRepository.findAll();
         HashMap<String, Boolean> rolesMap = new HashMap<>();
         HashMap<String, Boolean> wotMap = new HashMap<>();
@@ -230,5 +238,48 @@ public class UserServiceImpl implements UserService {
         editAdminUserDto.setWorkOrderType(wotList);
 
         return editAdminUserDto;
+    }
+
+    @Override
+    public void adminEditUser(User userState, Employee employeeState, EditAdminUserDto userDto) throws EmptyRoleException, AppTransactionFailureException {
+        userState.setFirstName(userDto.getFirstName());
+        userState.setLastName(userDto.getLastName());
+        userState.setPhoneNumber(userDto.getPhoneNumber());
+        if(!userState.getLocked() && userDto.getLocked()){
+            userState.setInvalidLoginAttempts(0);
+        }
+        userState.setLocked(userDto.getLocked());
+        userState.setActivated(userDto.getActivated());
+
+        Collection<String> newRoles = new ArrayList<>();
+        if(userDto.getRolesMap().values().stream().allMatch(Objects::isNull)){
+            throw EmptyRoleException.createEmptyRoleException();
+        }
+
+        for(Map.Entry<String,Boolean> roleMap : userDto.getRolesMap().entrySet()){
+            if(null != roleMap.getValue()){
+                newRoles.add(roleMap.getKey());
+            }
+        }
+
+        userState.setRoles(roleRepository.findAllByCodeIn(newRoles));
+        this.editUser(userState);
+
+        if(newRoles.contains("MECHANIC")){
+            LocalDate tmp = LocalDate.now();
+            try{
+                tmp = LocalDate.parse(userDto.getDateBirth());
+            } catch (DateTimeParseException re){
+                Logger.getGlobal().log(Level.INFO, "Wrong date format! " + userDto.getDateBirth());
+            }
+            Collection<WorkOrderType> wot = workOrderTypeRepository.findAllByCodeIn(userDto.getWorkOrderType());
+            if(employeeState != null){
+                employeeState.setBirth(tmp);
+                employeeState.setWorkOrderTypes(wot);
+            } else {
+                employeeState = new Employee(tmp,userState,wot);
+            }
+            this.adminEditEmployee(employeeState);
+        }
     }
 }

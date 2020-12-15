@@ -42,7 +42,7 @@ public class UserController {
     private final MessageSource messages;
 
     @GetMapping
-    public ModelAndView getAll(){
+    public ModelAndView getMainPage(){
         ModelAndView modelAndView = new ModelAndView("index", "numOfUsers", userService.countAllActiveUsers());
         modelAndView.addObject("numOfEmployees", userService.countAllEmployees());
         modelAndView.addObject("numOfAllRepairs", workOrderService.countAllFinishedWorkOrders());
@@ -74,7 +74,7 @@ public class UserController {
             model.addAttribute("errorMessage",e.getMessage());
             return "login/register";
         }
-        redirectAttributes.addFlashAttribute("message","SUPER!");
+        redirectAttributes.addFlashAttribute("message",messages.getMessage("register.success", null, request.getLocale()));
         return "redirect:/login";
     }
 

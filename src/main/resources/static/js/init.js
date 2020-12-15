@@ -23,7 +23,8 @@ if (navigator.language === 'pl') {
         firstDay: 1,
         min: 0,
         max: false,
-        disable: [6, 7]
+        disable: [6, 7],
+        format: 'yyyy-mm-dd'
     });
 }
 

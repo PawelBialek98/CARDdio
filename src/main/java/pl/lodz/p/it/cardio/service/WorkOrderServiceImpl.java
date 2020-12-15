@@ -1,6 +1,8 @@
 package pl.lodz.p.it.cardio.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,6 +10,8 @@ import org.springframework.stereotype.Service;
 import pl.lodz.p.it.cardio.dto.AssignWorkOrderDto;
 import pl.lodz.p.it.cardio.dto.NewWorkOrderDto;
 import pl.lodz.p.it.cardio.dto.WorkOrderDto;
+import pl.lodz.p.it.cardio.entities.Status;
+import pl.lodz.p.it.cardio.events.statusChange.OrderStatusChangeEvent;
 import pl.lodz.p.it.cardio.exception.*;
 import pl.lodz.p.it.cardio.repositories.*;
 import pl.lodz.p.it.cardio.utils.ObjectMapper;
@@ -19,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
@@ -36,6 +41,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     private final EmployeeRepository employeeRepository;
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public Collection<WorkOrderDto> getAllWorkOrdersForClient() {
@@ -56,10 +62,18 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
+    //TODO ogarnąć wyjątki tutaj
     public void addWorkOrder(NewWorkOrderDto newWorkOrderDto) throws AppBaseException {
         WorkOrder wo = new WorkOrder();
 
-        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(newWorkOrderDto.getStartDate()), LocalTime.parse(newWorkOrderDto.getStartTime()));
+        LocalDateTime localDateTime = null;
+        try{
+            localDateTime = LocalDateTime.of(LocalDate.parse(newWorkOrderDto.getStartDate()), LocalTime.parse(newWorkOrderDto.getStartTime()));
+            wo.setStartDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+        } catch (DateTimeParseException e){
+
+        }
+
         wo.setStartDateTime(Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()));
         try{
             wo.setEmployee(employeeRepository.findByUser_Email(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -91,7 +105,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     @Override
     public WorkOrderDto getWorkOrderByBusinessKey(UUID workOrderBusinessKey) throws AppNotFoundException {
-        return ObjectMapper.map(workOrderRepository.findByBusinessKeyAndCustomerIsNull(workOrderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException),WorkOrderDto.class);
+        return ObjectMapper.map(workOrderRepository.findByBusinessKey(workOrderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException),WorkOrderDto.class);
     }
 
     @Override
@@ -103,6 +117,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         workOrder.setCurrentStatus(statusRepository.findByCode("ASSIGNED").orElseThrow(AppNotFoundException::createStatusNotFoundException));
         try{
             workOrderRepository.save(workOrder);
+
+            eventPublisher.publishEvent(new OrderStatusChangeEvent(workOrder,
+                    LocaleContextHolder.getLocale(), "assigned"));
         } catch (ObjectOptimisticLockingFailureException e){
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
         }
@@ -112,6 +129,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     public void unassignUserFromWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, TooLateCancellationException, AppTransactionFailureException {
         WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
         if(workOrder.canBeCancelled()){
+            eventPublisher.publishEvent(new OrderStatusChangeEvent(workOrder,
+                    LocaleContextHolder.getLocale(),  "unassigned"));
+
             workOrder.setCustomer(null);
             workOrder.setCurrentStatus(statusRepository.findByCode("WAITING").orElseThrow(AppNotFoundException::createStatusNotFoundException));
             try{
@@ -127,9 +147,13 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     @Override
     public void changeStatus(UUID orderBusinessKey, String statusCode) throws AppNotFoundException, AppTransactionFailureException {
         WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
-        workOrder.setCurrentStatus(statusRepository.findByCode(statusCode).orElseThrow(AppNotFoundException::createStatusNotFoundException));
+        Status status = statusRepository.findByCode(statusCode).orElseThrow(AppNotFoundException::createStatusNotFoundException);
+        workOrder.setCurrentStatus(status);
         try {
             workOrderRepository.save(workOrder);
+
+            eventPublisher.publishEvent(new OrderStatusChangeEvent(workOrder,
+                    LocaleContextHolder.getLocale(), "statusChanged"));
         } catch (ObjectOptimisticLockingFailureException e){
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
         }
