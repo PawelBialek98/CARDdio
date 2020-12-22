@@ -3,7 +3,6 @@ package pl.lodz.p.it.cardio.events.statusChange;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
-import pl.lodz.p.it.cardio.dto.UserDto;
 import pl.lodz.p.it.cardio.entities.WorkOrder;
 
 import java.util.Locale;

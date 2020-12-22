@@ -8,7 +8,6 @@ import pl.lodz.p.it.cardio.exception.AppNotFoundException;
 
 import javax.transaction.Transactional;
 
-@Transactional
 @Service
 @RequiredArgsConstructor
 public class StatusServiceImpl implements StatusService {

@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.MessageSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
-import pl.lodz.p.it.cardio.dto.UserDto;
+import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
 import pl.lodz.p.it.cardio.service.UserService;
 import org.springframework.mail.javamail.JavaMailSender;
 

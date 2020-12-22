@@ -1,14 +1,11 @@
-package pl.lodz.p.it.cardio.dto;
+package pl.lodz.p.it.cardio.dto.UserDto;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-import java.util.*;
 
 @Data
-public class EditAdminUserDto {
+public class EditUserDto {
 
     @Pattern(regexp = "[a-zA-ZąĄćĆęĘłŁńŃóÓśŚźŹżŻ.-]{2,31}", message = "{validation.firstName}")
     private String firstName;
@@ -16,16 +13,4 @@ public class EditAdminUserDto {
     private String lastName;
     @Pattern(regexp = "\\d{9}", message = "{validation.number}")
     private String phoneNumber;
-
-    private Boolean activated;
-
-    private Boolean locked;
-
-    private Map<String, Boolean> rolesMap;
-
-    private String dateBirth;
-
-    private Map<String, Boolean> workOrderTypeMap;
-
-    private Collection<String> workOrderType;
 }

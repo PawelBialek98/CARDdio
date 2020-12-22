@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/mechanic/mechanic_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{mechanicHeader}">Title</title>
+    <title th:text="#{myRepairs}">Title</title>
 </head>
 <body>
 
@@ -24,7 +24,8 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col" th:text="#{startDate}">Początek</th>
-                <th scope="col" th:text="#{endDate}">Koniec</th>
+                <th scope="col" th:text="#{status}">Koniec</th>
+                <th scope="col" th:text="#{client}">Client</th>
                 <th scope="col" th:text="#{type}">Typ</th>
                 <th scope="col" th:text="#{details}">Change status manually</th>
             </tr>
@@ -33,8 +34,9 @@
             <tr th:id="${repair.id}" th:each="repair : ${repairs}" th:style="'background-color: '+${repair.currentStatus.colour}+''">
                 <th scope="row" th:text="${repair.id}">#</th>
                 <td th:text="${#dates.format(repair.startDateTime,'yyyy-MM-dd HH:mm')}">John</td>
-                <td th:text="${#dates.format(repair.endDateTime,'yyyy-MM-dd HH:mm')}">John</td>
-                <td th:text="#{${repair.workOrderType.code}}">johnwick@google.com</td>
+                <td th:text="#{${repair.currentStatus.code}}">John</td>
+                <td th:text="${repair.customer} ? ${repair.customer.firstName + ' ' + repair.customer.lastName} : ''">John</td>
+                <td th:text="${#messages.msgOrNull(repair.workOrderType.code) ?: repair.workOrderType.name}">johnwick@google.com</td>
                 <td>
                     <form class="text-center"
                           action="#" th:action="@{/mechanic/orderDetails}" method="post" novalidate>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="layouts/admin/admin_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{allOrderTypes}">Title</title>
+</head>
+<body>
+
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/admin}" th:text="#{usersList}"></a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" th:href="@{/admin/allOrderType}" th:text="#{allOrderTypes}"></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/admin/newOrderType}" th:text="#{newOrderType}"></a>
+        </li>
+    </ul>
+
+    <main>
+        <div>
+
+            <div th:unless="${#lists.isEmpty(orderTypes)}">
+
+                <h2 th:text="#{usersList}">Users List</h2>
+
+                <table class="table table-striped table-responsive-md btn-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col" th:text="#{orderType}"></th>
+                            <th scope="col" th:text="#{estimatedDuration}"></th>
+                            <th scope="col" th:text="#{isActive}"></th>
+                            <th scope="col" th:text="#{changeActivity}"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:id="${orderType.businessKey}" th:each="orderType : ${orderTypes}" th:style="${orderType.active} == true ? 'background-color: #b5ffb0' : 'background-color: #f29494'">
+                        <th scope="row" th:text="${orderTypeStat.count}">#</th>
+                        <td th:text="${#messages.msgOrNull(orderType.code) ?: orderType.name}">John</td>
+                        <td th:text="${orderType.requiredTime} + ' min'">Wick</td>
+                        <td th:text="${orderType.active} == true ? #{yes} : #{no}">johnwick@google.com</td>
+                        <td>
+                            <form class="text-center"
+                                  action="#" th:action="@{/admin/changeActivity}" method="post" novalidate>
+                                <input type="hidden" name="orderTypeBusinessKey" th:value="${orderType.businessKey}">
+                                <button type="submit" class="btn-floating light-blue"><i th:class="${orderType.active} == true ? 'fas fa-check' : 'fas fa-times'"></i></button>
+                            </form>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

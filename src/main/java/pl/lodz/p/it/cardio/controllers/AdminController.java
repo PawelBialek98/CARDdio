@@ -8,13 +8,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pl.lodz.p.it.cardio.dto.EditAdminUserDto;
+import pl.lodz.p.it.cardio.dto.UserDto.EditAdminUserDto;
+import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
 import pl.lodz.p.it.cardio.dto.WorkOrderTypeDto;
 import pl.lodz.p.it.cardio.entities.Employee;
-import pl.lodz.p.it.cardio.entities.Role;
-import pl.lodz.p.it.cardio.entities.WorkOrderType;
 import pl.lodz.p.it.cardio.exception.AppBaseException;
-import pl.lodz.p.it.cardio.exception.EmptyRoleException;
 import pl.lodz.p.it.cardio.service.RoleService;
 import pl.lodz.p.it.cardio.service.UserService;
 import pl.lodz.p.it.cardio.service.WorkOrderTypeService;
@@ -24,12 +22,7 @@ import pl.lodz.p.it.cardio.entities.User;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -61,9 +54,9 @@ public class AdminController {
             EditAdminUserDto editAdminUserDto = userService.prepareEditUser(employeeState, userState);
 
             model.addAttribute("user", editAdminUserDto);
-            model.addAttribute("wot", ObjectMapper.mapAll(workOrderTypeService.findAll(), WorkOrderTypeDto.class));
+            model.addAttribute("wot", workOrderTypeService.findAll());
         } catch (AppBaseException e){
-            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/admin";
         }
         return "admin/editUserData";
@@ -71,8 +64,7 @@ public class AdminController {
 
     @PostMapping("/editAccount")
     public String editAccount(@Valid @ModelAttribute("user") EditAdminUserDto userDto,
-                              BindingResult result,
-                              Model model, HttpServletRequest request, RedirectAttributes redirectAttributes){
+                              BindingResult result, RedirectAttributes redirectAttributes){
         if(result.hasErrors()){
             return "admin/editUserData";
         }
@@ -86,5 +78,39 @@ public class AdminController {
         return "redirect:/admin";
     }
 
+    @GetMapping("/allOrderType")
+    public ModelAndView getAllOrderTypePage(){
+        return new ModelAndView("admin/allOrderTypes", "orderTypes", workOrderTypeService.findAll());
+    }
 
+    @PostMapping("/changeActivity")
+    public String changeActivity( @RequestParam("orderTypeBusinessKey") String orderTypeBusinessKey,RedirectAttributes redirectAttributes){
+        try {
+            workOrderTypeService.changeActivity(UUID.fromString(orderTypeBusinessKey));
+        } catch (AppBaseException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/allOrderType";
+    }
+
+    @GetMapping("/newOrderType")
+    public ModelAndView getNewOrderTypePage(){
+        return new ModelAndView("admin/newOrderType", "orderType", new WorkOrderTypeDto());
+    }
+
+    @PostMapping("/newOrderType")
+    public String createNewOrderType(@Valid @ModelAttribute("orderType") WorkOrderTypeDto workOrderTypeDto, BindingResult result,
+                                     Model model, RedirectAttributes redirectAttributes){
+        if(result.hasErrors()){
+            return "admin/newOrderType";
+        }
+        try{
+            workOrderTypeService.addWorkOrderType(workOrderTypeDto);
+        } catch (AppBaseException e) {
+            model.addAttribute("errorMessage",e.getMessage());
+            return "admin/newOrderType";
+        }
+        redirectAttributes.addFlashAttribute("message","SUCESS");
+        return "redirect:/admin/allOrderType";
+    }
 }

@@ -7,9 +7,9 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.it.cardio.dto.AssignWorkOrderDto;
-import pl.lodz.p.it.cardio.dto.NewWorkOrderDto;
-import pl.lodz.p.it.cardio.dto.WorkOrderDto;
+import pl.lodz.p.it.cardio.dto.WorkOrderDto.AssignWorkOrderDto;
+import pl.lodz.p.it.cardio.dto.WorkOrderDto.NewWorkOrderDto;
+import pl.lodz.p.it.cardio.dto.WorkOrderDto.WorkOrderDto;
 import pl.lodz.p.it.cardio.entities.Status;
 import pl.lodz.p.it.cardio.events.statusChange.OrderStatusChangeEvent;
 import pl.lodz.p.it.cardio.exception.*;
@@ -100,7 +100,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     @Override
     public Collection<AssignWorkOrderDto> getAllUnAssignedWorkOrders(){
-        return ObjectMapper.mapAll(workOrderRepository.findAllUnassignedWorkOrders(new Date()),AssignWorkOrderDto.class);
+        return ObjectMapper.mapAll(workOrderRepository.findAllUnassignedWorkOrders(new Date()), AssignWorkOrderDto.class);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     public void assignUserToWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, AppTransactionFailureException {
         WorkOrder workOrder = workOrderRepository.findByBusinessKeyAndCustomerIsNull(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        workOrder.setCustomer(userRepository.findByEmail(authentication.getName())
+        workOrder.setCustomer(userRepository.findByEmailAndLockedIsFalse(authentication.getName())
                 .orElseThrow(AppNotFoundException::createUserNotFoundException));
         workOrder.setCurrentStatus(statusRepository.findByCode("ASSIGNED").orElseThrow(AppNotFoundException::createStatusNotFoundException));
         try{
@@ -151,11 +151,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         workOrder.setCurrentStatus(status);
         try {
             workOrderRepository.save(workOrder);
-
             eventPublisher.publishEvent(new OrderStatusChangeEvent(workOrder,
                     LocaleContextHolder.getLocale(), "statusChanged"));
         } catch (ObjectOptimisticLockingFailureException e){
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        } catch (NullPointerException npe) {
+            Logger.getGlobal().log(Level.INFO, "Email send failed");
         }
     }
 

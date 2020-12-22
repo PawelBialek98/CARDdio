@@ -23,11 +23,11 @@ public class WorkOrderType extends BaseEntity{
     @Column(name = "required_time")
     @Getter
     @Setter
-    private int requiredTime;
+    private int requiredTime = 60;
 
-    /*@JoinColumn(name = "skill_id", referencedColumnName = "id")
-    @ManyToOne
-    private Skill requiredSkill;*/
+    @Getter
+    @Setter
+    private boolean active = true;
 
     @ManyToMany(mappedBy = "workOrderTypes")
     /*@JoinTable(

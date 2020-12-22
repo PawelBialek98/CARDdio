@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/admin/admin_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{adminHeader}">Title</title>
+    <title th:text="#{usersList}">Title</title>
 </head>
 <body>
 
     <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-            <a class="nav-link" th:href="@{/admin}" th:text="#{usersList}">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" th:href="@{/admin}" th:text="#{usersList}"></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/admin/allOrderType}" th:text="#{allOrderTypes}"></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/admin/newOrderType}" th:text="#{newOrderType}"></a>
         </li>
     </ul>
 

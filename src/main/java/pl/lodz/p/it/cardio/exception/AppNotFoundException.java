@@ -11,6 +11,7 @@ public class AppNotFoundException extends AppBaseException {
     public static final String WORK_ORDER_MESSAGE_KEY = "exception.workOrderNotFound";
     public static final String TOKEN_MESSAGE_KEY = "exception.tokenNotFound";
     public static final String STATUS_MESSAGE_KEY = "exception.statusNotFound";
+    public static final String WORK_ORDER_TYPE_MESSAGE_KEY = "exception.workOrderTypeNotFound";
 
     @Getter
     @Setter
@@ -51,6 +52,12 @@ public class AppNotFoundException extends AppBaseException {
     public static AppNotFoundException createStatusNotFoundException(){
         AppNotFoundException nfe = new AppNotFoundException(resourceBundle.getString(STATUS_MESSAGE_KEY));
         nfe.setObjectClass(Status.class);
+        return nfe;
+    }
+
+    public static AppNotFoundException createWorkOrderTypeNotFoundException(){
+        AppNotFoundException nfe = new AppNotFoundException(resourceBundle.getString(WORK_ORDER_TYPE_MESSAGE_KEY));
+        nfe.setObjectClass(WorkOrderType.class);
         return nfe;
     }
 }

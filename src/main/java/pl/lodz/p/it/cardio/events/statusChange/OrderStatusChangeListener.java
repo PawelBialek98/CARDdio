@@ -12,7 +12,10 @@ import org.springframework.stereotype.Component;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Component
 @RequiredArgsConstructor
@@ -27,13 +30,20 @@ public class OrderStatusChangeListener implements ApplicationListener<OrderStatu
 
         String recipientAddress = orderStatusChangeEvent.getWorkOrder().getCustomer().getEmail();
         String subject = emailResourceBundle.getString(orderStatusChangeEvent.getMessagePrefix().concat(".title"));
+        String wotCode = orderStatusChangeEvent.getWorkOrder().getWorkOrderType().getCode();
+        try{
+            wotCode = resourceBundle.getString(wotCode);
+        } catch (MissingResourceException e){
+            Logger.getGlobal().log(Level.INFO, "Not found resource for key: " + wotCode);
+            wotCode = orderStatusChangeEvent.getWorkOrder().getWorkOrderType().getName();
+        }
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         String pattern = emailResourceBundle.getString(orderStatusChangeEvent.getMessagePrefix().concat(".text"));
         String message = MessageFormat.format(pattern,
                 resourceBundle.getString(orderStatusChangeEvent.getWorkOrder().getCurrentStatus().getCode()),
                 dateFormat.format(orderStatusChangeEvent.getWorkOrder().getStartDateTime()),
-                resourceBundle.getString(orderStatusChangeEvent.getWorkOrder().getWorkOrderType().getCode()),
+                wotCode,
                 orderStatusChangeEvent.getWorkOrder().getWorkOrderType().getRequiredTime() + " min");
 
         SimpleMailMessage email = new SimpleMailMessage();

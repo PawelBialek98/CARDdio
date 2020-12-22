@@ -1,6 +1,7 @@
-package pl.lodz.p.it.cardio.dto;
+package pl.lodz.p.it.cardio.dto.UserDto;
 
 import lombok.Data;
+import pl.lodz.p.it.cardio.dto.WorkOrderTypeDto;
 
 import java.util.Collection;
 import java.util.Date;

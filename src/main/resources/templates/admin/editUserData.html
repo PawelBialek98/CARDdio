@@ -6,7 +6,10 @@
 <body>
 <ul class="navbar-nav mr-auto">
     <li class="nav-item">
-        <a class="nav-link" th:href="@{/admin}" th:text="#{usersList}">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" th:href="@{/admin}" th:text="#{usersList}"></a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/admin/allOrderType}" th:text="#{allOrderTypes}"></a>
     </li>
 </ul>
 
@@ -56,13 +59,13 @@
         <div class="col md-form">
             <div class="form-check">
                 <input th:type="checkbox" class="form-check-input" id="activated" th:field="*{activated}" checked>
-                <label class="form-check-label" for="activated">activated</label>
+                <label class="form-check-label" for="activated" th:text="#{activated}">activated</label>
             </div>
         </div>
         <div class="col md-form">
             <div class="form-check">
                 <input th:type="checkbox" class="form-check-input" id="locked" th:field="*{locked}" checked>
-                <label class="form-check-label" for="locked">locked</label>
+                <label class="form-check-label" for="locked" th:text="#{locked}">locked</label>
             </div>
         </div>
     </div>
@@ -70,7 +73,7 @@
     <table class="table table-borderless">
         <thead>
             <tr>
-                <th scope="col">Role name</th>
+                <th scope="col" th:text="#{roles}">Role name</th>
                 <th scope="col">OFF/ON</th>
             </tr>
         </thead>
@@ -78,10 +81,6 @@
            <tr th:each="role : ${user.rolesMap.entrySet()}">
                 <th scope="col" th:text="#{${role.key}}">Role name</th>
                 <th>
-                    <!--<div>
-                        <input th:type="checkbox" class="form-check-input" th:field="*{rolesMap['__${role.key}__']}" th:id="${role.key}" th:value="${role.value}" checked>
-                        <label class="form-check-label" th:for="${role.key}"></label>
-                    </div>-->
                     <div class="switch">
                         <label>
                             Off
@@ -103,7 +102,7 @@
             <option th:each="i : ${wot}"
                     th:field="*{workOrderType}"
                     th:selected="*{workOrderType.contains('__${i.code}__')}"
-                    th:value="${i.code}" th:text="#{${i.code}}" ></option>
+                    th:value="${i.code}" th:text="${#messages.msgOrNull(i.code) ?: i.name}" ></option>
         </select>
     </div>
 

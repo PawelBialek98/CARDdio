@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/mechanic/mechanic_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{mechanicHeader}">Title</title>
+    <title th:text="#{newOrder}">Title</title>
 </head>
 <body>
 
@@ -18,7 +18,7 @@
     <form class="text-center border border-light p-5 needs-validation" th:action="@{/mechanic/newOrder}" th:object="${order}"  method="post">
         <select class="mdb-select md-form" serchable="" th:field="*{workOrderTypeCode}">
             <option value="" disabled selected th:text="#{newOrder.type}">Choose your option</option>
-            <option th:each="i : ${wot}" th:value="${i.getCode()}" th:text="#{${i.getCode()}} + ' (' + ${i.getRequiredTime()} + ' min)'" ></option>
+            <option th:each="i : ${wot}" th:value="${i.getCode()}" th:text="${#messages.msgOrNull(i.code) ?: i.name} + ' (' + ${i.getRequiredTime()} + ' min)'" ></option>
         </select>
 
         <div class="md-form md-outline input-with-post-icon datepicker">
@@ -44,9 +44,8 @@
             <i class="fas fa-clock input-prefix"></i>
         </div>
 
-
         <button id="submit" class="btn btn-info mt-4 mb-2 btn-block"
-                type="submit" >Create</button>
+                type="submit" th:text="#{save}">Create</button>
     </form>
 </main>
 </body>

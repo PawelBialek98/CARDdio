@@ -1,20 +1,15 @@
-package pl.lodz.p.it.cardio.dto;
+package pl.lodz.p.it.cardio.dto.UserDto;
 
 import lombok.Data;
 
-import javax.validation.constraints.Email;
+import javax.persistence.Column;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-import java.util.Collection;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 @Data
-public class ListUsersDto {
+public class EditAdminUserDto {
 
-    private int id;
-    private UUID businessKey;
-    @Email
-    private String email;
     @Pattern(regexp = "[a-zA-ZąĄćĆęĘłŁńŃóÓśŚźŹżŻ.-]{2,31}", message = "{validation.firstName}")
     private String firstName;
     @Pattern(regexp = "[a-zA-ZąĄćĆęĘłŁńŃóÓśŚźŹżŻ.-]{2,31}", message = "{validation.lastName}")
@@ -22,7 +17,15 @@ public class ListUsersDto {
     @Pattern(regexp = "\\d{9}", message = "{validation.number}")
     private String phoneNumber;
 
-    private Date createDate;
+    private Boolean activated;
 
-    private Collection<RolesDto> roles;
+    private Boolean locked;
+
+    private Map<String, Boolean> rolesMap;
+
+    private String dateBirth;
+
+    private Map<String, Boolean> workOrderTypeMap;
+
+    private Collection<String> workOrderType;
 }

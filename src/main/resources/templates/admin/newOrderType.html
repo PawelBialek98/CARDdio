@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="layouts/admin/admin_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{newOrderType}">Title</title>
+</head>
+<body>
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/admin}" th:text="#{usersList}"></a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" th:href="@{/admin/allOrderType}" th:text="#{allOrderTypes}"></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/admin/newOrderType}" th:text="#{newOrderType}"></a>
+        </li>
+    </ul>
+
+    <main>
+
+        <form class="text-center border border-light p-5 needs-validation"
+              action="#" th:action="@{/admin/newOrderType}" th:object="${orderType}" method="post" novalidate>
+
+            <p class="h4 mb-4" th:text="#{newWorkOrderType.title}">Sign up</p>
+
+            <div class="form-row mb-4">
+                <div class="col md-form">
+                    <label class="required" for="newWorkOrderTypeCode" th:text="#{newWorkOrderType.code}"></label>
+                    <input type="text" id="newWorkOrderTypeCode" class="form-control "
+                           th:field="*{code}"
+                           th:classappend="${not #lists.isEmpty(#fields.errors('code'))} ? is-invalid">
+                    <div class="invalid-feedback">
+                        <p th:each="error: ${#fields.errors('code')}"
+                           th:text="${error}">Invalid data</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row mb-4">
+                <div class="col md-form">
+                    <label class="required" for="newWorkOrderTypeName" th:text="#{newWorkOrderType.name}"></label>
+                    <input type="text" id="newWorkOrderTypeName" class="form-control "
+                           th:field="*{name}"
+                           th:classappend="${not #lists.isEmpty(#fields.errors('name'))} ? is-invalid">
+                    <div class="invalid-feedback">
+                        <p th:each="error: ${#fields.errors('name')}"
+                           th:text="${error}">Invalid data</p>
+                    </div>
+                </div>
+                <div class="col md-form">
+                    <label class="required" for="newWorkOrderTypeRequiredTime" th:text="#{newWorkOrderType.requiredTime}"></label>
+                    <input th:type="number" id="newWorkOrderTypeRequiredTime" class="form-control"
+                           th:field="*{requiredTime}"
+                           th:classappend="${not #lists.isEmpty(#fields.errors('requiredTime'))} ? is-invalid">
+                    <div class="invalid-feedback">
+                        <p th:each="error: ${#fields.errors('requiredTime')}"
+                           th:text="${error}">Invalid data</p>
+                    </div>
+                </div>
+            </div>
+
+            <button id="signUpBtn" class="btn btn-info mt-4 mb-2 btn-block" type="submit" th:text="#{newWorkOrderType.save}">Sign in</button>
+
+        </form>
+
+    </main>
+</body>
+</html>

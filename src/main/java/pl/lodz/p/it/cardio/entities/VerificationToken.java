@@ -34,12 +34,14 @@ public class VerificationToken {
     @Column(name = "expiry_date")
     private Date expiryDate;
 
+    @Column
+    private boolean used = false;
+
     public VerificationToken(String token, User user, String type) {
         this.token = token;
         this.user = user;
         this.type = type;
         this.expiryDate = calculateExpiryDate();
-
     }
 
     public VerificationToken() {

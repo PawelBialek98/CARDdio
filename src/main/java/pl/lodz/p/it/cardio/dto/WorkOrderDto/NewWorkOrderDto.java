@@ -1,4 +1,4 @@
-package pl.lodz.p.it.cardio.dto;
+package pl.lodz.p.it.cardio.dto.WorkOrderDto;
 
 import lombok.Data;
 

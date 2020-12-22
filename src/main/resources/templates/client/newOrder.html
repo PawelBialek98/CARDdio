@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/client/client_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{clientHeader}">Title</title>
+    <title th:text="#{newOrder}">Title</title>
 </head>
 <body>
 
@@ -16,6 +16,27 @@
 
 <main>
     <form>
+        <div th:if="${#lists.isEmpty(orders)}">
+            <!--Section: Content-->
+            <section class="px-md-5 mx-md-5 text-center border border-light p-5 dark-grey-text">
+                <div class="row d-flex justify-content-center">
+                    <div>
+                        <h3 class="font-weight-bold">Empty!</h3>
+                        <p class="text-muted" th:text="#{emptyClientRepairs}">
+                            Nie masz jeszcze żadnych wizyt
+                            jeżeli potrzebujesz dokonać rezerwacji
+                            kliknij w przycisk poniżej
+                        </p>
+
+                        <a class="btn btn-info btn-md ml-0 mb-5" th:href="@{/client/newOrder}" role="button" th:text="#{newOrder}">Start now<i class="fa fa-magic ml-2"></i></a>
+                    </div>
+                    <!--Grid column-->
+
+                </div>
+                <!--Grid row-->
+
+            </section>
+        </div>
         <div th:unless="${#lists.isEmpty(orders)}">
 
             <table id="dtMaterialDesignExample" class="table table-responsive-md btn-table" width="100%">
@@ -35,7 +56,7 @@
                         <td th:text="${#dates.format(order.startDateTime, 'yyyy-MM-dd HH:mm')}">John</td>
                         <td th:text="${order.workOrderType.requiredTime} + min">John</td>
                         <td th:text="${order.employee.user.firstName}">John</td>
-                        <td th:text="#{${order.workOrderType.code}}">Wick</td>
+                        <td th:text="${#messages.msgOrNull(order.workOrderType.code) ?: order.workOrderType.name}">Wick</td>
                         <td>
                             <button type="button" class="btn btn-primary btn-sm m-0"
                                     data-toggle="modal" data-target="#basicExampleModal"
@@ -55,11 +76,11 @@
                                             Are You sure???
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}">Close</button>
+                                            <button type="button" class="btn btn-danger btn-sm m-0" data-dismiss="modal" th:text="#{cancel}">Close</button>
                                             <form class="text-center"
                                                   action="#" th:action="@{/client/newOrder}" method="post" novalidate>
                                                 <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${order.businessKey}">
-                                                <button type="submit" class="btn btn-primary" th:text="#{save}">Save changes</button>
+                                                <button type="submit" class="btn btn-success btn-sm m-0" th:text="#{save}">Save changes</button>
                                             </form>
                                         </div>
                                     </div>

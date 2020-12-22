@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+//TODO to chyba nie jest potrzebne
 @Component
 public class MyAccessDeniedHandler implements AccessDeniedHandler {
 

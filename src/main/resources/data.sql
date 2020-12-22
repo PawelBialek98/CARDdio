@@ -43,12 +43,12 @@ VALUES
 (4, 1, random_uuid(), 'Zakończona', 'FINISHED', '#22b531', 'AFTER'),
 (5, 1, random_uuid(), 'Anulowana', 'CANCELLED', '#999999', 'AFTER');
 
-INSERT INTO work_order_type_t(id, version, business_key, name, code, required_time)
+INSERT INTO work_order_type_t(id, version, business_key, name, code, required_time, active)
 VALUES
-(1, 1, random_uuid(), 'Naprawa Klimatyzacji', 'CLIME', 120),
-(2, 1, random_uuid(), 'Uzupełnianie czynnika', 'CLIME_REFUEL', 60),
-(3, 1, random_uuid(), 'Wymiana opon', 'TIRE_CHANGE', 30),
-(4, 1, random_uuid(), 'Czyszczenie wnętrza', 'INTERIOR_CLEANING', 90);
+(1, 1, random_uuid(), 'Naprawa Klimatyzacji', 'CLIME', 120, true),
+(2, 1, random_uuid(), 'Uzupełnianie czynnika', 'CLIME_REFUEL', 60, true),
+(3, 1, random_uuid(), 'Wymiana opon', 'TIRE_CHANGE', 30, true),
+(4, 1, random_uuid(), 'Czyszczenie wnętrza', 'INTERIOR_CLEANING', 90, true);
 
 INSERT INTO work_order_flow_t(id, status_from_id, status_to_id, can_be_scheduled)
 VALUES

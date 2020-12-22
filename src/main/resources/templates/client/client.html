@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/client/client_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{clientHeader}">Title</title>
+    <title th:text="#{myVisits}">Title</title>
 </head>
 <body>
 
@@ -57,7 +57,7 @@
                     <th scope="row" th:text="${repairStat.count}">#</th>
                     <td th:text="${#dates.format(repair.startDate, 'yyyy-MM-dd HH:mm')}">John</td>
                     <td th:text="#{${repair.currentStatus.code}}"></td>
-                    <td th:text="#{${repair.workOrderType.code}}"></td>
+                    <td th:text="${#messages.msgOrNull(repair.workOrderType.code) ?: repair.workOrderType.name}"></td>
                     <td th:text="${repair.workOrderType.requiredTime}"></td>
                     <td>
                         <div th:if="${repair.canBeCancalled()}">
@@ -80,11 +80,11 @@
                                             Are You sure???
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary btn-sm m-0" data-dismiss="modal" th:text="#{no}">Close</button>
+                                            <button type="button" class="btn btn-danger btn-sm m-0" data-dismiss="modal" th:text="#{no}">Close</button>
                                             <form class="text-center"
                                                   action="#" th:action="@{/client/cancelOrder}" method="post" novalidate>
                                                 <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${repair.businessKey}">
-                                                <button type="submit" class="btn btn-primary btn-sm m-0" th:text="#{yes}">Save changes</button>
+                                                <button type="submit" class="btn btn-success btn-sm m-0" th:text="#{yes}">Save changes</button>
                                             </form>
                                         </div>
                                     </div>

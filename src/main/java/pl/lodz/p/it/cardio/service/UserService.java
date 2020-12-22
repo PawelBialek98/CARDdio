@@ -1,9 +1,10 @@
 package pl.lodz.p.it.cardio.service;
 
-import pl.lodz.p.it.cardio.dto.EditAdminUserDto;
-import pl.lodz.p.it.cardio.dto.EmployeeDto;
+import pl.lodz.p.it.cardio.dto.UserDto.EditAdminUserDto;
+import pl.lodz.p.it.cardio.dto.UserDto.EmployeeDto;
 import pl.lodz.p.it.cardio.dto.ResetMailDto;
-import pl.lodz.p.it.cardio.dto.UserDto;
+import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
+import pl.lodz.p.it.cardio.entities.VerificationToken;
 import pl.lodz.p.it.cardio.exception.*;
 import pl.lodz.p.it.cardio.entities.Employee;
 import pl.lodz.p.it.cardio.entities.User;
@@ -27,7 +28,7 @@ public interface UserService {
 
     User findByEmail(String email) throws AppNotFoundException;
 
-    void setNewPassword(User changeUserPasswordDto) throws AppNotFoundException, AppTransactionFailureException;
+    void setNewPassword(User changeUserPasswordDto, String token) throws AppNotFoundException, AppTransactionFailureException, TokenExpiredException;
 
     User getCurrentUser() throws AppNotFoundException;
 
@@ -47,11 +48,13 @@ public interface UserService {
 
     void resetPassword(ResetMailDto userEmail, HttpServletRequest request) throws AppNotFoundException;
 
-    User verifyToken(String token) throws AppNotFoundException, TokenExpiredException;
+    void verifyToken(String token, String type) throws AppNotFoundException, TokenExpiredException, AppTransactionFailureException;
 
     void removeInactivatedAccounts() throws AppTransactionFailureException;
 
     EditAdminUserDto prepareEditUser(Employee employeeState, User userState);
 
     void adminEditUser(User userState, Employee employeeState, EditAdminUserDto userDto) throws EmptyRoleException, AppTransactionFailureException;
+
+    User getUserByToken(String token) throws AppNotFoundException;
 }

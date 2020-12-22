@@ -3,7 +3,7 @@ package pl.lodz.p.it.cardio.configuration;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
-import pl.lodz.p.it.cardio.dto.UserDto;
+import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
 
 import java.util.Locale;
 

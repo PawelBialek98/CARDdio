@@ -11,7 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import pl.lodz.p.it.cardio.dto.NewWorkOrderDto;
+import pl.lodz.p.it.cardio.dto.WorkOrderDto.NewWorkOrderDto;
 import pl.lodz.p.it.cardio.exception.AppBaseException;
 import pl.lodz.p.it.cardio.service.WorkOrderService;
 import pl.lodz.p.it.cardio.service.WorkOrderTypeService;
@@ -78,8 +78,8 @@ public class MechanicController {
 
     @PostMapping("/changeStatus")
     public String changeStatus(@RequestParam("orderBusinessKey") String orderBusinessKey,
-                              @RequestParam("statusCode") String statusCode,
-                              RedirectAttributes redirectAttributes){
+                               @RequestParam("statusCode") String statusCode,
+                               RedirectAttributes redirectAttributes){
         try{
             workOrderService.changeStatus(UUID.fromString(orderBusinessKey), statusCode);
         } catch (AppBaseException e) {

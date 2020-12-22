@@ -10,15 +10,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.it.cardio.dto.EditAdminUserDto;
-import pl.lodz.p.it.cardio.dto.EmployeeDto;
+import pl.lodz.p.it.cardio.dto.UserDto.EditAdminUserDto;
+import pl.lodz.p.it.cardio.dto.UserDto.EmployeeDto;
 import pl.lodz.p.it.cardio.dto.ResetMailDto;
 import pl.lodz.p.it.cardio.entities.*;
 import pl.lodz.p.it.cardio.exception.*;
 import pl.lodz.p.it.cardio.repositories.*;
 import pl.lodz.p.it.cardio.utils.ObjectMapper;
 import pl.lodz.p.it.cardio.events.accountOperation.AccountOperationEvent;
-import pl.lodz.p.it.cardio.dto.UserDto;
+import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
@@ -79,23 +79,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void activateAccount(String token) throws AppNotFoundException, TokenExpiredException, AppTransactionFailureException {
-
-        VerificationToken verificationToken = tokenRepository.findByToken(token).orElseThrow(AppNotFoundException::createTokenNotFoundException);
-
-        if (!verificationToken.getType().equals("register")) {
-            throw AppNotFoundException.createTokenNotFoundException();
-        }
-
-        User user = verificationToken.getUser();
-        Calendar cal = Calendar.getInstance();
-
-        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-            throw TokenExpiredException.createTokenExpiredException(verificationToken);
-        }
-
-        user.setActivated(true);
-
         try {
+            verifyToken(token,"register");
+            User user = getUserByToken(token);
+            user.setActivated(true);
             userRepository.save(user);
         } catch (ObjectOptimisticLockingFailureException e){
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
@@ -108,10 +95,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setNewPassword(User changeUserPasswordDto) throws AppNotFoundException, AppTransactionFailureException {
-        User user = userRepository.findByEmail(changeUserPasswordDto.getEmail()).orElseThrow(AppNotFoundException::createUserNotFoundException);
-        user.setPassword(passwordEncoder.encode(changeUserPasswordDto.getPassword()));
+    public void setNewPassword(User changeUserPasswordDto, String token) throws AppNotFoundException, AppTransactionFailureException, TokenExpiredException {
         try{
+            verifyToken(token, "resetPassword");
+
+            User user = userRepository.findByEmail(changeUserPasswordDto.getEmail()).orElseThrow(AppNotFoundException::createUserNotFoundException);
+            user.setPassword(passwordEncoder.encode(changeUserPasswordDto.getPassword()));
             userRepository.saveAndFlush(user);
         } catch (ObjectOptimisticLockingFailureException e){
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
@@ -177,16 +166,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User verifyToken(String token) throws AppNotFoundException, TokenExpiredException {
+    public void verifyToken(String token, String type) throws AppNotFoundException, TokenExpiredException, AppTransactionFailureException {
         VerificationToken verificationToken = tokenRepository.findByToken(token).orElseThrow(AppNotFoundException::createTokenNotFoundException);
-        if (!verificationToken.getType().equals("resetPassword")) {
+        if (!verificationToken.getType().equals(type)) {
             throw AppNotFoundException.createTokenNotFoundException();
         }
-
-        if ((verificationToken.getExpiryDate().getTime() - Calendar.getInstance().getTime().getTime()) <= 0) {
+        if ((verificationToken.getExpiryDate().getTime() - Calendar.getInstance().getTime().getTime()) <= 0 || verificationToken.isUsed()) {
             throw TokenExpiredException.createTokenExpiredException(verificationToken);
         }
-        return verificationToken.getUser();
+        verificationToken.setUsed(true);
+        try{
+            tokenRepository.saveAndFlush(verificationToken);
+        } catch (ObjectOptimisticLockingFailureException e){
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        }
     }
 
     @Override
@@ -201,8 +194,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public EditAdminUserDto prepareEditUser(Employee employeeState, User userState) {
-        ResourceBundle roleResourceBundle = ResourceBundle.getBundle("i18n/roles", LocaleContextHolder.getLocale());
-
         Collection<Role> roles = roleRepository.findAll();
         HashMap<String, Boolean> rolesMap = new HashMap<>();
         HashMap<String, Boolean> wotMap = new HashMap<>();
@@ -220,7 +211,7 @@ public class UserServiceImpl implements UserService {
         if(employeeState != null){
             editAdminUserDto.setDateBirth(employeeState.getBirth().toString());
 
-            for(WorkOrderType wot : workOrderTypeRepository.findAll()){
+            for(WorkOrderType wot : workOrderTypeRepository.findAllByActiveIsTrue()){
                 if(employeeState.getWorkOrderTypes().stream().map(WorkOrderType::getCode).collect(Collectors.toList()).contains(wot.getCode())) {
                     wotMap.put(wot.getCode(),true);
                     wotList.add(wot.getCode());
@@ -229,7 +220,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
         } else {
-            for(WorkOrderType wot : workOrderTypeRepository.findAll()){
+            for(WorkOrderType wot : workOrderTypeRepository.findAllByActiveIsTrue()){
                 wotMap.put(wot.getCode(), false);
             }
         }
@@ -272,14 +263,19 @@ public class UserServiceImpl implements UserService {
             } catch (DateTimeParseException re){
                 Logger.getGlobal().log(Level.INFO, "Wrong date format! " + userDto.getDateBirth());
             }
-            Collection<WorkOrderType> wot = workOrderTypeRepository.findAllByCodeIn(userDto.getWorkOrderType());
+            Collection<WorkOrderType> wot = workOrderTypeRepository.findAllByActiveIsTrueAndCodeIn(userDto.getWorkOrderType());
             if(employeeState != null){
                 employeeState.setBirth(tmp);
                 employeeState.setWorkOrderTypes(wot);
             } else {
                 employeeState = new Employee(tmp,userState,wot);
             }
-            this.adminEditEmployee(employeeState);
+            adminEditEmployee(employeeState);
         }
+    }
+
+    @Override
+    public User getUserByToken(String token) throws AppNotFoundException {
+        return tokenRepository.findByToken(token).orElseThrow(AppNotFoundException::createTokenNotFoundException).getUser();
     }
 }

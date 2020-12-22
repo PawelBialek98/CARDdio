@@ -1,55 +1,53 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/dispatcher/dispatcher_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{dispatcherHeader}">Title</title>
+    <title th:text="#{newOrder}">Title</title>
 </head>
 <body>
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dispatcher}" th:text="#{allRepairs}">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dispatcher/allEmployees}"  th:text="#{employees}">Pracownicy<span class="sr-only">(current)</span></a>
+        </li>
+    </ul>
 
-<ul class="navbar-nav mr-auto">
-    <li class="nav-item">
-        <a class="nav-link" th:href="@{/dispatcher}" th:text="#{allRepairs}">Home</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" th:href="@{/dispatcher/allEmployees}"  th:text="#{employees}">Pracownicy<span class="sr-only">(current)</span></a>
-    </li>
-</ul>
+    <main>
+        <form class="text-center border border-light p-5 needs-validation" th:action="@{/dispatcher/newOrder}" th:object="${order}"  method="post">
+            <h2 th:text="${employee.user.firstName} + ' ' + ${employee.user.lastName}"></h2>
 
-<main>
-    <form class="text-center border border-light p-5 needs-validation" th:action="@{/dispatcher/newOrder}" th:object="${order}"  method="post">
-        <h2 th:text="${employee.user.firstName} + ' ' + ${employee.user.lastName}"></h2>
+            <select class="mdb-select md-form" serchable="" th:field="*{workOrderTypeCode}">
+                <option value="" disabled selected th:text="#{newOrder.type}">Choose your option</option>
+                <option th:each="i : ${employee.workOrderTypes}" th:value="${i.code}" th:text="#{${i.code}} + ' (' + ${i.getRequiredTime()} + ' min)'" ></option>
+            </select>
 
-        <select class="mdb-select md-form" serchable="" th:field="*{workOrderTypeCode}">
-            <option value="" disabled selected th:text="#{newOrder.type}">Choose your option</option>
-            <option th:each="i : ${employee.workOrderTypes}" th:value="${i.code}" th:text="#{${i.code}} + ' (' + ${i.getRequiredTime()} + ' min)'" ></option>
-        </select>
-
-        <div class="md-form md-outline input-with-post-icon datepicker">
-            <input th:placeholder="#{newOrder.date}" type="text" id="date"
-                   class="form-control" th:field="*{startDate}"
-                   th:classappend="${not #lists.isEmpty(#fields.errors('startDate'))} ? is-invalid">
-            <label for="date" th:text="#{newOrder.date}"></label>
-            <div class="invalid-feedback">
-                <p th:each="error: ${#fields.errors('startDate')}"
-                   th:text="${error}">Invalid data</p>
+            <div class="md-form md-outline input-with-post-icon datepicker">
+                <input th:placeholder="#{newOrder.date}" type="text" id="date"
+                       class="form-control" th:field="*{startDate}"
+                       th:classappend="${not #lists.isEmpty(#fields.errors('startDate'))} ? is-invalid">
+                <label for="date" th:text="#{newOrder.date}"></label>
+                <div class="invalid-feedback">
+                    <p th:each="error: ${#fields.errors('startDate')}"
+                       th:text="${error}">Invalid data</p>
+                </div>
+                <i class="fas fa-calendar input-prefix" tabindex=0></i>
             </div>
-            <i class="fas fa-calendar input-prefix" tabindex=0></i>
-        </div>
 
-        <div class="md-form md-outline input-with-post-icon timepicker" default="now" min="8:00AM" max="4:00PM">
-            <input type="text" id="manualOperations" class="form-control" th:placeholder="#{newOrder.time}"
-                   th:field="*{startTime}" th:classappend="${not #lists.isEmpty(#fields.errors('startTime'))} ? is-invalid">
-            <label for="manualOperations" th:text="#{newOrder.time}">Select time</label>
-            <div class="invalid-feedback">
-                <p th:each="error: ${#fields.errors('startTime')}"
-                   th:text="${error}">Invalid data</p>
+            <div class="md-form md-outline input-with-post-icon timepicker" default="now" min="8:00AM" max="4:00PM">
+                <input type="text" id="manualOperations" class="form-control" th:placeholder="#{newOrder.time}"
+                       th:field="*{startTime}" th:classappend="${not #lists.isEmpty(#fields.errors('startTime'))} ? is-invalid">
+                <label for="manualOperations" th:text="#{newOrder.time}">Select time</label>
+                <div class="invalid-feedback">
+                    <p th:each="error: ${#fields.errors('startTime')}"
+                       th:text="${error}">Invalid data</p>
+                </div>
+                <i class="fas fa-clock input-prefix"></i>
             </div>
-            <i class="fas fa-clock input-prefix"></i>
-        </div>
 
-
-        <button id="submit" class="btn btn-info mt-4 mb-2 btn-block"
-                type="submit" th:class="#{save}">Create</button>
-    </form>
-</main>
+            <button id="submit" class="btn btn-info mt-4 mb-2 btn-block"
+                    type="submit" th:text="#{save}">Create</button>
+        </form>
+    </main>
 </body>
 </html>

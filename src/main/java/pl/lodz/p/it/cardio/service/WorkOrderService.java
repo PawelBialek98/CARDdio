@@ -1,8 +1,8 @@
 package pl.lodz.p.it.cardio.service;
 
-import pl.lodz.p.it.cardio.dto.AssignWorkOrderDto;
-import pl.lodz.p.it.cardio.dto.NewWorkOrderDto;
-import pl.lodz.p.it.cardio.dto.WorkOrderDto;
+import pl.lodz.p.it.cardio.dto.WorkOrderDto.AssignWorkOrderDto;
+import pl.lodz.p.it.cardio.dto.WorkOrderDto.NewWorkOrderDto;
+import pl.lodz.p.it.cardio.dto.WorkOrderDto.WorkOrderDto;
 import pl.lodz.p.it.cardio.entities.WorkOrder;
 import pl.lodz.p.it.cardio.exception.AppBaseException;
 import pl.lodz.p.it.cardio.exception.AppNotFoundException;

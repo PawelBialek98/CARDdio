@@ -1,8 +1,9 @@
-package pl.lodz.p.it.cardio.dto;
+package pl.lodz.p.it.cardio.dto.WorkOrderDto;
 
 import lombok.Data;
+import pl.lodz.p.it.cardio.dto.UserDto.EmployeeDto;
+import pl.lodz.p.it.cardio.dto.WorkOrderTypeDto;
 
-import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.UUID;
@@ -13,7 +14,7 @@ public class AssignWorkOrderDto {
     @NotNull
     private String id;
 
-    @FutureOrPresent
+    @NotNull
     private Date startDateTime;
 
     @NotNull

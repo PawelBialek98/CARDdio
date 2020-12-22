@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" th:replace="layouts/mechanic/mechanic_main :: layout (~{::title}, ~{::main}, ~{::ul})" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{mechanicHeader}">Title</title>
+    <title th:text="#{orderDetails}">Title</title>
 </head>
 <body>
 
@@ -21,7 +21,7 @@
                 <p th:text="#{orderType}">Typ zlecenia</p>
             </div>
             <div class="col">
-                <p th:text="#{*{workOrder.workOrderType.code}}"></p>
+                <p th:text="${#messages.msgOrNull(workOrder.workOrderType.code) ?: workOrder.workOrderType.name}"></p>
             </div>
         </div>
 
@@ -43,8 +43,9 @@
                       action="#" th:action="@{/mechanic/changeStatus}" method="post" novalidate>
                     <input type="hidden" id="orderBusinessKey" name="orderBusinessKey" th:value="${workOrder.businessKey}">
                     <select class="mdb-select md-form col" id="statusCode" name="statusCode">
-                        <option value="" th:text="#{order.changeStatus}" disabled selected>Change Status</option>
-                        <option th:each="i : ${workOrder.currentStatus.workOrderFlow}" th:value="${i.statusTo.code}" th:text="#{${i.statusTo.code}}"></option>
+                        <!--<option value="" th:text="#{order.changeStatus}" disabled selected>Change Status</option>-->
+                        <option th:each="i : ${workOrder.currentStatus.workOrderFlow}"
+                                th:value="${i.statusTo.code}" th:text="#{${i.statusTo.code}}"></option>
                     </select>
                     <button type="submit" class="btn-sm btn-primary col mt-4 mb-2" th:text="#{save}">Save changes</button>
                 </form>

@@ -15,9 +15,9 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.lodz.p.it.cardio.dto.ChangeUserPasswordDto;
-import pl.lodz.p.it.cardio.dto.EditUserDto;
+import pl.lodz.p.it.cardio.dto.UserDto.EditUserDto;
 import pl.lodz.p.it.cardio.dto.ResetMailDto;
-import pl.lodz.p.it.cardio.dto.UserDto;
+import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
 import pl.lodz.p.it.cardio.entities.User;
 import pl.lodz.p.it.cardio.exception.AppBaseException;
 import pl.lodz.p.it.cardio.service.UserService;
@@ -108,7 +108,7 @@ public class UserController {
             model.addAttribute("errorMessage", e.getMessage());
             return "login/resetPassword";
         }
-        model.addAttribute("errorMessage",  messages.getMessage("resetPassword.checkMailBox", null, request.getLocale()));
+        model.addAttribute("message",  messages.getMessage("resetPassword.checkMailBox", null, request.getLocale()));
         return "login/login";
     }
 
@@ -116,8 +116,10 @@ public class UserController {
     public String getNewPasswordForm(Model model, @RequestParam("token") String token, RedirectAttributes redirectAttributes) {
 
         try{
-            userState = userService.verifyToken(token);
-            model.addAttribute("user", ObjectMapper.map(userState, ChangeUserPasswordDto.class));
+            userState = userService.getUserByToken(token);
+            ChangeUserPasswordDto changeUserPasswordDto = ObjectMapper.map(userState, ChangeUserPasswordDto.class);
+            changeUserPasswordDto.setToken(token);
+            model.addAttribute("user", changeUserPasswordDto);
         } catch (AppBaseException e){
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/login";
@@ -134,7 +136,7 @@ public class UserController {
 
         try{
             userState.setPassword(userDto.getPassword());
-            userService.setNewPassword(userState);
+            userService.setNewPassword(userState, userDto.getToken());
         } catch (AppBaseException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/login";

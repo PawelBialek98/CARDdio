@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Transactional
 public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmailAndLockedIsFalse(String email);
     Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
     Optional<User> findByBusinessKey(UUID userBusinessKey);
