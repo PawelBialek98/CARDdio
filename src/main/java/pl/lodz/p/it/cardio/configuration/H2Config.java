@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.sql.SQLException;
 
+/*
 @Configuration
 public class H2Config {
 
@@ -14,3 +15,4 @@ public class H2Config {
         return Server.createTcpServer("-tcp");
     }
 }
+*/
