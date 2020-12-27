@@ -9,17 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pl.lodz.p.it.cardio.dto.UserDto.EditAdminUserDto;
-import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
 import pl.lodz.p.it.cardio.dto.WorkOrderTypeDto;
 import pl.lodz.p.it.cardio.entities.Employee;
 import pl.lodz.p.it.cardio.exception.AppBaseException;
-import pl.lodz.p.it.cardio.service.RoleService;
 import pl.lodz.p.it.cardio.service.UserService;
 import pl.lodz.p.it.cardio.service.WorkOrderTypeService;
-import pl.lodz.p.it.cardio.utils.ObjectMapper;
 import pl.lodz.p.it.cardio.entities.User;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -31,7 +27,6 @@ import java.util.*;
 public class AdminController {
 
     private final UserService userService;
-    private final RoleService roleService;
     private final WorkOrderTypeService workOrderTypeService;
 
     private Employee employeeState;

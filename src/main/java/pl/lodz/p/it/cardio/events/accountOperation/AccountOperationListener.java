@@ -7,10 +7,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
+import pl.lodz.p.it.cardio.exception.AppNotFoundException;
 import pl.lodz.p.it.cardio.service.UserService;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +31,11 @@ public class AccountOperationListener implements
     public void onApplicationEvent(AccountOperationEvent event) {
         UserDto user = event.getUser();
         String token = UUID.randomUUID().toString();
-        service.createVerificationToken(user, token, event.getMessagePrefix());
+        try {
+            service.createVerificationToken(user, token, event.getMessagePrefix());
+        } catch (AppNotFoundException e) {
+            Logger.getGlobal().log(Level.INFO, e.getMessage());
+        }
 
         String recipientAddress = user.getEmail();
         String subject = messages.getMessage(event.getMessagePrefix() + ".title", null, event.getLocale());

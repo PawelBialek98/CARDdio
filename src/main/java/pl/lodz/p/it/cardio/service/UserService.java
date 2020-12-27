@@ -22,7 +22,7 @@ public interface UserService {
 
     void addUser(UserDto userDto, HttpServletRequest request) throws AppNotFoundException, ValueNotUniqueException, AppTransactionFailureException;
 
-    void createVerificationToken(UserDto user, String token,  String type);
+    void createVerificationToken(UserDto user, String token, String type) throws AppNotFoundException;
 
     void activateAccount(String token) throws AppNotFoundException, TokenExpiredException, AppTransactionFailureException;
 

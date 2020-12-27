@@ -72,8 +72,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createVerificationToken(UserDto user, String token, String type) {
-        VerificationToken myToken = new VerificationToken(token, userRepository.findByEmail(user.getEmail()).get(), type);
+    public void createVerificationToken(UserDto userDto, String token, String type) throws AppNotFoundException {
+        VerificationToken myToken = new VerificationToken(token,
+                userRepository.findByEmail(userDto.getEmail()).orElseThrow(AppNotFoundException::createUserNotFoundException),
+                type);
         tokenRepository.save(myToken);
     }
 
