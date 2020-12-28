@@ -1,16 +1,22 @@
 package pl.lodz.p.it.cardio.utils;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
 import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
+import pl.lodz.p.it.cardio.entities.VerificationToken;
 import pl.lodz.p.it.cardio.entities.WorkOrder;
 import pl.lodz.p.it.cardio.exception.AppNotFoundException;
 import pl.lodz.p.it.cardio.exception.EmailException;
+import pl.lodz.p.it.cardio.repositories.UserRepository;
+import pl.lodz.p.it.cardio.repositories.VerificationTokenRepository;
 import pl.lodz.p.it.cardio.service.UserService;
 
 import java.text.DateFormat;
@@ -23,14 +29,14 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Component
 @RequiredArgsConstructor
 public class CustomMailSender {
 
-    private final UserService service;
-
+    private final UserRepository userRepository;
+    private final VerificationTokenRepository tokenRepository;
     @Qualifier("messageSource")
     private final MessageSource messages;
-
     private final JavaMailSender mailSender;
 
     @Value("${url}")
@@ -39,7 +45,7 @@ public class CustomMailSender {
     public void accountOperation(UserDto user, Locale locale, String messagePrefix) throws EmailException {
         String token = UUID.randomUUID().toString();
         try {
-            service.createVerificationToken(user, token, messagePrefix);
+            createVerificationToken(user, token, messagePrefix);
         } catch (AppNotFoundException e) {
             Logger.getGlobal().log(Level.INFO, e.getMessage());
         }
@@ -98,5 +104,12 @@ public class CustomMailSender {
             Logger.getGlobal().log(Level.WARNING, "Error while sending email: " + e.getMessage());
             throw EmailException.createMailAthenticationException();
         }
+    }
+
+    private void createVerificationToken(UserDto userDto, String token, String type) throws AppNotFoundException {
+        VerificationToken myToken = new VerificationToken(token,
+                userRepository.findByEmail(userDto.getEmail()).orElseThrow(AppNotFoundException::createUserNotFoundException),
+                type);
+        tokenRepository.save(myToken);
     }
 }
