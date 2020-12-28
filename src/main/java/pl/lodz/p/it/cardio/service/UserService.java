@@ -20,7 +20,7 @@ public interface UserService {
 
     List<EmployeeDto> getAllEmployee();
 
-    void addUser(UserDto userDto, HttpServletRequest request) throws AppNotFoundException, ValueNotUniqueException, AppTransactionFailureException;
+    void addUser(UserDto userDto, HttpServletRequest request) throws AppNotFoundException, ValueNotUniqueException, AppTransactionFailureException, EmailException;
 
     void createVerificationToken(UserDto user, String token, String type) throws AppNotFoundException;
 
@@ -46,7 +46,7 @@ public interface UserService {
 
     int countAllEmployees();
 
-    void resetPassword(ResetMailDto userEmail, HttpServletRequest request) throws AppNotFoundException;
+    void resetPassword(ResetMailDto userEmail, HttpServletRequest request) throws AppNotFoundException, EmailException;
 
     void verifyToken(String token, String type) throws AppNotFoundException, TokenExpiredException, AppTransactionFailureException;
 

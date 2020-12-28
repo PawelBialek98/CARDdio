@@ -14,6 +14,7 @@ import pl.lodz.p.it.cardio.entities.Status;
 import pl.lodz.p.it.cardio.events.statusChange.OrderStatusChangeEvent;
 import pl.lodz.p.it.cardio.exception.*;
 import pl.lodz.p.it.cardio.repositories.*;
+import pl.lodz.p.it.cardio.utils.CustomMailSender;
 import pl.lodz.p.it.cardio.utils.ObjectMapper;
 import pl.lodz.p.it.cardio.entities.WorkOrder;
 import pl.lodz.p.it.cardio.entities.WorkOrderType;
@@ -41,7 +42,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     private final EmployeeRepository employeeRepository;
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final CustomMailSender mailSender;
 
     @Override
     public Collection<WorkOrderDto> getAllWorkOrdersForClient() {
@@ -109,55 +110,52 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public void assignUserToWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, AppTransactionFailureException {
+    public void assignUserToWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, AppTransactionFailureException, EmailException {
         WorkOrder workOrder = workOrderRepository.findByBusinessKeyAndCustomerIsNull(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         workOrder.setCustomer(userRepository.findByEmailAndLockedIsFalse(authentication.getName())
                 .orElseThrow(AppNotFoundException::createUserNotFoundException));
         workOrder.setCurrentStatus(statusRepository.findByCode("ASSIGNED").orElseThrow(AppNotFoundException::createStatusNotFoundException));
-        try{
+        try {
             workOrderRepository.save(workOrder);
-
-            eventPublisher.publishEvent(new OrderStatusChangeEvent(workOrder,
-                    LocaleContextHolder.getLocale(), "assigned"));
-        } catch (ObjectOptimisticLockingFailureException e){
+        } catch (ObjectOptimisticLockingFailureException e) {
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
         }
+        mailSender.orderStatusChange(workOrder,
+                LocaleContextHolder.getLocale(), "assigned");
     }
 
     @Override
-    public void unassignUserFromWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, TooLateCancellationException, AppTransactionFailureException {
+    public void unassignUserFromWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, TooLateCancellationException, AppTransactionFailureException, EmailException {
         WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
-        if(workOrder.canBeCancelled()){
-            eventPublisher.publishEvent(new OrderStatusChangeEvent(workOrder,
-                    LocaleContextHolder.getLocale(),  "unassigned"));
+        if (workOrder.canBeCancelled()) {
 
             workOrder.setCustomer(null);
             workOrder.setCurrentStatus(statusRepository.findByCode("WAITING").orElseThrow(AppNotFoundException::createStatusNotFoundException));
-            try{
+            try {
                 workOrderRepository.save(workOrder);
-            } catch (ObjectOptimisticLockingFailureException e){
+            } catch (ObjectOptimisticLockingFailureException e) {
                 throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
             }
+            mailSender.orderStatusChange(workOrder,
+                    LocaleContextHolder.getLocale(), "unassigned");
         } else {
             throw TooLateCancellationException.createTooLateCancellationException(workOrder);
         }
     }
 
     @Override
-    public void changeStatus(UUID orderBusinessKey, String statusCode) throws AppNotFoundException, AppTransactionFailureException {
+    public void changeStatus(UUID orderBusinessKey, String statusCode) throws AppNotFoundException, AppTransactionFailureException, EmailException {
         WorkOrder workOrder = workOrderRepository.findByBusinessKey(orderBusinessKey).orElseThrow(AppNotFoundException::createWorkOrderNotFoundException);
         Status status = statusRepository.findByCode(statusCode).orElseThrow(AppNotFoundException::createStatusNotFoundException);
         workOrder.setCurrentStatus(status);
         try {
             workOrderRepository.save(workOrder);
-            eventPublisher.publishEvent(new OrderStatusChangeEvent(workOrder,
-                    LocaleContextHolder.getLocale(), "statusChanged"));
-        } catch (ObjectOptimisticLockingFailureException e){
+        } catch (ObjectOptimisticLockingFailureException e) {
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
-        } catch (NullPointerException npe) {
-            Logger.getGlobal().log(Level.INFO, "Email send failed");
         }
+        mailSender.orderStatusChange(workOrder,
+                LocaleContextHolder.getLocale(), "statusChanged");
     }
 
     @Override

@@ -16,6 +16,7 @@ import pl.lodz.p.it.cardio.dto.ResetMailDto;
 import pl.lodz.p.it.cardio.entities.*;
 import pl.lodz.p.it.cardio.exception.*;
 import pl.lodz.p.it.cardio.repositories.*;
+import pl.lodz.p.it.cardio.utils.CustomMailSender;
 import pl.lodz.p.it.cardio.utils.ObjectMapper;
 import pl.lodz.p.it.cardio.events.accountOperation.AccountOperationEvent;
 import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
@@ -38,7 +39,7 @@ public class UserServiceImpl implements UserService {
     private final VerificationTokenRepository tokenRepository;
     private final WorkOrderTypeRepository workOrderTypeRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ApplicationEventPublisher eventPublisher;
+    private final CustomMailSender mailSender;
 
     @Override
     public List<User> getAllUsers(){
@@ -51,9 +52,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addUser(UserDto userDto, HttpServletRequest request) throws AppNotFoundException, ValueNotUniqueException, AppTransactionFailureException {
-        User user =  new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
-        if(userRepository.existsByEmail(user.getEmail())){
+    public void addUser(UserDto userDto, HttpServletRequest request) throws AppNotFoundException, ValueNotUniqueException, AppTransactionFailureException, EmailException {
+        User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw ValueNotUniqueException.createEmailNotUniqueException(user);
         }
         user.setActivated(false);
@@ -61,14 +62,14 @@ public class UserServiceImpl implements UserService {
         //TODO przenieść do parmetrów systemowych
         user.setRoles(roleRepository.findByCode("CLIENT").orElseThrow(AppNotFoundException::createStatusNotFoundException));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        try{
+        try {
             userRepository.save(user);
-        } catch (ObjectOptimisticLockingFailureException e){
+        } catch (ObjectOptimisticLockingFailureException e) {
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
         }
 
-        eventPublisher.publishEvent(new AccountOperationEvent(userDto,
-                request.getLocale(), request.getContextPath(), "register"));
+        mailSender.accountOperation(userDto,
+                request.getLocale(), "register");
     }
 
     @Override
@@ -161,10 +162,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resetPassword(ResetMailDto userEmail, HttpServletRequest request) throws AppNotFoundException {
-        UserDto userDto = ObjectMapper.map(findByEmail(userEmail.getEmail()),UserDto.class);
-        eventPublisher.publishEvent(new AccountOperationEvent(userDto,
-                request.getLocale(), request.getContextPath(), "resetPassword"));
+    public void resetPassword(ResetMailDto userEmail, HttpServletRequest request) throws AppNotFoundException, EmailException {
+        UserDto userDto = ObjectMapper.map(findByEmail(userEmail.getEmail()), UserDto.class);
+        mailSender.accountOperation(userDto,
+                request.getLocale(), "resetPassword");
     }
 
     @Override

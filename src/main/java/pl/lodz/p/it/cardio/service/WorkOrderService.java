@@ -4,10 +4,7 @@ import pl.lodz.p.it.cardio.dto.WorkOrderDto.AssignWorkOrderDto;
 import pl.lodz.p.it.cardio.dto.WorkOrderDto.NewWorkOrderDto;
 import pl.lodz.p.it.cardio.dto.WorkOrderDto.WorkOrderDto;
 import pl.lodz.p.it.cardio.entities.WorkOrder;
-import pl.lodz.p.it.cardio.exception.AppBaseException;
-import pl.lodz.p.it.cardio.exception.AppNotFoundException;
-import pl.lodz.p.it.cardio.exception.AppTransactionFailureException;
-import pl.lodz.p.it.cardio.exception.TooLateCancellationException;
+import pl.lodz.p.it.cardio.exception.*;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -25,11 +22,11 @@ public interface WorkOrderService {
 
     WorkOrderDto getWorkOrderByBusinessKey(UUID workOrderBusinessKey) throws AppNotFoundException;
 
-    void assignUserToWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, AppTransactionFailureException;
+    void assignUserToWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, AppTransactionFailureException, EmailException;
 
-    void unassignUserFromWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, TooLateCancellationException, AppTransactionFailureException;
+    void unassignUserFromWorkOrder(UUID orderBusinessKey) throws AppNotFoundException, TooLateCancellationException, AppTransactionFailureException, EmailException;
 
-    void changeStatus(UUID fromString, String statusCode) throws AppNotFoundException, AppTransactionFailureException;
+    void changeStatus(UUID fromString, String statusCode) throws AppNotFoundException, AppTransactionFailureException, EmailException;
 
     Collection<WorkOrderDto> getAllWorkOrders();
 
