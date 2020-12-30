@@ -18,7 +18,6 @@ import pl.lodz.p.it.cardio.exception.*;
 import pl.lodz.p.it.cardio.repositories.*;
 import pl.lodz.p.it.cardio.utils.CustomMailSender;
 import pl.lodz.p.it.cardio.utils.ObjectMapper;
-import pl.lodz.p.it.cardio.events.accountOperation.AccountOperationEvent;
 import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
 
 import javax.servlet.http.HttpServletRequest;
