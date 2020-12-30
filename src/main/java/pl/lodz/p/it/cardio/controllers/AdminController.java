@@ -1,6 +1,8 @@
 package pl.lodz.p.it.cardio.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import pl.lodz.p.it.cardio.service.UserService;
 import pl.lodz.p.it.cardio.service.WorkOrderTypeService;
 import pl.lodz.p.it.cardio.entities.User;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -29,11 +32,14 @@ public class AdminController {
     private final UserService userService;
     private final WorkOrderTypeService workOrderTypeService;
 
+    @Qualifier("messageSource")
+    private final MessageSource messages;
+
     private Employee employeeState;
     private User userState;
 
     @GetMapping
-    public ModelAndView getMainAdminPage(){
+    public ModelAndView getMainAdminPage() {
         return new ModelAndView("admin/admin", "users", userService.getAllUsers());
     }
 
@@ -58,18 +64,18 @@ public class AdminController {
     }
 
     @PostMapping("/editAccount")
-    public String editAccount(@Valid @ModelAttribute("user") EditAdminUserDto userDto,
-                              BindingResult result, RedirectAttributes redirectAttributes){
-        if(result.hasErrors()){
+    public String editAccount(@Valid @ModelAttribute("user") EditAdminUserDto userDto, BindingResult result,
+                              RedirectAttributes redirectAttributes, HttpServletRequest request) {
+        if (result.hasErrors()) {
             return "admin/editUserData";
         }
-        try{
+        try {
             userService.adminEditUser(userState, employeeState, userDto);
         } catch (AppBaseException e) {
-            redirectAttributes.addFlashAttribute("errorMessage",e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/admin";
         }
-        redirectAttributes.addFlashAttribute("message","Success!!");
+        redirectAttributes.addFlashAttribute("message", messages.getMessage("editAccount.success", null, request.getLocale()));
         return "redirect:/admin";
     }
 
@@ -95,17 +101,17 @@ public class AdminController {
 
     @PostMapping("/newOrderType")
     public String createNewOrderType(@Valid @ModelAttribute("orderType") WorkOrderTypeDto workOrderTypeDto, BindingResult result,
-                                     Model model, RedirectAttributes redirectAttributes){
-        if(result.hasErrors()){
+                                     Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+        if (result.hasErrors()) {
             return "admin/newOrderType";
         }
-        try{
+        try {
             workOrderTypeService.addWorkOrderType(workOrderTypeDto);
         } catch (AppBaseException e) {
-            model.addAttribute("errorMessage",e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
             return "admin/newOrderType";
         }
-        redirectAttributes.addFlashAttribute("message","SUCESS");
+        redirectAttributes.addFlashAttribute("message", messages.getMessage("newOrderType.success", null, request.getLocale()));
         return "redirect:/admin/allOrderType";
     }
 }
