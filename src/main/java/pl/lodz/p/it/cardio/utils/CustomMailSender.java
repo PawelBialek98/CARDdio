@@ -57,17 +57,14 @@ public class CustomMailSender {
                 + "?token=" + token;
         String message = messages.getMessage(messagePrefix + ".text", null, locale);
 
-        try {
-            SimpleMailMessage email = new SimpleMailMessage();
+
+        SimpleMailMessage email = new SimpleMailMessage();
             email.setFrom("cardio.contact@google.com");
             email.setTo(recipientAddress);
             email.setSubject(subject);
             email.setText(message + "\n" + this.appUrl + confirmationUrl);
             mailSender.send(email);
-        } catch (MailAuthenticationException e) {
-            Logger.getGlobal().log(Level.WARNING, "Error while sending email: " + e.getMessage());
-            throw EmailException.createMailAthenticationException();
-        }
+
 
     }
 
