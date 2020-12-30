@@ -1,7 +1,6 @@
 package pl.lodz.p.it.cardio.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.Authentication;
@@ -12,7 +11,6 @@ import pl.lodz.p.it.cardio.dto.WorkOrderDto.NewWorkOrderDto;
 import pl.lodz.p.it.cardio.dto.WorkOrderDto.WorkOrderDto;
 import pl.lodz.p.it.cardio.entities.Status;
 import pl.lodz.p.it.cardio.entities.WorkOrderFlow;
-import pl.lodz.p.it.cardio.events.statusChange.OrderStatusChangeEvent;
 import pl.lodz.p.it.cardio.exception.*;
 import pl.lodz.p.it.cardio.repositories.*;
 import pl.lodz.p.it.cardio.utils.CustomMailSender;

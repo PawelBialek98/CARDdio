@@ -10,10 +10,12 @@ import pl.lodz.p.it.cardio.repositories.UserRepository;
 import pl.lodz.p.it.cardio.entities.User;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
+@Transactional(Transactional.TxType.REQUIRES_NEW)
 @RequiredArgsConstructor
 public class AuthenticationFailureListener {
 

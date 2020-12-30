@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Service("userDetailsService")
-@Transactional
+@Transactional(Transactional.TxType.REQUIRES_NEW)
 @RequiredArgsConstructor
 public class MyUserDetailsService implements UserDetailsService {
 
