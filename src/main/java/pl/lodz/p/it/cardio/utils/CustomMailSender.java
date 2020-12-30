@@ -1,12 +1,14 @@
 package pl.lodz.p.it.cardio.utils;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -58,12 +60,17 @@ public class CustomMailSender {
         String message = messages.getMessage(messagePrefix + ".text", null, locale);
 
 
-        SimpleMailMessage email = new SimpleMailMessage();
+        try {
+            SimpleMailMessage email = new SimpleMailMessage();
             email.setFrom("cardio.contact@google.com");
             email.setTo(recipientAddress);
             email.setSubject(subject);
             email.setText(message + "\n" + this.appUrl + confirmationUrl);
             mailSender.send(email);
+        } catch (MailException e) {
+            Logger.getGlobal().log(Level.WARNING, "Error while sending email! Details: " + e.getMessage());
+            throw EmailException.createMailAthenticationException();
+        }
 
 
     }
@@ -99,6 +106,7 @@ public class CustomMailSender {
             mailSender.send(email);
         } catch (MailAuthenticationException e) {
             Logger.getGlobal().log(Level.WARNING, "Error while sending email: " + e.getMessage());
+            //userRepository.delete(workOrder.getCustomer());
             throw EmailException.createMailAthenticationException();
         }
     }

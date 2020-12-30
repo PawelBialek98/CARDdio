@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-@Transactional
+@Transactional(Transactional.TxType.MANDATORY)
 public interface WorkOrderTypeRepository extends JpaRepository<WorkOrderType, Long> {
     Collection<WorkOrderType> findAllByEmployees_User_Email(String email);
     WorkOrderType findByCode(String code);

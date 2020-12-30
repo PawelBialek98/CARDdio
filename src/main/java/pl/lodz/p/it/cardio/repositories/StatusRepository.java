@@ -6,7 +6,7 @@ import pl.lodz.p.it.cardio.entities.Status;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
-@Transactional
+@Transactional(Transactional.TxType.MANDATORY)
 public interface StatusRepository extends JpaRepository<Status, Long> {
     Optional<Status> findByCode(String code);
 }

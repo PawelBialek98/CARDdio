@@ -7,7 +7,7 @@ import pl.lodz.p.it.cardio.entities.VerificationToken;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
-@Transactional
+@Transactional(Transactional.TxType.MANDATORY)
 public interface VerificationTokenRepository extends JpaRepository<VerificationToken, Long> {
     Optional<VerificationToken> findByToken(String token);
     VerificationToken findByUser(User user);

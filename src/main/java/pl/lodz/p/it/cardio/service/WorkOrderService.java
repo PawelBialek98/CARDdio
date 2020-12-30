@@ -31,4 +31,8 @@ public interface WorkOrderService {
     Collection<WorkOrderDto> getAllWorkOrders();
 
     int countAllFinishedWorkOrders();
+
+    void changeWorkOrderStatus() throws AppTransactionFailureException;
+
+    void removeCancelledWorkOrders();
 }

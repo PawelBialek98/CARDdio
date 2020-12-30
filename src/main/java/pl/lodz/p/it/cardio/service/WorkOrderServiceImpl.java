@@ -11,6 +11,7 @@ import pl.lodz.p.it.cardio.dto.WorkOrderDto.AssignWorkOrderDto;
 import pl.lodz.p.it.cardio.dto.WorkOrderDto.NewWorkOrderDto;
 import pl.lodz.p.it.cardio.dto.WorkOrderDto.WorkOrderDto;
 import pl.lodz.p.it.cardio.entities.Status;
+import pl.lodz.p.it.cardio.entities.WorkOrderFlow;
 import pl.lodz.p.it.cardio.events.statusChange.OrderStatusChangeEvent;
 import pl.lodz.p.it.cardio.exception.*;
 import pl.lodz.p.it.cardio.repositories.*;
@@ -33,12 +34,13 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(Transactional.TxType.REQUIRES_NEW)
 @RequiredArgsConstructor
 public class WorkOrderServiceImpl implements WorkOrderService {
 
     private final WorkOrderRepository workOrderRepository;
     private final WorkOrderTypeRepository workOrderTypeRepository;
+    private final WorkOrderFlowRepository workOrderFlowRepository;
     private final EmployeeRepository employeeRepository;
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
@@ -160,11 +162,53 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     @Override
     public Collection<WorkOrderDto> getAllWorkOrders() {
-        return ObjectMapper.mapAll(workOrderRepository.findAll(),WorkOrderDto.class);
+        return ObjectMapper.mapAll(workOrderRepository.findAll(), WorkOrderDto.class);
     }
 
     @Override
     public int countAllFinishedWorkOrders() {
         return workOrderRepository.countAllFinished();
+    }
+
+    @Override
+    public void changeWorkOrderStatus() throws AppTransactionFailureException {
+        Collection<WorkOrderFlow> workOrderFlows = workOrderFlowRepository.findAllByCanBeScheduledIsTrue();
+        for (WorkOrderFlow wof : workOrderFlows) {
+            changeStatusFromTo(wof.getStatusFrom(), wof.getStatusTo());
+        }
+    }
+
+    //TODO refactoring
+    private void changeStatusFromTo(Status statusFrom, Status statusTo) throws AppTransactionFailureException {
+        Collection<WorkOrder> workOrdersBefore = workOrderRepository.findAllByCurrentStatus_CodeAndCurrentStatus_StatusType(statusFrom.getCode(), "BEFORE");
+        workOrdersBefore = workOrdersBefore.stream().filter(wo -> wo.getStartDateTime().getTime() - new Date().getTime() < 0).collect(Collectors.toList());
+        workOrdersBefore.forEach(workOrder -> workOrder.setCurrentStatus(statusTo));
+        try {
+            workOrderRepository.saveAll(workOrdersBefore);
+        } catch (ObjectOptimisticLockingFailureException e) {
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        }
+
+
+        Collection<WorkOrder> workOrdersDuring = workOrderRepository.findAllByCurrentStatus_CodeAndCurrentStatus_StatusType(statusFrom.getCode(), "DURING");
+        workOrdersDuring = workOrdersDuring.stream().filter(wo -> wo.getEndDateTime().getTime() - new Date().getTime() < 0).collect(Collectors.toList());
+        workOrdersDuring.forEach(workOrder -> workOrder.setCurrentStatus(statusTo));
+        try {
+            workOrderRepository.saveAll(workOrdersDuring);
+        } catch (ObjectOptimisticLockingFailureException e) {
+            throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
+        }
+    }
+
+    @Override
+    public void removeCancelledWorkOrders() {
+        Collection<WorkOrder> workOrders = workOrderRepository.findAllByCurrentStatus_Code("CANCELLED");
+
+        int oldTime = 1000 * 60 * 60 * 24 * 7;
+        workOrders = workOrders.stream()
+                .filter(wo -> new Date().getTime() - wo.getStartDateTime().getTime() > oldTime)
+                .collect(Collectors.toList());
+
+        workOrderRepository.deleteAll(workOrders);
     }
 }

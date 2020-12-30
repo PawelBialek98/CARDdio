@@ -21,10 +21,15 @@ public class LoggerInterceptor {
     public Object auditMethod(ProceedingJoinPoint jp) throws Throwable {
         String methodName = jp.getSignature().getName();
         String packageName = jp.getSignature().getDeclaringTypeName();
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal;
+        try {
+            principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (NullPointerException npe) {
+            principal = "Scheduler";
+        }
         String callerName;
-        if(principal instanceof UserDetails){
-            callerName = ((UserDetails)principal).getUsername();
+        if (principal instanceof UserDetails) {
+            callerName = ((UserDetails) principal).getUsername();
         } else {
             callerName = principal.toString();
         }

@@ -105,6 +105,7 @@ public class UserController {
         try{
             userService.resetPassword(userEmail, request) ;
         } catch (AppBaseException e) {
+            //TODO ukryć informowanie o błędzie??
             model.addAttribute("errorMessage", e.getMessage());
             return "login/resetPassword";
         }

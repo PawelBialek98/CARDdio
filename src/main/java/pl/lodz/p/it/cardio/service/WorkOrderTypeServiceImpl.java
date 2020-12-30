@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(Transactional.TxType.REQUIRES_NEW)
 @RequiredArgsConstructor
 public class WorkOrderTypeServiceImpl implements WorkOrderTypeService {
 

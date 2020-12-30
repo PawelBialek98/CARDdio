@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-@Transactional
+@Transactional(Transactional.TxType.MANDATORY)
 public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
     Collection<WorkOrder> findAllByCustomer_Email(String email);
     Collection<WorkOrder> findAllByEmployee_User_Email(String email);

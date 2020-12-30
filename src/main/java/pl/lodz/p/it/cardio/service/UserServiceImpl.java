@@ -22,6 +22,7 @@ import pl.lodz.p.it.cardio.events.accountOperation.AccountOperationEvent;
 import pl.lodz.p.it.cardio.dto.UserDto.UserDto;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -30,6 +31,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(Transactional.TxType.REQUIRES_NEW)
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
@@ -52,6 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = EmailException.class)
     public void addUser(UserDto userDto, HttpServletRequest request) throws AppNotFoundException, ValueNotUniqueException, AppTransactionFailureException, EmailException {
         User user = new User(userDto.getFirstName(), userDto.getLastName(), userDto.getEmail(), userDto.getPassword(), userDto.getPhoneNumber());
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -67,7 +70,6 @@ public class UserServiceImpl implements UserService {
         } catch (ObjectOptimisticLockingFailureException e) {
             throw AppTransactionFailureException.createOptimisticLockingException(e.getCause());
         }
-
         mailSender.accountOperation(userDto,
                 request.getLocale(), "register");
     }

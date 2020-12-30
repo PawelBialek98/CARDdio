@@ -13,6 +13,6 @@ public class EmailException extends AppBaseException {
     }
 
     public static EmailException createMailAthenticationException() {
-        return new EmailException(MAIL_AUTHENTICATION_EXCEPTION);
+        return new EmailException(resourceBundle.getString(MAIL_AUTHENTICATION_EXCEPTION));
     }
 }

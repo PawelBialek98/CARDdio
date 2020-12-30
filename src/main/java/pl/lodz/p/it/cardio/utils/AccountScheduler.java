@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import pl.lodz.p.it.cardio.exception.AppTransactionFailureException;
 import pl.lodz.p.it.cardio.service.UserService;
 
+import javax.transaction.Transactional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

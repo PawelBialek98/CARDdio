@@ -7,7 +7,7 @@ import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 
-@Transactional
+@Transactional(Transactional.TxType.MANDATORY)
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findByUser_Email(String email);
     Optional<Employee> findByUser_BusinessKey(UUID userBusinessKey);

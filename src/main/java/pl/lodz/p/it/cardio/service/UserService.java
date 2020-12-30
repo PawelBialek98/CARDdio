@@ -14,7 +14,6 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 
-@Transactional
 public interface UserService {
     List<User> getAllUsers();
 
